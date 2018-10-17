@@ -1,0 +1,20 @@
+export default [
+    {'text': 'ApplicationRoot', value: 0},
+    {'text': 'DataStoreRootNode', value: 1},
+    {'text': 'DataStoreNode', value: 2},
+    {'text': 'ApplicationNode', value: 3},
+    {'text': 'ModelRootNode', value: 4},
+    {'text': 'ResourcesNode', value: 5},
+    {'text': 'FolderNode', value: 6},
+    {'text': 'AssemblyRoot', value: 7},
+    {'text': 'OrgUnitNode', value: 8},
+    {'text': 'EntityModelNode', value: 20},
+    {'text': 'ServiceModelNode', value: 21},
+    {'text': 'FormModelNode', value: 22},
+    {'text': 'EnumModelNode', value: 23},
+    {'text': 'EventModelNode', value: 24},
+    {'text': 'PermissionModelNode', value: 25},
+    {'text': 'WorkflowModelNode', value: 26},
+    {'text': 'ReportModelNode', value: 27},
+    {'text': 'MenuItemNode', value: 28}
+]
