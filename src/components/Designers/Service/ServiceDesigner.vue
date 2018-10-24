@@ -87,7 +87,7 @@
 
             loadModel(byCheckout) {
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.OpenServiceModel', [this.target.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.OpenServiceModel', [this.target.ID]).then(res => {
                     _this.onModelLoaded(res, byCheckout)
                 }).catch(err => {
                     _this.$message.error('加载服务代码失败: ' + err)
@@ -111,7 +111,7 @@
                 // todo:***** 临时修复monaco升级至0.9.0的问题，原本event.range，现在event.changes[].range
                 for (var i = 0; i < event.changes.length; i++) {
                     var change = event.changes[i]
-                    this.$channel.invoke('sys.DesignHub.ChangeBuffer', [1, this.target.ID,
+                    this.$channel.invoke('sys.DesignService.ChangeBuffer', [1, this.target.ID,
                         change.range.startLineNumber, change.range.startColumn,
                         change.range.endLineNumber, change.range.endColumn, change.text]).catch(err => {
                             _this.$message.warning('提交代码变更错误: ' + err)
@@ -123,7 +123,7 @@
             /** 延迟检查代码有效性 */
             checkCode() {
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.CheckCode', [1, this.target.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.CheckCode', [1, this.target.ID]).then(res => {
                     if (res && res.length > 0) {
                         var errs = []
                         for (var i = 0; i < res.length; i++) {
@@ -142,7 +142,7 @@
             save() {
                 let node = this.target
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.SaveModel', [node.Type, node.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
                     _this.$message.success('保存成功')
                 }).catch(err => {
                     _this.$message.error('保存失败: ' + err)
@@ -171,7 +171,7 @@
                 // 先调用PrepareDebug服务定位入口
                 let position = this.$refs.editor.getPosition()
                 var breakpoints = this.$refs.editor.getBreakpoints()
-                this.$channel.invoke('sys.DesignHub.PrepareDebug', [this.target.ID, position.lineNumber, position.column]).then(res => {
+                this.$channel.invoke('sys.DesignService.PrepareDebug', [this.target.ID, position.lineNumber, position.column]).then(res => {
                     var method = JSON.parse(res)
                     for (var i = 0; i < method.Args.length; i++) {
                         method.Args[i].Value = ''
@@ -196,7 +196,7 @@
                     let thread = this.hitBreakpoint.Thread
                     this.hitBreakpoint = null
                     this.$refs.editor.highlightBreakline(-1) // 取消当前高亮
-                    this.$channel.invoke('sys.DesignHub.ContinueBreakpoint', [thread]).then(res => {
+                    this.$channel.invoke('sys.DesignService.ContinueBreakpoint', [thread]).then(res => {
                         // do nothing
                     }).catch(err => {
                         _this.$message.error('继续执行错误: ' + err)

@@ -43,7 +43,7 @@
                 this.caDisabled = true
 
                 var _this = this
-                store.channel.invoke('sys.DesignHub.Publish', [this.commitMessage]).then(res => {
+                store.channel.invoke('sys.DesignService.Publish', [this.commitMessage]).then(res => {
                     _this.publishing = false
                     _this.caDisabled = false
                     // 激发事件通知更新DesignTree的CheckoutByMe的节点的状态
@@ -59,7 +59,7 @@
         },
         mounted() {
             var _this = this
-            store.channel.invoke('sys.DesignHub.GetPendingChanges', []).then(res => {
+            store.channel.invoke('sys.DesignService.GetPendingChanges', []).then(res => {
                 _this.pendingModels = res
                 if (res && res.length > 0) {
                     _this.okDisabled = false

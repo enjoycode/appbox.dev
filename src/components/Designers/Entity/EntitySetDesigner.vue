@@ -40,7 +40,7 @@ export default {
         propertyChanged(name, value) {
             var _that = this
             // 传入服务更改
-            this.$channel.invoke('sys.DesignHub.ChangeEntityMember', [this.modelId, this.Name, name, value]).then(res => {
+            this.$channel.invoke('sys.DesignService.ChangeEntityMember', [this.modelId, this.Name, name, value]).then(res => {
                 this.$emit('PropertyChanged', name, value)
             }).catch(err => {
                 _that.$message.error(err)

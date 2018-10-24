@@ -37,7 +37,7 @@ export default {
 
             var node = store.tree.currentNode
             var _this = this
-            store.channel.invoke('sys.DesignHub.NewViewModel', [node.Type, node.ID, this.newname]).then(res => {
+            store.channel.invoke('sys.DesignService.NewViewModel', [node.Type, node.ID, this.newname]).then(res => {
                 _this.running = false
                 _this.caDisabled = false
                 // 根据返回结果添加新节点

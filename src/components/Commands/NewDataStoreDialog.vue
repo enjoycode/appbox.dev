@@ -70,7 +70,7 @@
                 let _this = this
                 var args = [this.storeType, this.storeProvider, this.storeName]
                 // 获取实体属性
-                this.$channel.invoke('sys.DesignHub.NewDataStore', args).then(res => {
+                this.$channel.invoke('sys.DesignService.NewDataStore', args).then(res => {
                     // 根据返回结果添加新节点
                     DesignStore.tree.onNewNode({ ParentNodeType: 1, ParentNodeID: '', NewNode: res })
                     _this.$message.success('新建存储成功')

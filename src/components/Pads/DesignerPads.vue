@@ -61,7 +61,7 @@
 
                 // 发送关闭请求至服务端
                 if (targetNode) {
-                    this.$channel.invoke('sys.DesignHub.CloseDesigner', [targetNode.Type, targetNode.ID])
+                    this.$channel.invoke('sys.DesignService.CloseDesigner', [targetNode.Type, targetNode.ID])
                 }
 
                 this.currentTab = activeName

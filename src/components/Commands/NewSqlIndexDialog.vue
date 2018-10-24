@@ -67,7 +67,7 @@
 
                 let args = [this.designer.target.ID, 'AddIndex', JSON.stringify(this.indexInfo)]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeSqlOptions', args).then(res => {
+                this.$channel.invoke('sys.DesignService.ChangeSqlOptions', args).then(res => {
                     _this.designer.addIndex(res)
                     _this.visible = false
                 }).catch(err => {

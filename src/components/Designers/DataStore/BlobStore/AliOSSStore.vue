@@ -77,7 +77,7 @@
                 let _this = this
                 let settingsValue = JSON.stringify(this.settings)
                 let args = [this.target.ID, settingsValue]
-                this.$channel.invoke('sys.DesignHub.SaveDataStore', args).then(res => {
+                this.$channel.invoke('sys.DesignService.SaveDataStore', args).then(res => {
                     _this.target.Settings = settingsValue // 更新模型的值
                     _this.$message.success('保存成功!')
                 }).catch(err => {

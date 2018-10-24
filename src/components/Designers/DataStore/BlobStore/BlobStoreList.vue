@@ -65,7 +65,7 @@ export default {
             var _this = this
             this.filter = this.folder ? (this.folder + this.keyWords) : this.keyWords
             console.log(this.filter)
-            this.$channel.invoke('sys.DesignHub.GetBlobObjects', [this.storeName, this.page[this.currentPage], this.pageSize, this.filter]).then(res => {
+            this.$channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.page[this.currentPage], this.pageSize, this.filter]).then(res => {
                 _this.preBtnVisible = true
                 _this.nextBtnVisible = true
                 _this.nextMarker = res.NextMarker
@@ -115,7 +115,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.DeleteBlobObject', [this.storeName, this.folder + row.Name]).then(res => {
+                this.$channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, this.folder + row.Name]).then(res => {
                     this.$message({
                         type: 'success',
                         message: '删除成功!'

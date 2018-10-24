@@ -93,7 +93,7 @@
                 if (this.target.DataType === 8 && this.enums.length === 0) {
                     var _that = this
                     // todo:***** 改从设计树中获取所有枚举节点
-                    this.$channel.invoke('sys.DesignHub.GetAllEnumModels', []).then(res => {
+                    this.$channel.invoke('sys.DesignService.GetAllEnumModels', []).then(res => {
                         _that.enums = res
                     }).catch(() => {
                         _that.$message.error('加载所有枚举模型失败')
@@ -125,7 +125,7 @@
                 }
                 var _that = this
                 // 传入服务更改
-                this.$channel.invoke('sys.DesignHub.ChangeEntityMember', [this.modelId, this.target.Name, name, value]).catch(err => {
+                this.$channel.invoke('sys.DesignService.ChangeEntityMember', [this.modelId, this.target.Name, name, value]).catch(err => {
                     _that.$message.error(err)
                 })
             }

@@ -67,7 +67,7 @@ export default class WorkflowDesignService implements IDesignService {
     }
 
     public ChangeProperty(item: ItemDesigner, name: string, tag: any, value: any): void {
-        this._channel.invoke("sys.DesignHub.ChangeWorkflowItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
+        this._channel.invoke("sys.DesignService.ChangeWorkflowItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
             if (res) {
                 let items = res as Array<any>;
                 for (var i = 0; i < items.length; i++) {

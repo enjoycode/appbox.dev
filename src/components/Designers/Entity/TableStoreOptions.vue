@@ -119,7 +119,7 @@
                     }).then(res => {
                         mvName = res.value
                         let args = [_this.target.ID, 'AddMV', mvName]
-                        return _this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args)
+                        return _this.$channel.invoke('sys.DesignService.ChangeTableOptions', args)
                     }).then(res => { // 同步前端
                         _this.options.MaterializedViews.push({
                             Name: mvName,
@@ -135,7 +135,7 @@
                         type: 'warning'
                     }).then(res => {
                         let args = [this.target.ID, 'RemoveMV', targetName]
-                        return _this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args)
+                        return _this.$channel.invoke('sys.DesignService.ChangeTableOptions', args)
                     }).then(res => { // 同步前端
                         _this.options.MaterializedViews = _this.options.MaterializedViews.filter(v => v.Name !== targetName)
                         _this.curMV = _this.options.MaterializedViews.length > 0 ? _this.options.MaterializedViews[0].Name : ''
@@ -145,7 +145,7 @@
             onPartitionKeysChanged(e) {
                 let args = [this.target.ID, 'PartitionKeys', this.options.PartitionKeys]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
+                this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
                     this.onPrimaryKeyChanged()
                 }).catch(err => {
                     _this.$message.error('改变表存储PartitionKeys失败: ' + err)
@@ -154,7 +154,7 @@
             onClusteringColumnsChanged(e) {
                 let args = [this.target.ID, 'ClusteringColumns', JSON.stringify(this.options.ClusteringColumns)]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
+                this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
                     this.onPrimaryKeyChanged()
                 }).catch(err => {
                     _this.$message.error('改变表存储ClusteringColumns失败: ' + err)
@@ -174,14 +174,14 @@
             onMVPartitionKeysChanged(mv) {
                 let args = [this.target.ID, 'MVPartitionKeys', mv.PartitionKeys, mv.Name]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
+                this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).catch(err => {
                     _this.$message.error('改变物化视图PartitionKeys失败: ' + err)
                 })
             },
             onMVClusteringColumnsChanged(mv) {
                 let args = [this.target.ID, 'MVClusteringColumns', JSON.stringify(mv.ClusteringColumns), mv.Name]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
+                this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).catch(err => {
                     _this.$message.error('改变物化视图ClusteringColumns失败: ' + err)
                 })
             }

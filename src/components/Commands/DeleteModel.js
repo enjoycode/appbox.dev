@@ -21,7 +21,7 @@ module.exports = function () {
         type: 'warning'
     }).then(() => {
         // 获取实体属性
-        store.channel.invoke('sys.DesignHub.Delete', [selectNode.Type, selectNode.ID]).then(res => {
+        store.channel.invoke('sys.DesignService.Delete', [selectNode.Type, selectNode.ID]).then(res => {
             // 移除选中节点
             store.tree.onDeleteNode(selectNode, res)
             // 移除选中节点对应的tab

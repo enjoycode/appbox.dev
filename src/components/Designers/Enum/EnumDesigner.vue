@@ -97,7 +97,7 @@
             propertyChanged(name, value) {
                 var _that = this
                 // 传入服务更改
-                this.$channel.invoke('sys.DesignHub.ChangeEnumMember', [this.target.ID, this.currentMember.Name, name, value]).then(res => {
+                this.$channel.invoke('sys.DesignService.ChangeEnumMember', [this.target.ID, this.currentMember.Name, name, value]).then(res => {
                     this.$emit('PropertyChanged', name, value)
                 }).catch(err => {
                     _that.$message.error(err)
@@ -106,7 +106,7 @@
             save() {
                 let node = this.target
                 var _that = this
-                this.$channel.invoke('sys.DesignHub.SaveModel', [node.Type, node.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
                     _that.$message.success('保存成功')
                 }).catch(err => {
                     _that.$message.error('保存失败: ' + err)
@@ -117,7 +117,7 @@
         mounted() {
             var _that = this
             // 获取实体属性
-            this.$channel.invoke('sys.DesignHub.GetEnumItems', [this.target.ID]).then(res => {
+            this.$channel.invoke('sys.DesignService.GetEnumItems', [this.target.ID]).then(res => {
                 _that.tableData = res
             }).catch(err => {
                 alert(err)

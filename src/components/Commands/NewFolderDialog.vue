@@ -47,7 +47,7 @@
                     var node = store.tree.currentNode
                     var _this = this
                     var args = [node.Type, node.ID, this.viewModel.Name]
-                    this.$channel.invoke('sys.DesignHub.NewFolder', args).then(res => {
+                    this.$channel.invoke('sys.DesignService.NewFolder', args).then(res => {
                         store.tree.onNewNode(res) // 根据返回结果刷新或添加新节点
                         _this.$message.success('添加成功')
                         _this.visible = false

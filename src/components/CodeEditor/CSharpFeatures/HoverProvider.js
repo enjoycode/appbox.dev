@@ -13,6 +13,6 @@ export default {
         // 	}
         // });
 
-        return DesignStore.channel.invoke('sys.DesignHub.GetHover', [model.fileName, position.lineNumber, position.column])
+        return DesignStore.channel.invoke('sys.DesignService.GetHover', [model.fileName, position.lineNumber, position.column])
     }
 }

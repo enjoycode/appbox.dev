@@ -26,7 +26,7 @@
             // 代码编辑器初始化后开始加载表达式代码
             onEditorMounted() {
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.OpenExpression', [this.ownerType, this.ownerID, this.propertyName]).then(res => {
+                this.$channel.invoke('sys.DesignService.OpenExpression', [this.ownerType, this.ownerID, this.propertyName]).then(res => {
                     _this.onCodeLoaded(res)
                 }).catch(err => {
                     _this.$message.error('加载表达式错误: ' + err)
@@ -43,7 +43,7 @@
                 // todo:***** 临时修复monaco升级至0.9.0的问题，原本event.range，现在event.changes[].range
                 for (var i = 0; i < event.changes.length; i++) {
                     var change = event.changes[i]
-                    this.$channel.invoke('sys.DesignHub.ChangeBuffer', [2, this.fileName,
+                    this.$channel.invoke('sys.DesignService.ChangeBuffer', [2, this.fileName,
                         change.range.startLineNumber, change.range.startColumn,
                         change.range.endLineNumber, change.range.endColumn, change.text]).catch(err => {
                             _this.$message.warning('提交代码变更错误: ' + err)
@@ -53,7 +53,7 @@
             },
             close(isCancel) {
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.CloseExpression', [this.fileName, isCancel]).catch(err => {
+                this.$channel.invoke('sys.DesignService.CloseExpression', [this.fileName, isCancel]).catch(err => {
                     _this.$message.error('关闭表达式编辑器错误: ' + err)
                 })
             }

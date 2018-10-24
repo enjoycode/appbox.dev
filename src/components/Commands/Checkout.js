@@ -17,7 +17,7 @@ module.exports = function () {
         if (node.Type >= DesignNodeType.EntityModelNode ||
             node.Type === DesignNodeType.DataStoreNode ||
             node.Type === DesignNodeType.ModelRootNode) { // 模型根节点、模型节点或存储节点
-            store.channel.invoke('sys.DesignHub.Checkout', [node.Type, node.ID]).then(res => {
+            store.channel.invoke('sys.DesignService.Checkout', [node.Type, node.ID]).then(res => {
                 // 通知store激发NodeCheckout事件
                 store.emitEvent('NodeCheckout', node, res)
                 store.ide.$message.success('签出节点: ' + node.Text + '成功')

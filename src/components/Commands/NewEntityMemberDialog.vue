@@ -133,7 +133,7 @@
 
                     // 获取实体属性
                     let _this = this
-                    this.$channel.invoke('sys.DesignHub.NewEntityMember', args).then(res => {
+                    this.$channel.invoke('sys.DesignService.NewEntityMember', args).then(res => {
                         // 根据返回结果添加新节点
                         _this.designer.addMember(res)
                         _this.$message.success('添加成功')
@@ -173,7 +173,7 @@
                 store.tree.getAllEntityNodes(this.RefTreeData)
                 // 获取所有引用指定模型标识的EntityRef Member集合
                 var modelId = this.designer.target.ID
-                this.$channel.invoke('sys.DesignHub.GetEntityRefModels', [modelId]).then(res => {
+                this.$channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {
                     this.SetTreeData = res
                 }).catch(err => {
                     this.$message.error(err)

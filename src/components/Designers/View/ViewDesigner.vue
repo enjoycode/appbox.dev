@@ -203,7 +203,7 @@
             },
             loadModel(byCheckout) {
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.OpenViewModel', [this.target.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
                     _this.onModelLoaded(res, byCheckout)
                 }).catch(err => {
                     _this.$message.error('加载视图代码失败: ' + err)
@@ -245,7 +245,7 @@
             /** 改变路由设置 */
             changeRouteSetting() {
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeRouteSetting', [this.target.ID, this.routeEnable, this.routePath])
+                this.$channel.invoke('sys.DesignService.ChangeRouteSetting', [this.target.ID, this.routeEnable, this.routePath])
                     .then(res => {
                         _this.routeDialogVisible = false
                     })
@@ -335,7 +335,7 @@
                 }
 
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.SaveModel', [node.Type, node.ID, sourceCode, JSON.stringify(runtimeCode)]).then(res => {
+                this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID, sourceCode, JSON.stringify(runtimeCode)]).then(res => {
                     _this.$message.success('保存成功')
                 }).catch(err => {
                     _this.$message.error('保存失败: ' + err)

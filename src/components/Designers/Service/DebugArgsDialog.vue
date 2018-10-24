@@ -48,7 +48,7 @@
 
                 let _this = this
                 let invokeArgs = [this.dlgProps.ModelID, this.dlgProps.Method.Name, JSON.stringify(args), JSON.stringify(this.dlgProps.Breakpoints)]
-                this.$channel.invoke('sys.DesignHub.StartDebugging', invokeArgs).then(res => {
+                this.$channel.invoke('sys.DesignService.StartDebugging', invokeArgs).then(res => {
                     _this.$message.success('开始调试成功')
                     _this.visible = false
                 }).catch(err => {

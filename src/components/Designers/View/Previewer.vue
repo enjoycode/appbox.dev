@@ -89,7 +89,7 @@
                 var name = viewModelID.replace('.', '')
                 return Vue.component(name, function (resolve, reject) {
                     // 开始Download代码及样式，注意：不能用this.$channel，因实例化时尚未注入
-                    window.$store.channel.invoke('sys.DesignHub.LoadView', [viewModelID]).then(res => {
+                    window.$store.channel.invoke('sys.DesignService.LoadView', [viewModelID]).then(res => {
                         const result = JSON.parse(res)
                         if (!result.Code) {
                             reject('视图模型尚未编译')

@@ -73,7 +73,7 @@
                 formdata.append('file', files[0])
                 let _this = this
                 axios({
-                    url: '/api/blob/sys.DesignHub.ValidateServiceDeps/sys.DesignHub.UploadServiceDeps/' + this.targetNode.AppID,
+                    url: '/api/blob/sys.DesignService.ValidateServiceDeps/sys.DesignService.UploadServiceDeps/' + this.targetNode.AppID,
                     method: 'post',
                     data: formdata,
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -87,7 +87,7 @@
             },
             onOkClick() {
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.UpdateReferences', [this.targetNode.ID, this.references]).catch(err => {
+                this.$channel.invoke('sys.DesignService.UpdateReferences', [this.targetNode.ID, this.references]).catch(err => {
                     _this.$message.error('更新服务依赖失败: ' + err)
                 })
             },
@@ -104,7 +104,7 @@
             let designer = store.designers.getActiveDesigner()
             this.targetNode = designer.target
             var _this = this
-            this.$channel.invoke('sys.DesignHub.GetReferences', [this.targetNode.ID]).then(res => {
+            this.$channel.invoke('sys.DesignService.GetReferences', [this.targetNode.ID]).then(res => {
                 let d = JSON.parse(res)
                 if (d.AppDeps) {
                     for (var i = 0; i < d.AppDeps.length; i++) {

@@ -18,7 +18,7 @@ module.exports = function () {
           type: 'warning'
         }).then(() => {
             // 获取实体属性
-            store.channel.invoke('sys.DesignHub.DeleteEnumItem', [modelId, memberName]).then(res => {
+            store.channel.invoke('sys.DesignService.DeleteEnumItem', [modelId, memberName]).then(res => {
                 // 移除选中成员
                 activeDesigner.removeCurrentMember()
                 Message.success('删除成功')

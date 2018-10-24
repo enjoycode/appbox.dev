@@ -208,7 +208,7 @@
             },
             save() {
                 var _that = this
-                this.$channel.invoke('sys.DesignHub.SaveModel', [this.target.Type, this.target.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.SaveModel', [this.target.Type, this.target.ID]).then(res => {
                     _that.$message.success('保存成功')
                 }).catch(err => {
                     _that.$message.error('保存失败: ' + err)
@@ -216,7 +216,7 @@
             },
             refresh() {
                 var _this = this
-                this.$channel.invoke('sys.DesignHub.GetEntityModel', [this.target.ID]).then(res => {
+                this.$channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
                     _this.storeName = res.StoreName
                     _this.storeType = res.StoreType
                     _this.members = res.Members

@@ -51,7 +51,7 @@ export default class ReportDesignService implements IDesignService {
     }
 
     public ChangeProperty(item: ItemDesigner, name: string, tag: any, value: any): void {
-        this._channel.invoke("sys.DesignHub.ChangeReportItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
+        this._channel.invoke("sys.DesignService.ChangeReportItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
             if (res) {
                 let item = (res as IServerReportItem[])[0]; //todo:暂只返回一个
                 // 先根据ID找到对应的设计器

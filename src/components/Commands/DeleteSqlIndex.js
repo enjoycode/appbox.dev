@@ -21,7 +21,7 @@ module.exports = function () {
         type: 'warning'
     }).then(() => {
         let args = [designer.target.ID, 'DeleteIndex', index.ID]
-        store.channel.invoke('sys.DesignHub.ChangeSqlOptions', args).then(res => {
+        store.channel.invoke('sys.DesignService.ChangeSqlOptions', args).then(res => {
             designer.removeIndex(index)
         }).catch(err => {
             Message.error(err)

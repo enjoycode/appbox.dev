@@ -23,7 +23,7 @@ module.exports = function () {
         type: 'warning'
     }).then(() => {
         // 获取实体属性
-        store.channel.invoke('sys.DesignHub.DeleteEntityMember', [modelId, memberName]).then(res => {
+        store.channel.invoke('sys.DesignService.DeleteEntityMember', [modelId, memberName]).then(res => {
             // 判断结果是否是引用列表
             if (res.length) {
                 store.usages.update(res)
