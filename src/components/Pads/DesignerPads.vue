@@ -32,7 +32,7 @@
                 currentTab: 'Welcome',
                 openedTabs: [
                     {
-                        title: '欢迎',
+                        title: 'Welcome',
                         name: 'Welcome',
                         target: null, // 目标设计节点， 可能为null
                         designer: Welcome
@@ -84,7 +84,7 @@
                 }
                 // 没有则新建tab
                 var tab = {
-                    title: node.ID,
+                    title: node.App + '.' + node.Name,
                     name: key,
                     target: node,
                     designer: null

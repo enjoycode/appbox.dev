@@ -92,7 +92,7 @@
         },
         data() {
             return {
-                activeView: 'members', // 当前视图 members | sqlOptions | tableOptions
+                activeView: 'members', // 当前视图 members | indexes | data
                 views: [{ label: 'members', title: 'Members' }],
                 designerType: 'EntityDesigner', // 用于外部判断当前设计视图的类型，此属性一直保持不变
                 storeName: '', // 映射的存储名称
