@@ -57,9 +57,9 @@
         },
         computed: {
             canEditLength() {
-                if (this.storeType !== 'Sql') {
-                    return false
-                }
+                // if (this.storeType !== 'Sql') {
+                //     return false
+                // }
                 switch (this.target.DataType) {
                     case 1:// DateTime
                     case 4: // bool
@@ -72,9 +72,9 @@
                 }
             },
             canEditScale() {
-                if (this.storeType !== 'Sql') {
-                    return false
-                }
+                // if (this.storeType !== 'Sql') {
+                //     return false
+                // }
                 switch (this.target.DataType) {
                     case 3:// Decimal
                     case 9:// Float
@@ -85,7 +85,7 @@
                 }
             },
             canEditAllowNull() {
-                return this.storeType === 'Sql'
+                return false // this.storeType === 'Sql'
             }
         },
         methods: {
