@@ -119,17 +119,18 @@
 
             /** 用于新建成功返回后刷新模型根节点或添加新建的节点 */
             onNewNode(nodeInfo) {
-                if (nodeInfo.RootNodeID) { // 否则重新刷新模型根节点，因为可能已经改变过目录结构
-                    let rootNode = this.findNode(DesignNodeType.ModelRootNode, nodeInfo.RootNodeID)
-                    this.onNodeCheckout(rootNode, true)
-                } else { // 根节点之前已签出则简单添加
-                    if (nodeInfo.ParentNodeType === DesignNodeType.DataStoreRootNode) { // 存储根节点
-                        this.designNodes[0].Nodes.push(nodeInfo.NewNode)
-                    } else {
+                // TODO:待重构
+                // if (nodeInfo.RootNodeID) { // 否则重新刷新模型根节点，因为可能已经改变过目录结构
+                //     let rootNode = this.findNode(DesignNodeType.ModelRootNode, nodeInfo.RootNodeID)
+                //     this.onNodeCheckout(rootNode, true)
+                // } else { // 根节点之前已签出则简单添加
+                    // if (nodeInfo.ParentNodeType === DesignNodeType.DataStoreRootNode) { // 存储根节点
+                    //     this.designNodes[0].Nodes.push(nodeInfo.NewNode)
+                    // } else {
                         let parent = this.findNode(nodeInfo.ParentNodeType, nodeInfo.ParentNodeID)
                         parent.Nodes.splice(nodeInfo.InsertIndex, 0, nodeInfo.NewNode)
-                    }
-                }
+                    // }
+                // }
             },
 
             /** 用于服务端删除成功后刷新模型根节点或移除删除的节点 */
@@ -236,18 +237,18 @@
             onNodeCheckout(node, needUpdate) {
                 node.CheckoutBy = 'Me'
                 this.refreshNode(node)
-                // 判断是否签出模型根节点，是则开始刷新
-                if (node.Type === DesignNodeType.ModelRootNode) {
-                    this.loading = true
-                    let _this = this
-                    this.$channel.invoke('sys.DesignService.RefreshModelRoot', [node.ID]).then(res => {
-                        node.Nodes = res // todo:如何处理已展开的节点?
-                        _this.loading = false
-                    }).catch(err => {
-                        _this.loading = false
-                        _this.$message.error('刷新模型根节点失败: ' + err)
-                    })
-                }
+                // 判断是否签出模型根节点，是则开始刷新(待修改为不用刷新)
+                // if (node.Type === DesignNodeType.ModelRootNode) {
+                //     this.loading = true
+                //     let _this = this
+                //     this.$channel.invoke('sys.DesignService.RefreshModelRoot', [node.ID]).then(res => {
+                //         node.Nodes = res // todo:如何处理已展开的节点?
+                //         _this.loading = false
+                //     }).catch(err => {
+                //         _this.loading = false
+                //         _this.$message.error('刷新模型根节点失败: ' + err)
+                //     })
+                // }
             },
             /** 发布成功后更新所有签出节点的状态显示 */
             onPublish() {
