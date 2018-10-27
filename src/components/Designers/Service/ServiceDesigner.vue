@@ -53,8 +53,7 @@
         },
         computed: {
             fileName() {
-                var sr = this.target.ID.split('.')
-                return sr[0] + '.Services.' + sr[1] + '.cs'
+                return this.target.App + '.Services.' + this.target.Text + '.cs'
             }
         },
         watch: {
