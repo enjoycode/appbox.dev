@@ -127,11 +127,11 @@
                         var errs = []
                         for (var i = 0; i < res.length; i++) {
                             var element = res[i]
-                            errs.push({ Model: this.target.ID, Location: '(' + element.Line + ',' + element.Column + ')', Info: element.Text })
+                            errs.push({ Model: this.target.App + '.' + this.target.Name, Location: '(' + element.Line + ',' + element.Column + ')', Info: element.Text })
                         }
-                        DesignStore.errors.update(this.target.ID, errs)
+                        DesignStore.errors.update(this.target.App + '.' + this.target.Name, errs)
                     } else {
-                        DesignStore.errors.clear(this.target.ID)
+                        DesignStore.errors.clear(this.target.App + '.' + this.target.Name)
                     }
                 }).catch(err => {
                     _this.$message.warning('检查代码错误: ' + err)
