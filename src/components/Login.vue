@@ -1,7 +1,7 @@
 <template>
     <div class="align-center">
         <e-card>
-            <div slot="header" style="text-align: center">Developer Login</div>
+            <div slot="header" style="text-align: center">AppBox Studio</div>
             <e-input v-model="user" placeholder="Account..." prefix-icon="fas fa-user"> </e-input>
             <br>
             <br>
