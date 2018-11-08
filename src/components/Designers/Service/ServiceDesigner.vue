@@ -107,6 +107,7 @@
             /** 代码变更通知服务端同步 */
             onCodeChanged(event) {
                 let _this = this
+                // TODO:** 排队处理，防止服务端乱序执行
                 // todo:***** 临时修复monaco升级至0.9.0的问题，原本event.range，现在event.changes[].range
                 for (var i = 0; i < event.changes.length; i++) {
                     var change = event.changes[i]
