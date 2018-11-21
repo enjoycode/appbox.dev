@@ -27,12 +27,17 @@
             return {
                 defaultActive: 'model',
                 nodes: [{
-                    title: 'DataStore',
+                    title: 'New',
                     icon: null,
-                    index: 'store',
+                    index: 'new',
                     nodes: [
-                        { title: 'New DataStore', icon: 'fas fa-plus fa-fw', index: 'NewDataStore' },
-                        { title: 'Delete DataStore', icon: 'fas fa-times fa-fw', index: 'DeleteDataStore' }
+                        { title: 'Application', icon: 'fas fa-th-large fa-fw', index: 'NewApplication' },
+                        { title: 'Folder', icon: 'fas fa-folder fa-fw', index: 'NewFolder' },
+                        { title: 'Entity', icon: 'fas fa-table fa-fw', index: 'NewEntity' },
+                        { title: 'Service', icon: 'fas fa-cog fa-fw', index: 'NewService' },
+                        { title: 'View', icon: 'far fa-window-maximize fa-fw', index: 'NewViewModel' },
+                        { title: 'Enum', icon: 'fas fa-th-list fa-fw', index: 'NewEnumModel' },
+                        { title: 'Permission', icon: 'fas fa-lock fa-fw', index: 'NewPermissionModel' }
                     ]
                 },
                 {
@@ -42,12 +47,6 @@
                     nodes: [
                         { title: 'Save', icon: 'fas fa-save fa-fw', index: 'Save' },
                         { title: 'Checkout', icon: 'fas fa-edit fa-fw', index: 'Checkout' },
-                        { title: 'New Application', icon: 'fas fa-th-large fa-fw', index: 'NewApplication' },
-                        { title: 'New Folder', icon: 'fas fa-folder fa-fw', index: 'NewFolder' },
-                        { title: 'New Entity', icon: 'fas fa-table fa-fw', index: 'NewEntity' },
-                        { title: 'New Service', icon: 'fas fa-cog fa-fw', index: 'NewService' },
-                        { title: 'New View', icon: 'far fa-window-maximize fa-fw', index: 'NewViewModel' },
-                        { title: 'New Enum', icon: 'fas fa-th-list fa-fw', index: 'NewEnumModel' },
                         { title: 'Delete', icon: 'fas fa-trash fa-fw', index: 'DeleteModel' },
                         { title: 'Publish', icon: 'fas fa-archive fa-fw', index: 'Publish' }
                     ]
