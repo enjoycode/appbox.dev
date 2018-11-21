@@ -38,15 +38,16 @@ export default {
             var node = store.tree.currentNode
             var _this = this
             store.channel.invoke('sys.DesignService.NewViewModel', [node.Type, node.ID, this.newname]).then(res => {
-                _this.running = false
-                _this.caDisabled = false
-                // 根据返回结果添加新节点
                 store.tree.onNewNode(res)
+                _this.$message.success('New view succeed.')
+                _this.running = false
+                _this.visible = false
+                _this.caDisabled = false
             }).catch(err => {
                 _this.running = false
                 _this.okDisabled = false
                 _this.caDisabled = false
-                _this.$message.error('新建错误: ' + err)
+                _this.$message.error(err)
             })
         }
     }
