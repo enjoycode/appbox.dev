@@ -328,17 +328,16 @@
                 const template = this.editState['template'].model.getValue()
                 const script = this.editState['script'].model.getValue()
                 const styles = this.editState['style'].model.getValue()
-                const sourceCode = '<template>' + template + '</template><script>' + script + '</' + 'script><style>' + styles + '</style>'
                 let runtimeCode = {
                     Code: minifyCode,
                     Style: this.runtimeStyle
                 }
 
                 var _this = this
-                this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID, sourceCode, JSON.stringify(runtimeCode)]).then(res => {
-                    _this.$message.success('保存成功')
+                this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID, template, script, styles, JSON.stringify(runtimeCode)]).then(res => {
+                    _this.$message.success('Save view succeed.')
                 }).catch(err => {
-                    _this.$message.error('保存失败: ' + err)
+                    _this.$message.error(err)
                 })
             },
             /** 切换显示预览窗口 */
