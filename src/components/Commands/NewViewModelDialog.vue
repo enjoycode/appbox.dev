@@ -1,9 +1,9 @@
 <template>
-    <e-dialog title="新建视图模型" width="450px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
-        <span>视图名称:</span><e-input v-model="newname"></e-input>
+    <e-dialog title="New ViewModel" width="450px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
+        <span>Name:</span><e-input v-model="newname"></e-input>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">取 消</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="onOkClick">确 定</e-button>
+            <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
+            <e-button :disabled="okDisabled" type="primary" @click="onOkClick">Ok</e-button>
         </div>
     </e-dialog>
 </template>
