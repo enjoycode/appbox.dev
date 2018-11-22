@@ -32,16 +32,16 @@ module.exports = {
         assetsPublicPath: '/',
         proxyTable: {
             '/api': {
-                target: 'http://10.211.55.11:5000/',
+                target: 'http://10.211.55.10:5000/',
                 secure: false
             },
             '/wsapi': {
-                target: 'ws://10.211.55.11:5000/',
+                target: 'ws://10.211.55.10:5000/',
                 secure: false,
                 ws: true
             },
             '/ssh': {
-                target: 'ws://10.211.55.11:5000/',
+                target: 'ws://10.211.55.10:5000/',
                 secure: false,
                 ws: true
             }
