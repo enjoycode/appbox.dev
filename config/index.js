@@ -7,8 +7,8 @@ const path = require('path')
 module.exports = {
     build: {
         env: require('./prod.env'),
-        index: path.resolve(__dirname, '../', '../', 'appbox', 'bin', 'wwwroot', 'dev', 'index.html'),
-        assetsRoot: path.resolve(__dirname, '../', '../', 'appbox', 'bin', 'wwwroot', 'dev'),
+        index: path.resolve(__dirname, '../', '../', 'appbox', 'cmake-build-debug', 'wwwroot', 'dev', 'index.html'),
+        assetsRoot: path.resolve(__dirname, '../', '../', 'appbox', 'cmake-build-debug', 'wwwroot', 'dev'),
         assetsSubDirectory: 'static',
         assetsPublicPath: '/dev/',
         productionSourceMap: false,
