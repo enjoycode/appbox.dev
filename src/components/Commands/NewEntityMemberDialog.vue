@@ -57,6 +57,11 @@
             <e-form-item prop="AllowNull" label="AllowNull:">
                 <e-switch v-model="viewModel.AllowNull"></e-switch>
             </e-form-item>
+            <template v-if="!viewModel.AllowNull">
+                <e-form-item prop="DefaultValue" label="DefaultValue:">
+                    <e-input v-model="viewModel.DefaultValue"></e-input>
+                </e-form-item>
+            </template>
         </e-form>
         <div slot="footer" class="dialog-footer">
             <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
@@ -85,7 +90,8 @@
                     IsReverse: false,
                     RefIds: [],
                     SetId: null,
-                    AllowNull: true
+                    AllowNull: true,
+                    DefaultValue: ''
                 },
                 rules: {
                     Name: [
@@ -140,6 +146,9 @@
                     if (this.viewModel.EntityMemberType === 0) { // DataField
                         args.push(this.viewModel.EntityFieldType)
                         args.push(this.viewModel.AllowNull)
+                        if (!this.viewModel.AllowNull) {
+                            args.push(this.viewModel.DefaultValue)
+                        }
                     } else if (this.viewModel.EntityMemberType === 2) { // EntityRef
                         var refIdStr = this.viewModel.RefIds.join(',')
                         args.push(refIdStr)
