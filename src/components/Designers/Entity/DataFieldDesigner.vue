@@ -7,7 +7,7 @@
             <e-input v-model="target.LocalizedName" @change="onLocalizedNameChanged"></e-input>
         </e-form-item>
         <e-form-item prop="DataType" :required="true" label="DataType">
-            <e-select v-model="target.DataType" @change="onDataTypeChanged" placeholder="请选择">
+            <e-select v-model="target.DataType" @change="onDataTypeChanged" :disabled="true">
                 <e-option v-for="item in DataFieldTypes" :key="item.value" :label="item.text" :value="item.value">
                 </e-option>
             </e-select>
@@ -18,12 +18,12 @@
                 </e-option>
             </e-select>
         </e-form-item>
-        <e-form-item prop="Length" v-if="canEditLength" :required="true" label="Length">
+        <!-- <e-form-item prop="Length" v-if="canEditLength" :required="true" label="Length">
             <e-input v-model="target.Length" @change="onLengthChanged"></e-input>
         </e-form-item>
         <e-form-item label="Scale" v-if="canEditScale">
             <e-input v-model="target.Scale" @change="onScaleChanged"></e-input>
-        </e-form-item>
+        </e-form-item> -->
         <e-form-item label="AllowNull" v-if="canEditAllowNull">
             <e-checkbox v-model="target.AllowNull" @change="onAllowNullChanged"></e-checkbox>
         </e-form-item>
