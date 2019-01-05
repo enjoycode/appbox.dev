@@ -1,14 +1,21 @@
 <template>
-    <e-dialog title="New Entity Member" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <e-dialog title="New Entity Member" width="600px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <e-form :model="viewModel" ref="viewModel" :rules="rules" label-width="120px" label-position="right">
-            <e-form-item prop="Name" :required="true" label="Name">
+            <e-form-item prop="Name" :required="true" label="Name:">
                 <e-input v-model="viewModel.Name"></e-input>
             </e-form-item>
-            <e-form-item prop="EntityMemberType" label="Type">
+            <e-form-item prop="EntityMemberType" label="MemberType:">
                 <e-select v-model="viewModel.EntityMemberType">
                     <e-option v-for="item in memberTypes" :key="item.value" :label="item.text" :value="item.value"></e-option>
                 </e-select>
             </e-form-item>
+            <template v-if="viewModel.EntityMemberType === 0"> <!--DataField属性-->
+                <e-form-item prop="EntityFieldType" label="FieldType:">
+                    <e-select v-model="viewModel.EntityFieldType">
+                        <e-option v-for="item in fieldTypes" :key="item.value" :label="item.text" :value="item.value"></e-option>
+                    </e-select>
+                </e-form-item>
+            </template>
             <template v-if="viewModel.EntityMemberType === 2">
                 <e-form-item prop="IsReverse" label="IsReverse">
                     <e-checkbox v-model="viewModel.IsReverse"></e-checkbox>
@@ -47,6 +54,9 @@
                     </e-select>
                 </e-form-item>
             </template>
+            <e-form-item prop="AllowNull" label="AllowNull:">
+                <e-switch v-model="viewModel.AllowNull"></e-switch>
+            </e-form-item>
         </e-form>
         <div slot="footer" class="dialog-footer">
             <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
@@ -57,6 +67,7 @@
 
 <script>
     import store from '../DesignStore'
+    import DataFieldTypes from '../Designers/Entity/DataFieldTypes'
 
     export default {
         data() {
@@ -70,9 +81,11 @@
                 viewModel: {
                     Name: '',
                     EntityMemberType: 0,
+                    EntityFieldType: 1,
                     IsReverse: false,
                     RefIds: [],
-                    SetId: null
+                    SetId: null,
+                    AllowNull: true
                 },
                 rules: {
                     Name: [
@@ -101,6 +114,9 @@
             },
             memberTypes() {
                 return this.designer ? this.designer.memberTypes : []
+            },
+            fieldTypes() {
+                return DataFieldTypes
             }
         },
         methods: {
@@ -121,11 +137,14 @@
                         this.viewModel.EntityMemberType
                     ]
 
-                    if (this.viewModel.EntityMemberType === 2) { // EntityRef
+                    if (this.viewModel.EntityMemberType === 0) { // DataField
+                        args.push(this.viewModel.EntityFieldType)
+                        args.push(this.viewModel.AllowNull)
+                    } else if (this.viewModel.EntityMemberType === 2) { // EntityRef
                         var refIdStr = this.viewModel.RefIds.join(',')
                         args.push(refIdStr)
                         args.push(this.viewModel.IsReverse)
-                    } else if (this.viewModel.EntityMemberType === 3) {
+                    } else if (this.viewModel.EntityMemberType === 3) { // EntitySet
                         var setId = this.viewModel.SetId
                         args.push(setId.EntityID)
                         args.push(setId.Name)
