@@ -14,8 +14,7 @@
                 <e-radio class="radio" v-model="entityModel.EntityModelType" :label="0">NonInherits</e-radio>
                 <e-radio class="radio" v-model="entityModel.EntityModelType" :label="1">Inherits</e-radio>
             </e-form-item>
-            <e-form-item v-if="entityModel.EntityModelType === 1" prop="Inherit" label="继承类">
-                <!--<e-tree ref="inheritTree" @filter-node-method="filterNodeMethod" :data="InheritNodes" :props="treeOption" highlight-current></e-tree>-->
+            <e-form-item v-if="entityModel.EntityModelType === 1" prop="Inherit" label="BaseEntity:">
                 <e-select v-model="entityModel.Inherit" filterable>
                     <e-option-group v-for="group in InheritNodes" :key="group.ID" :label="group.Text" :value="group.ID">
                         <e-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
@@ -25,8 +24,8 @@
             </e-form-item>
         </e-form>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">取 消</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="submit('entityModel')">确 定</e-button>
+            <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
+            <e-button :disabled="okDisabled" type="primary" @click="submit('entityModel')">OK</e-button>
         </div>
     </e-dialog>
 </template>
@@ -53,11 +52,6 @@
                         { validator: this.validateName, trigger: 'change' }
                     ]
                 }
-            }
-        },
-        computed: {
-            treeOption() {
-                return { label: 'Text', children: 'Nodes' }
             }
         },
         methods: {
@@ -97,10 +91,6 @@
                     })
                 })
             },
-            // filterNodeMethod: function (value, data, node) {
-            //     // 筛选出只有类的节点
-            //     return true
-            // },
             validateName: function (rule, value, callback) {
                 if (!value) {
                     return callback(new Error('名称不能为空！'))
@@ -111,8 +101,6 @@
         },
         mounted: function () {
             store.tree.getAllEntityNodes(this.InheritNodes)
-            this.storeNodes = store.tree.getAllSqlAndTableNodes()
-            this.storeNodes.push({ ID: 'None', StoreType: -1 }) // -1表示没有映射
         }
     }
 </script>
