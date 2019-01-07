@@ -55,10 +55,8 @@
                     </e-collapse>
                 </div>
             </e-splitter>
-            <!-- 关系存储选项视图 -->
-            <sql-store-options ref="sqlOptions" :target="target" :members="members" :options="sqlOptions" v-if="activeView==='sqlOptions'"></sql-store-options>
-            <!-- 表存储选项视图 -->
-            <table-store-options :target="target" :members="members" :options="tableOptions" v-if="activeView==='tableOptions'"></table-store-options>
+            <!-- 实体选项视图 -->
+            <entity-options ref="optionsView" :target="target" :members="members" :options="options" v-if="activeView==='options'"></entity-options>
         </div>
         <!--表达式编辑器对话框占位-->
         <component v-if="expressionDialog" :is="expressionDialog" ownerType="EntityModel" :ownerID="target.ID" propertyName="ToStringExpression"
@@ -67,206 +65,200 @@
 </template>
 
 <script>
-    import Vue from 'vue'
-    import EntityRefDesigner from './EntityRefDesigner'
-    import DataFieldDesigner from './DataFieldDesigner'
-    import EntitySetDesigner from './EntitySetDesigner'
-    import AutoNumberDesigner from './AutoNumberDesigner'
-    import FieldSetDesigner from './FieldSetDesigner'
-    import EntityMemberTypes from './EntityMemberTypes'
-    import TableStoreOptions from './TableStoreOptions'
-    import SqlStoreOptions from './SqlStoreOptions'
-    import ExpressionDialog from '../../CodeEditor/ExpressionEditorDialog'
+import Vue from 'vue'
+import EntityRefDesigner from './EntityRefDesigner'
+import DataFieldDesigner from './DataFieldDesigner'
+import EntitySetDesigner from './EntitySetDesigner'
+import AutoNumberDesigner from './AutoNumberDesigner'
+import FieldSetDesigner from './FieldSetDesigner'
+import EntityMemberTypes from './EntityMemberTypes'
+import EntityOptions from './EntityOptions'
+import ExpressionDialog from '../../CodeEditor/ExpressionEditorDialog'
 
-    export default {
-        components: {
-            DataFieldDesigner: DataFieldDesigner,
-            EntityRefDesigner: EntityRefDesigner,
-            EntitySetDesigner: EntitySetDesigner,
-            TableStoreOptions: TableStoreOptions,
-            SqlStoreOptions: SqlStoreOptions
-        },
-        props: {
-            // 实体模型节点
-            target: { type: Object, required: true }
-        },
-        data() {
-            return {
-                activeView: 'members', // 当前视图 members | indexes | data
-                views: [{ label: 'members', title: 'Members' }],
-                designerType: 'EntityDesigner', // 用于外部判断当前设计视图的类型，此属性一直保持不变
-                storeName: '', // 映射的存储名称
-                storeType: '', // 映射的存储类型
-                members: [], // 成员列表
-                collapseValue: ['1'],
-                currentMember: null,
-                currentMemberDesigner: null,
-                currentMemberTitle: null, // 属性面板中成员的标题,
-                expressionDialog: null, // ToString表达式编辑器对话框
-                tableOptions: {
-                    PartitionKeys: [],
-                    ClusteringColumns: [],
-                    ContainsIndexs: [],
-                    MaterializedViews: [],
-                    DefaultTTL: 0
-                },
-                sqlOptions: {
-                    Indexes: []
-                }
+export default {
+    components: {
+        DataFieldDesigner: DataFieldDesigner,
+        EntityRefDesigner: EntityRefDesigner,
+        EntitySetDesigner: EntitySetDesigner,
+        EntityOptions: EntityOptions
+    },
+    props: {
+        // 实体模型节点
+        target: { type: Object, required: true }
+    },
+    data() {
+        return {
+            activeView: 'members', // 当前视图 members | options | data
+            views: [{ label: 'members', title: 'Members' }],
+            designerType: 'EntityDesigner', // 用于外部判断当前设计视图的类型，此属性一直保持不变
+            storeType: '', // 映射的存储类型
+            members: [], // 成员列表
+            collapseValue: ['1'],
+            currentMember: null,
+            currentMemberDesigner: null,
+            currentMemberTitle: null, // 属性面板中成员的标题,
+            expressionDialog: null, // ToString表达式编辑器对话框
+            options: {
+                PartitionKeys: [],
+                Indexes: []
             }
-        },
-        computed: {
-            storeTitle() {
-                return this.storeName ? this.storeType + 'Store - ' + this.storeName : 'DTO'
-            },
-            memberTypes() { // 当前存储类型下可使用的成员类型列表
-                return EntityMemberTypes(this.storeType)
-            }
-        },
-
-        methods: {
-            /** ----成员操作---- */
-            entityMemberTypeFormat(row, column) {
-                var found = this.memberTypes.find(t => t.value === row.Type)
-                return found ? found.text : 'Unknown'
-            },
-            currentRowChange(currentRow, oldCurrentRow) {
-                this.currentMember = currentRow
-                this.collapseValue = ['1', '2'] // 展开属性面板
-                if (!currentRow) {
-                    this.collapseValue = ['1']
-                    this.currentMemberDesigner = null
-                    this.currentMemberTitle = null
-                    return true
-                }
-
-                switch (currentRow.Type) {
-                    case 0:
-                        this.currentMemberDesigner = DataFieldDesigner
-                        this.currentMemberTitle = 'DataField Properties'
-                        break
-                    case 2:
-                        this.currentMemberDesigner = EntityRefDesigner
-                        this.currentMemberTitle = 'EntityRef Properties'
-                        break
-                    case 3:
-                        this.currentMemberDesigner = EntitySetDesigner
-                        this.currentMemberTitle = 'EntitySet Properties'
-                        break
-                    case 7:
-                        this.currentMemberDesigner = AutoNumberDesigner
-                        this.currentMemberTitle = 'AutoNumber Properties'
-                        break
-                    case 11:
-                        this.currentMemberDesigner = FieldSetDesigner
-                        this.currentMemberTitle = 'FieldSet Properties'
-                        break
-                    default:
-                        break
-                }
-            },
-            addMember(memberData) {
-                this.members.push(memberData)
-                this.selectMember(this.members[this.members.length - 1])
-                this.currentMember = memberData
-            },
-            selectMember(row) {
-                this.currentMember = row
-                this.$refs.memberTable.setCurrentRow(row)
-            },
-            removeCurrentMember() {
-                if (!this.currentMember) {
-                    return false
-                }
-                var index = this.members.indexOf(this.currentMember)
-                this.members.splice(index, 1)
-            },
-
-            /** ----索引操作---- */
-            addIndex(indexData) {
-                this.sqlOptions.Indexes.push(indexData)
-            },
-            getCurrentIndex() {
-                if (!this.$refs.sqlOptions) {
-                    return null
-                }
-                return this.$refs.sqlOptions.currentIndex
-            },
-            removeIndex(indexData) {
-                let at = this.sqlOptions.Indexes.indexOf(indexData)
-                if (at >= 0) {
-                    this.sqlOptions.Indexes.splice(at, 1)
-                }
-            },
-
-            /** ----EntityModel.ToStringExpression表达式编辑器---- */
-            onOpenExpressionEditor() {
-                this.expressionDialog = Vue.component('ExpressionEditorDialog', ExpressionDialog)
-            },
-            onCloseExpressionEditor() {
-                this.expressionDialog = null
-            },
-            save() {
-                var _that = this
-                this.$channel.invoke('sys.DesignService.SaveModel', [this.target.Type, this.target.ID]).then(res => {
-                    _that.$message.success('保存成功')
-                }).catch(err => {
-                    _that.$message.error('保存失败: ' + err)
-                })
-            },
-            refresh() {
-                var _this = this
-                this.$channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
-                    _this.storeName = res.StoreName
-                    _this.storeType = res.StoreType
-                    _this.members = res.Members
-                    if (_this.storeName) {
-                        switch (_this.storeType) {
-                            case 'Sql':
-                                _this.views.push({ label: 'sqlOptions', title: 'Indexes' }) // todo:检测已存在
-                                if (res.StoreOptions) {
-                                    _this.sqlOptions.Indexes = res.StoreOptions.Indexes ? res.StoreOptions.Indexes : []
-                                }
-                                break
-                            case 'Table':
-                                _this.views.push({ label: 'tableOptions', title: 'Table Options' }) // todo:检测已存在
-                                if (res.StoreOptions) {
-                                    _this.tableOptions.PartitionKeys = res.StoreOptions.PartitionKeys
-                                    _this.tableOptions.ClusteringColumns = res.StoreOptions.ClusteringColumns
-                                    _this.tableOptions.MaterializedViews = res.StoreOptions.MaterializedViews ? res.StoreOptions.MaterializedViews : []
-                                }
-                                break
-                            default:
-                                break
-                        }
-                    }
-                }).catch(err => {
-                    _this.$message.error(err)
-                })
-            }
-        },
-
-        mounted() {
-            this.refresh()
         }
+    },
+    computed: {
+        storeTitle() {
+            return ''
+            // return this.storeName ? this.storeType + 'Store - ' + this.storeName : 'DTO'
+        },
+        memberTypes() { // 当前存储类型下可使用的成员类型列表
+            return EntityMemberTypes(this.storeType)
+        }
+    },
+
+    methods: {
+        /** ----成员操作---- */
+        entityMemberTypeFormat(row, column) {
+            var found = this.memberTypes.find(t => t.value === row.Type)
+            return found ? found.text : 'Unknown'
+        },
+        currentRowChange(currentRow, oldCurrentRow) {
+            this.currentMember = currentRow
+            this.collapseValue = ['1', '2'] // 展开属性面板
+            if (!currentRow) {
+                this.collapseValue = ['1']
+                this.currentMemberDesigner = null
+                this.currentMemberTitle = null
+                return true
+            }
+
+            switch (currentRow.Type) {
+                case 0:
+                    this.currentMemberDesigner = DataFieldDesigner
+                    this.currentMemberTitle = 'DataField Properties'
+                    break
+                case 2:
+                    this.currentMemberDesigner = EntityRefDesigner
+                    this.currentMemberTitle = 'EntityRef Properties'
+                    break
+                case 3:
+                    this.currentMemberDesigner = EntitySetDesigner
+                    this.currentMemberTitle = 'EntitySet Properties'
+                    break
+                case 7:
+                    this.currentMemberDesigner = AutoNumberDesigner
+                    this.currentMemberTitle = 'AutoNumber Properties'
+                    break
+                case 11:
+                    this.currentMemberDesigner = FieldSetDesigner
+                    this.currentMemberTitle = 'FieldSet Properties'
+                    break
+                default:
+                    break
+            }
+        },
+        addMember(memberData) {
+            this.members.push(memberData)
+            this.selectMember(this.members[this.members.length - 1])
+            this.currentMember = memberData
+        },
+        selectMember(row) {
+            this.currentMember = row
+            this.$refs.memberTable.setCurrentRow(row)
+        },
+        removeCurrentMember() {
+            if (!this.currentMember) {
+                return false
+            }
+            var index = this.members.indexOf(this.currentMember)
+            this.members.splice(index, 1)
+        },
+
+        /** ----索引操作---- */
+        addIndex(indexData) {
+            this.sqlOptions.Indexes.push(indexData)
+        },
+        getCurrentIndex() {
+            if (!this.$refs.sqlOptions) {
+                return null
+            }
+            return this.$refs.sqlOptions.currentIndex
+        },
+        removeIndex(indexData) {
+            let at = this.sqlOptions.Indexes.indexOf(indexData)
+            if (at >= 0) {
+                this.sqlOptions.Indexes.splice(at, 1)
+            }
+        },
+
+        /** ----EntityModel.ToStringExpression表达式编辑器---- */
+        onOpenExpressionEditor() {
+            this.expressionDialog = Vue.component('ExpressionEditorDialog', ExpressionDialog)
+        },
+        onCloseExpressionEditor() {
+            this.expressionDialog = null
+        },
+        save() {
+            var _that = this
+            this.$channel.invoke('sys.DesignService.SaveModel', [this.target.Type, this.target.ID]).then(res => {
+                _that.$message.success('保存成功')
+            }).catch(err => {
+                _that.$message.error('保存失败: ' + err)
+            })
+        },
+        refresh() {
+            var _this = this
+            this.$channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
+                _this.storeName = res.StoreName
+                _this.storeType = res.StoreType
+                _this.members = res.Members
+
+                _this.views.push({ label: 'options', title: 'Options' })
+                // if (_this.storeName) {
+                //     switch (_this.storeType) {
+                //         case 'Sql':
+                //             _this.views.push({ label: 'sqlOptions', title: 'Indexes' }) // todo:检测已存在
+                //             if (res.StoreOptions) {
+                //                 _this.sqlOptions.Indexes = res.StoreOptions.Indexes ? res.StoreOptions.Indexes : []
+                //             }
+                //             break
+                //         case 'Table':
+                //             _this.views.push({ label: 'tableOptions', title: 'Table Options' }) // todo:检测已存在
+                //             if (res.StoreOptions) {
+                //                 _this.tableOptions.PartitionKeys = res.StoreOptions.PartitionKeys
+                //                 _this.tableOptions.ClusteringColumns = res.StoreOptions.ClusteringColumns
+                //                 _this.tableOptions.MaterializedViews = res.StoreOptions.MaterializedViews ? res.StoreOptions.MaterializedViews : []
+                //             }
+                //             break
+                //         default:
+                //             break
+                //     }
+                // }
+            }).catch(err => {
+                _this.$message.error(err)
+            })
+        }
+    },
+
+    mounted() {
+        this.refresh()
     }
+}
 </script>
 
 <style scoped>
-    .header {
-        line-height: 45px;
-        font-weight: bold;
-        padding: 0 10px;
-        height: 45px;
-        box-shadow: 0 3px 3px #ccc
-    }
+.header {
+    line-height: 45px;
+    font-weight: bold;
+    padding: 0 10px;
+    height: 45px;
+    box-shadow: 0 3px 3px #ccc;
+}
 
-    .content {
-        margin-top: 4px;
-        height: calc(100% - 49px);
-    }
+.content {
+    margin-top: 4px;
+    height: calc(100% - 49px);
+}
 
-    .members {
-        height: 100%;
-    }
+.members {
+    height: 100%;
+}
 </style>
