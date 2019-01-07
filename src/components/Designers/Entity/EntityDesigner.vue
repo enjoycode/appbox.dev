@@ -212,26 +212,7 @@ export default {
                 _this.members = res.Members
 
                 _this.views.push({ label: 'options', title: 'Options' })
-                // if (_this.storeName) {
-                //     switch (_this.storeType) {
-                //         case 'Sql':
-                //             _this.views.push({ label: 'sqlOptions', title: 'Indexes' }) // todo:检测已存在
-                //             if (res.StoreOptions) {
-                //                 _this.sqlOptions.Indexes = res.StoreOptions.Indexes ? res.StoreOptions.Indexes : []
-                //             }
-                //             break
-                //         case 'Table':
-                //             _this.views.push({ label: 'tableOptions', title: 'Table Options' }) // todo:检测已存在
-                //             if (res.StoreOptions) {
-                //                 _this.tableOptions.PartitionKeys = res.StoreOptions.PartitionKeys
-                //                 _this.tableOptions.ClusteringColumns = res.StoreOptions.ClusteringColumns
-                //                 _this.tableOptions.MaterializedViews = res.StoreOptions.MaterializedViews ? res.StoreOptions.MaterializedViews : []
-                //             }
-                //             break
-                //         default:
-                //             break
-                //     }
-                // }
+                _this.options.Indexes = res.Indexes
             }).catch(err => {
                 _this.$message.error(err)
             })

@@ -21,7 +21,7 @@
         <h3>Indexs:</h3>
         <e-table :data="options.Indexes" @current-change="onCurrentChanged"
             highlight-current-row border empty-text=" ">
-            <e-table-column prop="Comment" label="Comment" width="300" align="center"></e-table-column>
+            <e-table-column prop="Name" label="Name" width="300" align="center"></e-table-column>
             <e-table-column prop="Fields" label="Fields" :formatter="indexFieldsFormat"></e-table-column>
             <e-table-column prop="Unique" label="Unique" width="180" align="center">
                 <template slot-scope="scope">
@@ -52,7 +52,7 @@ export default {
                 if (i !== 0) {
                     s += '; '
                 }
-                s += this.members.find(t => t.UID === element.MemberUID).Name + ' '
+                s += this.members.find(t => t.ID === element.MID).Name + ' '
                 s += element.OrderByDesc ? 'DESC' : 'ASC'
             }
             return s
@@ -92,8 +92,4 @@ export default {
 .view >>> .el-select {
     width: 95%;
 }
-
-/* .indexs {
-    height: 100%;
-} */
 </style>
