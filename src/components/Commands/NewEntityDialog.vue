@@ -1,20 +1,18 @@
 <template>
-    <e-dialog title="新建实体模型" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <e-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <e-form :model="entityModel" ref="entityModel" :rules="rules" label-width="120px" label-position="right">
-            <e-form-item prop="Name" :required="true" label="名称:">
+            <e-form-item prop="Name" :required="true" label="Name:">
                 <e-input v-model="entityModel.Name"></e-input>
             </e-form-item>
-            <e-form-item prop="LocalizedName" label="本地化名称:">
+            <e-form-item prop="LocalizedName" label="Comment:">
                 <e-input v-model="entityModel.LocalizedName"></e-input>
             </e-form-item>
-            <e-form-item prop="StoreName" label="存储:">
-                <e-select v-model="entityModel.StoreName">
-                    <e-option v-for="item in storeNodes" :key="item.ID" :value="item.ID">{{item.ID}}</e-option>
-                </e-select>
+            <e-form-item prop="DTO" label="DTO:">
+                <e-switch v-model="entityModel.DTO"></e-switch>
             </e-form-item>
-            <e-form-item v-if="storeType === 0" prop="EntityModelType" label="类型:">
-                <e-radio class="radio" v-model="entityModel.EntityModelType" :label="0">普通类</e-radio>
-                <e-radio class="radio" v-model="entityModel.EntityModelType" :label="1">继承类</e-radio>
+            <e-form-item v-if="entityModel.DTO===false" prop="EntityModelType" label="Inherits:">
+                <e-radio class="radio" v-model="entityModel.EntityModelType" :label="0">NonInherits</e-radio>
+                <e-radio class="radio" v-model="entityModel.EntityModelType" :label="1">Inherits</e-radio>
             </e-form-item>
             <e-form-item v-if="entityModel.EntityModelType === 1" prop="Inherit" label="继承类">
                 <!--<e-tree ref="inheritTree" @filter-node-method="filterNodeMethod" :data="InheritNodes" :props="treeOption" highlight-current></e-tree>-->
@@ -42,12 +40,11 @@
                 visible: true,
                 okDisabled: false, // ok按钮是否禁用
                 caDisabled: false, // cancel按钮是否禁用
-                InheritNodes: [],
-                storeNodes: [], // 所有SqlStore及TableStore节点
+                InheritNodes: [], // 继承实体节点列表
                 entityModel: {
                     Name: '',
                     LocalizedName: '',
-                    StoreName: 'Default',
+                    DTO: false,
                     EntityModelType: 0,
                     Inherit: null
                 },
@@ -61,16 +58,6 @@
         computed: {
             treeOption() {
                 return { label: 'Text', children: 'Nodes' }
-            },
-            storeType() { // 当前选择的存储类型
-                var storeName = this.entityModel.StoreName
-                if (storeName) {
-                    var storeNode = this.storeNodes.find(t => { return t.ID === storeName })
-                    if (storeNode) {
-                        return storeNode.StoreType
-                    }
-                }
-                return -1
             }
         },
         methods: {
@@ -92,8 +79,7 @@
                         node.ID,
                         this.entityModel.Name,
                         this.entityModel.LocalizedName,
-                        this.entityModel.StoreName,
-                        this.storeType,
+                        this.entityModel.DTO,
                         this.entityModel.EntityModelType,
                         this.entityModel.Inherit
                     ]
