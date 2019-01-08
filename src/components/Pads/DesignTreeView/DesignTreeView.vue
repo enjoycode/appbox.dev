@@ -191,13 +191,11 @@
                         result.push(newNode)
                     }
                     if (node.Type === DesignNodeType.EntityModelNode) {
-                        var arr = node.ID.split('.')
-                        var appid = arr[0]
                         var group
                         // 查找对应分组
                         for (var i = 0; i < result.length; i++) {
                             var pn = result[i]
-                            if (pn.ID === appid) {
+                            if (pn.ID === node.App) {
                                 group = pn
                                 break
                             }
