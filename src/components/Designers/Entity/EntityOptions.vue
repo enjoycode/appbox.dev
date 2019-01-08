@@ -4,14 +4,15 @@
         <h3>Partions:</h3>
         <e-form label-width="200px" size="small">
             <e-form-item label="Partition Keys:">
-                <e-select v-model="options.PartitionKeys" multiple @change="onPartitionKeysChanged">
-                    <e-option v-for="item in members" :key="item.Name" :label="item.Name" :value="item.Name"
+                <e-select v-model="options.PartitionKeys" value-key="Name" multiple @change="onPartitionKeysChanged">
+                    <e-option v-for="item in allPartitionKeys" :key="item.Name" :label="item.Name" 
+                        :value="{MemberId: item.MemberId, Name: item.Name, OrderByDesc: item.OrderByDesc}"
                         :disabled="disabledMember(options, item.Name)"></e-option>
                 </e-select>
             </e-form-item>
             <e-form-item label="Partition Orders:">
                 <span v-for="item in options.PartitionKeys" :key="item.Name" >{{ item.Name }}:
-                    <e-switch v-model="item.OrderDESC" @change="onPartitionKeysChanged" active-text="DESC" inactive-text="ASC"></e-switch>
+                    <e-switch v-model="item.OrderByDesc" @change="onPartitionKeysChanged" active-text="DESC" inactive-text="ASC"></e-switch>
                     &nbsp;
                 </span>
             </e-form-item>
@@ -39,6 +40,17 @@ export default {
         members: { type: Array, required: true },
         options: { type: Object, required: true }
     },
+    computed: {
+        // 获取所有分区键，包括特殊分区键
+        allPartitionKeys() {
+            // TODO:排除EntityRef等类型
+            var pks = []
+            for (let i = 0; i < this.members.length; i++) {
+                pks.push({ MemberId: this.members[i].ID, Name: this.members[i].Name, OrderByDesc: false })
+            }
+            return pks
+        }
+    },
     data() {
         return {
             currentIndex: null
@@ -62,20 +74,20 @@ export default {
         },
         /** 用于判断该成员是否可选 */
         disabledMember(target, memberName) {
-            // TODO:排除EntityRef等类型
-            if (target.PartitionKeys.find(t => t === memberName)) {
+            if (target.PartitionKeys.find(t => t.Name === memberName)) {
                 return true
             }
             return false
         },
         onPartitionKeysChanged(e) {
-            let args = [this.target.ID, 'PartitionKeys', this.options.PartitionKeys]
-            let _this = this
-            this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
-                this.onPrimaryKeyChanged()
-            }).catch(err => {
-                _this.$message.error('改变PartitionKeys失败: ' + err)
-            })
+            console.log(this.options.PartitionKeys)
+            // let args = [this.target.ID, 'PartitionKeys', this.options.PartitionKeys]
+            // let _this = this
+            // this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
+            //     this.onPrimaryKeyChanged()
+            // }).catch(err => {
+            //     _this.$message.error('改变PartitionKeys失败: ' + err)
+            // })
         }
     }
 }

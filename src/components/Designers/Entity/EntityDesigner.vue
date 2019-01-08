@@ -213,6 +213,7 @@ export default {
 
                 _this.views.push({ label: 'options', title: 'Options' })
                 _this.options.Indexes = res.Indexes
+                _this.options.PartitionKeys = res.PartitionKeys
             }).catch(err => {
                 _this.$message.error(err)
             })
