@@ -80,14 +80,20 @@ export default {
             return false
         },
         onPartitionKeysChanged(e) {
-            console.log(this.options.PartitionKeys)
-            // let args = [this.target.ID, 'PartitionKeys', this.options.PartitionKeys]
-            // let _this = this
-            // this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
-            //     this.onPrimaryKeyChanged()
-            // }).catch(err => {
-            //     _this.$message.error('改变PartitionKeys失败: ' + err)
-            // })
+            var oldPartitionKeys = this.options.PartitionKeys.slice()
+            let args = [this.target.ID, 'PartitionKeys', JSON.stringify(this.options.PartitionKeys)]
+            let _this = this
+            this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
+                // 主键改变后同步刷新前端所有成员的AllowNull属性，后端已处理
+                _this.members.forEach(m => {
+                    if (_this.options.PartitionKeys.find(t => t.Name === m.Name)) {
+                        m.AllowNull = false
+                    }
+                })
+            }).catch(err => {
+                _this.options.PartitionKeys = oldPartitionKeys
+                _this.$message.error('Change PartitionKeys error: ' + err)
+            })
         }
     }
 }
