@@ -53,7 +53,8 @@ export default {
     },
     data() {
         return {
-            currentIndex: null
+            currentIndex: null,
+            oldPartitionKeys: [] // 暂存旧的分区键，用于更改失败后恢复
         }
     },
     methods: {
@@ -80,10 +81,10 @@ export default {
             return false
         },
         onPartitionKeysChanged(e) {
-            var oldPartitionKeys = this.options.PartitionKeys.slice()
             let args = [this.target.ID, 'PartitionKeys', JSON.stringify(this.options.PartitionKeys)]
             let _this = this
-            this.$channel.invoke('sys.DesignService.ChangeTableOptions', args).then(res => {
+            this.$channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
+                _this.oldPartitionKeys = _this.options.PartitionKeys.slice()
                 // 主键改变后同步刷新前端所有成员的AllowNull属性，后端已处理
                 _this.members.forEach(m => {
                     if (_this.options.PartitionKeys.find(t => t.Name === m.Name)) {
@@ -91,10 +92,13 @@ export default {
                     }
                 })
             }).catch(err => {
-                _this.options.PartitionKeys = oldPartitionKeys
+                _this.options.PartitionKeys = _this.oldPartitionKeys
                 _this.$message.error('Change PartitionKeys error: ' + err)
             })
         }
+    },
+    mounted() {
+        this.oldPartitionKeys = this.options.PartitionKeys.slice()
     }
 }
 </script>
