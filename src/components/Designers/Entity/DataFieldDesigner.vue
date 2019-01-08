@@ -18,12 +18,6 @@
                 </e-option>
             </e-select>
         </e-form-item>
-        <!-- <e-form-item prop="Length" v-if="canEditLength" :required="true" label="Length">
-            <e-input v-model="target.Length" @change="onLengthChanged"></e-input>
-        </e-form-item>
-        <e-form-item label="Scale" v-if="canEditScale">
-            <e-input v-model="target.Scale" @change="onScaleChanged"></e-input>
-        </e-form-item> -->
         <e-form-item label="AllowNull" v-if="canEditAllowNull">
             <e-checkbox v-model="target.AllowNull" @change="onAllowNullChanged"></e-checkbox>
         </e-form-item>
@@ -43,7 +37,6 @@
         },
         props: {
             target: { type: Object, required: true }, // EntityMemberModel
-            storeType: { type: String, required: true }, // Sql | Table
             modelId: { type: String, required: true }
         },
         watch: {
@@ -56,34 +49,6 @@
             }
         },
         computed: {
-            canEditLength() {
-                // if (this.storeType !== 'Sql') {
-                //     return false
-                // }
-                switch (this.target.DataType) {
-                    case 1:// DateTime
-                    case 4: // bool
-                    case 5:// Guid
-                    case 6:// Byte
-                    case 8:// Enum
-                        return false
-                    default:
-                        return true
-                }
-            },
-            canEditScale() {
-                // if (this.storeType !== 'Sql') {
-                //     return false
-                // }
-                switch (this.target.DataType) {
-                    case 3:// Decimal
-                    case 9:// Float
-                    case 10:// Double
-                        return true
-                    default:
-                        return false
-                }
-            },
             canEditAllowNull() {
                 return false // this.storeType === 'Sql'
             }

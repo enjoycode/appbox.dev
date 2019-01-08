@@ -68,8 +68,6 @@
                     _that.$message.error(err)
                 })
             }
-        },
-        mounted: function () {
         }
     }
 </script>

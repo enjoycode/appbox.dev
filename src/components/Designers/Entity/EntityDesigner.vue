@@ -50,7 +50,7 @@
                             </e-form>
                         </e-collapse-item>
                         <e-collapse-item v-if="currentMemberTitle !== null" :title="currentMemberTitle" name="2">
-                            <component :is="currentMemberDesigner" :target.sync="currentMember" :store-type="storeType" :model-id="target.ID"></component>
+                            <component :is="currentMemberDesigner" :target.sync="currentMember" :model-id="target.ID"></component>
                         </e-collapse-item>
                     </e-collapse>
                 </div>
@@ -207,7 +207,6 @@ export default {
         refresh() {
             var _this = this
             this.$channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
-                _this.storeName = res.StoreName
                 _this.storeType = res.StoreType
                 _this.members = res.Members
 
