@@ -57,6 +57,7 @@
             </e-splitter>
             <!-- 实体选项视图 -->
             <entity-options ref="optionsView" :target="target" :members="members" :options="options" v-if="activeView==='options'"></entity-options>
+            <entity-data-view ref="dataView" :target="target" :members="members" v-if="activeView==='data'"></entity-data-view>
         </div>
         <!--表达式编辑器对话框占位-->
         <component v-if="expressionDialog" :is="expressionDialog" ownerType="EntityModel" :ownerID="target.ID" propertyName="ToStringExpression"
@@ -73,6 +74,7 @@ import AutoNumberDesigner from './AutoNumberDesigner'
 import FieldSetDesigner from './FieldSetDesigner'
 import EntityMemberTypes from './EntityMemberTypes'
 import EntityOptions from './EntityOptions'
+import EntityDataView from './EntityDataView'
 import ExpressionDialog from '../../CodeEditor/ExpressionEditorDialog'
 
 export default {
@@ -80,7 +82,8 @@ export default {
         DataFieldDesigner: DataFieldDesigner,
         EntityRefDesigner: EntityRefDesigner,
         EntitySetDesigner: EntitySetDesigner,
-        EntityOptions: EntityOptions
+        EntityOptions: EntityOptions,
+        EntityDataView: EntityDataView
     },
     props: {
         // 实体模型节点
@@ -210,7 +213,7 @@ export default {
                 _this.storeType = res.StoreType
                 _this.members = res.Members
 
-                _this.views.push({ label: 'options', title: 'Options' })
+                _this.views.push({ label: 'options', title: 'Options' }, { label: 'data', title: 'Data' })
                 _this.options.Indexes = res.Indexes
                 _this.options.PartitionKeys = res.PartitionKeys
             }).catch(err => {
