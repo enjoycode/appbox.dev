@@ -1,5 +1,5 @@
 <template>
-    <e-table height="100%" :data="usages" size="small" class="viewpad" border>
+    <e-table height="100%" :data="usages" size="small" class="viewpad" border empty-text=" ">
         <e-table-column prop="Type" label="Type" :width="100">
         </e-table-column>
         <e-table-column prop="Model" label="Model" :width="200">
