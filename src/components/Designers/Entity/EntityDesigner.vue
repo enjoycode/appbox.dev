@@ -94,7 +94,8 @@ export default {
             activeView: 'members', // 当前视图 members | options | data
             views: [{ label: 'members', title: 'Members' }],
             designerType: 'EntityDesigner', // 用于外部判断当前设计视图的类型，此属性一直保持不变
-            storeType: '', // 映射的存储类型
+            isDTO: false,
+            isNew: false,
             members: [], // 成员列表
             collapseValue: ['1'],
             currentMember: null,
@@ -102,18 +103,24 @@ export default {
             currentMemberTitle: null, // 属性面板中成员的标题,
             expressionDialog: null, // ToString表达式编辑器对话框
             options: {
-                PartitionKeys: [],
-                Indexes: []
+                PartitionKeys: [], // 分工键列表
+                Indexes: [] // 索引列表
             }
         }
     },
     computed: {
         storeTitle() {
-            return ''
-            // return this.storeName ? this.storeType + 'Store - ' + this.storeName : 'DTO'
+            if (this.isDTO) {
+                return 'DTO'
+            } else {
+                if (this.options && this.options.PartitionKeys && this.options.PartitionKeys.length > 0) {
+                    return 'Partitioned'
+                }
+                return 'NonPartitioned'
+            }
         },
         memberTypes() { // 当前存储类型下可使用的成员类型列表
-            return EntityMemberTypes(this.storeType)
+            return EntityMemberTypes(this.isDTO)
         }
     },
 
@@ -210,7 +217,8 @@ export default {
         refresh() {
             var _this = this
             this.$channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
-                _this.storeType = res.StoreType
+                _this.isDTO = res.isDTO
+                _this.isNew = res.IsNew
                 _this.members = res.Members
 
                 _this.views.push({ label: 'options', title: 'Options' }, { label: 'data', title: 'Data' })

@@ -16,14 +16,11 @@
                     </e-select>
                 </e-form-item>
             </template>
-            <template v-if="viewModel.EntityMemberType === 2">
+            <template v-if="viewModel.EntityMemberType === 2"> <!--EntityRef属性-->
                 <e-form-item prop="IsReverse" label="IsReverse">
                     <e-checkbox v-model="viewModel.IsReverse"></e-checkbox>
                 </e-form-item>
                 <e-form-item prop="RefIds" :required="true" label="Ref Target">
-                    <!--<e-tree ref="refTree"
-                    :data="RefTreeData" :render-content="onRenderContent" @current-change="refTreeCurrentChange"
-                    class="el-tree-lock-height" :props="treeOption" highlight-current></e-tree>-->
                     <e-select v-model="viewModel.RefIds" multiple filterable>
                         <e-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
                             <e-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
@@ -197,15 +194,15 @@
         mounted() {
             this.designer = store.designers.getActiveDesigner()
 
-            if (this.designer.storeType === 'Sql') {
+            if (!this.designer.isDTO) {
                 store.tree.getAllEntityNodes(this.RefTreeData)
-                // 获取所有引用指定模型标识的EntityRef Member集合
-                var modelId = this.designer.target.ID
-                this.$channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {
-                    this.SetTreeData = res
-                }).catch(err => {
-                    this.$message.error(err)
-                })
+                // TODO: 获取所有引用指定模型标识的EntityRef Member集合
+                // var modelId = this.designer.target.ID
+                // this.$channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {
+                //     this.SetTreeData = res
+                // }).catch(err => {
+                //     this.$message.error(err)
+                // })
             }
         }
     }
