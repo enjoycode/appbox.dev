@@ -78,6 +78,7 @@
                     icon: null,
                     index: 'service',
                     nodes: [
+                        { title: 'Invoke', icon: 'fas fa-bug fa-fw', index: 'InvokeService' },
                         { title: 'Start Debug', icon: 'fas fa-bug fa-fw', index: 'StartDebug' },
                         { title: 'Continue', icon: 'fas fa-play fa-fw', index: 'ContinueBreakpoint' },
                         { title: 'Step', icon: 'fas fa-forward fa-fw', index: 'StepOver' },

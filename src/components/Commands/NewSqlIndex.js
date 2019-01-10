@@ -7,7 +7,7 @@ import { Message } from 'easeui'
 
 module.exports = function () {
     var designer = store.designers.getActiveDesigner()
-    if (designer && designer.designerType === 'EntityDesigner' && designer.storeType === 'Sql') {
+    if (designer && designer.designerType === 'EntityDesigner' && !designer.isDTO) {
         var dlg = Vue.component('NewSqlIndexDialog', Dialog)
         store.ide.showDialog(dlg)
     } else {

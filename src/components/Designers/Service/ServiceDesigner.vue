@@ -36,6 +36,7 @@
     import DesignStore from '../../DesignStore'
     import DebugService from './DebugService'
     import ReferencesDialog from './ReferencesDialog'
+    import InvokeDialog from './InvokeDialog'
     import DebugArgsDialog from './DebugArgsDialog'
 
     export default {
@@ -164,14 +165,32 @@
                 var dlg = Vue.component('ReferencesDialog', ReferencesDialog)
                 DesignStore.ide.showDialog(dlg)
             },
-            /** 开始调试 */
+            // 开始调用服务方法
+            startInvoke() {
+                let _this = this
+                // 先获取服务方法
+                let position = this.$refs.editor.getPosition()
+                let args = [this.target.ID, position.lineNumber, position.column]
+                this.$channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
+                    var method = JSON.parse(res)
+                    for (var i = 0; i < method.Args.length; i++) {
+                        method.Args[i].Value = ''
+                    }
+                    var dlg = Vue.component('InvokeDialog', InvokeDialog)
+                    DesignStore.ide.showDialog(dlg, {Service: _this.target.App + '.' + _this.target.Name, Method: method})
+                }).catch(() => {
+                    _this.$message.error('Cannot find target method')
+                })
+            },
+            /** 开始调试服务方法 */
             startDebug() {
                 let _this = this
                 DebugService.designer = this
-                // 先调用PrepareDebug服务定位入口
+                // 先获取服务方法
                 let position = this.$refs.editor.getPosition()
                 var breakpoints = this.$refs.editor.getBreakpoints()
-                this.$channel.invoke('sys.DesignService.PrepareDebug', [this.target.ID, position.lineNumber, position.column]).then(res => {
+                let args = [this.target.ID, position.lineNumber, position.column]
+                this.$channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
                     var method = JSON.parse(res)
                     for (var i = 0; i < method.Args.length; i++) {
                         method.Args[i].Value = ''
@@ -181,13 +200,12 @@
                     DesignStore.ide.showDialog(dlg, { ModelID: _this.target.ID, Method: method, Breakpoints: breakpoints })
                 }).catch(() => {
                     DebugService.designer = null
-                    _this.$message.error('无法定位目标服务方法')
+                    _this.$message.error('Cannot find target method')
                 })
             },
             onHitBreakpoint(bp) {
                 this.hitBreakpoint = bp
-                // 高亮击中的行
-                this.$refs.editor.highlightBreakline(bp.Line)
+                this.$refs.editor.highlightBreakline(bp.Line) // 高亮击中的行
                 this.$refs.editor.focus()
             },
             continueBreakpoint() {

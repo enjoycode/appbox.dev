@@ -19,6 +19,7 @@ import FindEntityMemberUsagesCommand from './FindEntityMemberUsages'
 import RenameEntityMemberCommand from './RenameEntityMember'
 import NewSqlIndexCommand from './NewSqlIndex'
 import DeleteSqlIndexCommand from './DeleteSqlIndex'
+import InvokeServiceCommand from './InvokeService'
 
 export default {
     Checkout: CheckoutCommand,
@@ -36,6 +37,7 @@ export default {
     NewFolder: NewFolderCommand,
     NewService: NewServiceCommand,
     NewDataStore: NewDataStoreCommand,
+    InvokeService: InvokeServiceCommand,
     StartDebug: StartDebugCommand,
     ContinueBreakpoint: ContinueBreakpointCommand,
     FindEntityMemberUsages: FindEntityMemberUsagesCommand,
