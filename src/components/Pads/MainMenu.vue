@@ -48,7 +48,8 @@
                         { title: 'Save', icon: 'fas fa-save fa-fw', index: 'Save' },
                         { title: 'Checkout', icon: 'fas fa-edit fa-fw', index: 'Checkout' },
                         { title: 'Delete', icon: 'fas fa-trash fa-fw', index: 'DeleteModel' },
-                        { title: 'Publish', icon: 'fas fa-archive fa-fw', index: 'Publish' }
+                        { title: 'Publish', icon: 'fas fa-archive fa-fw', index: 'Publish' },
+                        { title: 'DiscardChanges', icon: 'fas fa-archive fa-fw', index: 'DiscardChanges' }
                     ]
                 },
                 {

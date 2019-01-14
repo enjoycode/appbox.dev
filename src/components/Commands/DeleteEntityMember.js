@@ -12,26 +12,26 @@ module.exports = function () {
     var modelId = designer.target.ID
     var memberName = designer.currentMember.Name
 
-    if (memberName === 'ID' && designer.storeType === 'Sql') {
-        Message.warning('此成员不允许删除')
-        return false
-    }
+    // if (memberName === 'ID' && designer.storeType === 'Sql') {
+    //     Message.warning('此成员不允许删除')
+    //     return false
+    // }
 
-    MessageBox.confirm('确定删除选中的实体成员吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+    MessageBox.confirm('Are you sure to delete member: ' + memberName, 'Confirm', {
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         type: 'warning'
     }).then(() => {
         // 获取实体属性
         store.channel.invoke('sys.DesignService.DeleteEntityMember', [modelId, memberName]).then(res => {
             // 判断结果是否是引用列表
-            if (res.length) {
+            if (res && res.length) {
                 store.usages.update(res)
-                Message.error('存在引用项，无法删除')
+                Message.error('Member has references, can not delete')
             } else {
                 // 移除选中成员
                 designer.removeCurrentMember()
-                Message.success('删除成功')
+                Message.success('Delete member succeed')
             }
         }).catch(err => {
             Message.error(err)

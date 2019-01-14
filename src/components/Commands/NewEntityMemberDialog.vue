@@ -161,7 +161,7 @@
                     this.$channel.invoke('sys.DesignService.NewEntityMember', args).then(res => {
                         // 根据返回结果添加新节点
                         _this.designer.addMember(res)
-                        _this.$message.success('添加成功')
+                        _this.$message.success('Add member succeed')
                         _this.visible = false
                         _this.caDisabled = false
                     }).catch(err => {
@@ -173,14 +173,14 @@
             },
             validateName(rule, value, callback) {
                 if (!value) {
-                    return callback(new Error('名称不能为空！'))
+                    return callback(new Error('Name can not be empty'))
                 }
                 // TODO 验证名称的合法性
                 callback()
             },
             validateRefIds(rule, value, callback) {
                 if (!value || value.length === 0) {
-                    return callback(new Error('请选择引用实体类'))
+                    return callback(new Error('Please choose a EntityRef'))
                 }
                 callback()
             },
