@@ -1,7 +1,7 @@
 <template>
     <div class="view">
         <!-- Partions -->
-        <h3>Partions:</h3>
+        <h3>Partitions:</h3>
         <e-form label-width="200px" size="small">
             <e-form-item label="Partition Keys:">
                 <e-select v-model="options.PartitionKeys" value-key="Name" multiple @change="onPartitionKeysChanged">
