@@ -2,8 +2,8 @@
     <div>
         <div class="search">
             <div>
-                <e-input class="searchInput" v-model="keyWords" size="small" placeholder="输入Object名前缀匹配">
-                    <e-button @click="onSearch" slot="append" icon="search"></e-button>
+                <e-input class="searchInput" v-model="keyWords" size="small" placeholder="输入路径前缀匹配">
+                    <e-button @click="onSearch" slot="append" icon="fas fa-search"></e-button>
                 </e-input>
             </div>
             <div class="pagination">

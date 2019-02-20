@@ -51,13 +51,8 @@
                 designNodes: [],
                 onRenderContent: (h, node) => {
                     var iconClass
-                    if (node.data.Type === DesignNodeType.DataStoreNode) { // 存储节点单独处理
-                        switch (node.data.StoreType) {
-                            case 0: iconClass = 'fas fa-database'; break
-                            case 1: iconClass = 'fas fa-table'; break
-                            case 2: iconClass = 'fas fa-file'; break
-                            default: iconClass = 'fas fa-database'; break
-                        }
+                    if (node.data.Type === DesignNodeType.BlobStoreNode) { // 存储节点单独处理
+                        iconClass = 'fas fa-hdd'
                     } else {
                         iconClass = iconClasses['n' + node.data.Type]
                     }

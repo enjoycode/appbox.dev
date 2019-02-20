@@ -10,6 +10,7 @@
 
 <script>
     import Welcome from '../Designers/Welcome'
+    import BlobDesigner from '../Designers/DataStore/BlobStore/BlobDesigner'
     import ServiceDesigner from '../Designers/Service/ServiceDesigner'
     import EntityDesigner from '../Designers/Entity/EntityDesigner'
     import EnumDesigner from '../Designers/Enum/EnumDesigner'
@@ -18,7 +19,7 @@
     import ReportDesigner from '../Designers/Report/ReportDesigner'
     import ResourcePads from '../Designers/Resource/ResourcePads'
     import store from '../DesignStore'
-    import DataStoreProviders from '../Designers/DataStore/DataStoreProviders'
+    import DesignNodeType from '../../enums/DesignNodeType'
 
     export default {
         components: {
@@ -90,14 +91,14 @@
                     designer: null
                 }
                 switch (node.Type) {
-                    case 5: tab.designer = ResourcePads; break
-                    case 21: tab.designer = ServiceDesigner; break
-                    case 20: tab.designer = EntityDesigner; break
-                    case 22: tab.designer = ViewDesigner; break
-                    case 23: tab.designer = EnumDesigner; break
-                    case 26: tab.designer = WorkflowDesigner; break
-                    case 27: tab.designer = ReportDesigner; break
-                    case 2: tab.designer = DataStoreProviders.getDesigner(node); break
+                    case DesignNodeType.ResourcesNode: tab.designer = ResourcePads; break
+                    case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break
+                    case DesignNodeType.EntityModelNode: tab.designer = EntityDesigner; break
+                    case DesignNodeType.ViewModelNode: tab.designer = ViewDesigner; break
+                    case DesignNodeType.EnumModelNode: tab.designer = EnumDesigner; break
+                    case DesignNodeType.WorkflowModelNode: tab.designer = WorkflowDesigner; break
+                    case DesignNodeType.ReportModelNode: tab.designer = ReportDesigner; break
+                    case DesignNodeType.BlobStoreNode: tab.designer = BlobDesigner; break
                     default: return
                 }
 

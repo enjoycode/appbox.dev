@@ -12,7 +12,6 @@ import DeleteEnumItemCommand from './DeleteEnumItem'
 import NewApplicationCommand from './NewApplication'
 import NewFolderCommand from './NewFolder'
 import NewServiceCommand from './NewService'
-import NewDataStoreCommand from './NewDataStore'
 import StartDebugCommand from './StartDebug'
 import ContinueBreakpointCommand from './ContinueBreakpoint'
 import FindEntityMemberUsagesCommand from './FindEntityMemberUsages'
@@ -36,7 +35,6 @@ export default {
     NewApplication: NewApplicationCommand,
     NewFolder: NewFolderCommand,
     NewService: NewServiceCommand,
-    NewDataStore: NewDataStoreCommand,
     InvokeService: InvokeServiceCommand,
     StartDebug: StartDebugCommand,
     ContinueBreakpoint: ContinueBreakpointCommand,

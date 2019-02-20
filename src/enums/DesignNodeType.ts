@@ -1,14 +1,16 @@
 enum DesignNodeType
 {
     ApplicationRoot = 0,
-    DataStoreRootNode = 1,
-    DataStoreNode = 2,
+    DataStoreRootNode = 1, //TODO: remove
+    DataStoreNode = 2,     //TODO: remove
     ApplicationNode = 3,
     ModelRootNode = 4,
     ResourcesNode = 5,
     FolderNode = 6,
     AssemblyRoot = 7,
     OrgUnitNode = 8, // todo:??
+
+    BlobStoreNode = 10,
 
     EntityModelNode = 20,
     ServiceModelNode = 21,
