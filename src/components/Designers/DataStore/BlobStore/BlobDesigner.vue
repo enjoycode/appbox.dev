@@ -23,8 +23,6 @@
 
     export default {
         props: {
-            // width: { type: Number, required: true },
-            // height: { type: Number, required: true },
             target: { type: Object, required: true } // BlobStoreNode
         },
         components: {
@@ -33,7 +31,7 @@
 
         data() {
             return {
-                storeView: 'reportView'
+                storeView: 'listView'
             }
         }
     }

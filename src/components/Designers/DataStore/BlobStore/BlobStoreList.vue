@@ -11,10 +11,9 @@
                     <e-button @click="onSearch" slot="append" icon="fas fa-search"></e-button>
                 </e-input>
                 <e-button-group>
-                    <e-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small" icon="arrow-left">上一页</e-button>
-                    <e-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页
-                        <i class="el-icon-arrow-right el-icon--right"></i>
-                    </e-button>
+                    <e-button @click="uploadDlgVisible = true" type="primary" size="small" icon="fas fa-upload"> 上传</e-button>
+                    <e-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small" icon="fas fa-angle-left">上一页</e-button>
+                    <e-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页<i class="fas fa-angle-right"></i></e-button>
                 </e-button-group>
             </div>
             <div style="clear:both"></div>
@@ -37,23 +36,35 @@
                 </template>
             </e-table-column>
         </e-table>
+        <!-- 上传对话框 -->
+        <e-dialog title="上传文件" :visible.sync="uploadDlgVisible" width="400px">
+            <span>目标路径: <e-input v-model="uploadPath" size="small" placeholder="空上传至当前路径"></e-input></span>
+            <e-upload drag :action="uploadUrl" :multiple="false">
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                <div class="el-upload__tip" slot="tip">不超过64Mb</div>
+            </e-upload>
+            <span slot="footer">
+                <e-button type="primary" @click="uploadDlgVisible = false">关闭</e-button>
+            </span>
+        </e-dialog>
     </div>
 </template>
 <script>
-// import axios from 'axios'
 export default {
+    props: {
+        storeName: { type: String, required: true }
+    },
     data() {
         return {
             resultData: [],
             keyWords: '',
             curPath: '/', // 当前路径
             preBtnVisible: false,
-            nextBtnVisible: false
+            nextBtnVisible: false,
+            uploadDlgVisible: false, // 上传文件对话框是否打开
+            uploadPath: '' // 上传对话框内是否指定目录
         }
-    },
-
-    props: {
-        storeName: { type: String, required: true }
     },
     computed: {
         sepPaths() {
@@ -67,6 +78,20 @@ export default {
                 paths.push({Name: sr[i], Path: p})
             }
             return paths
+        },
+        // 组装上传url
+        uploadUrl() {
+            var url = '/blob/dev/' + this.storeName
+            if (this.uploadPath === '') {
+                if (this.curPath !== '/') {
+                    url += this.curPath
+                }
+            } else {
+                if (this.uploadPath !== '/') {
+                    url += this.uploadPath
+                }
+            }
+            return url
         }
     },
 
