@@ -1,12 +1,15 @@
 <template>
     <div>
-        <div class="search">
-            <div>
+        <div class="toolbar">
+            <e-breadcrumb class="sep-path">
+                <e-breadcrumb-item v-for="path in sepPaths" :key="path.Path">
+                  <a @click="onSepPathClick(path.Path)">{{ path.Name }}</a>  
+                </e-breadcrumb-item>
+            </e-breadcrumb>
+            <div class="toolbar-right">
                 <e-input class="searchInput" v-model="keyWords" size="small" placeholder="输入路径前缀匹配">
                     <e-button @click="onSearch" slot="append" icon="fas fa-search"></e-button>
                 </e-input>
-            </div>
-            <div class="pagination">
                 <e-button-group>
                     <e-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small" icon="arrow-left">上一页</e-button>
                     <e-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页
@@ -16,7 +19,7 @@
             </div>
             <div style="clear:both"></div>
         </div>
-        <e-table class="objectsTable" :data="resultData" :stripe="true" @row-click="onRowClick">
+        <e-table border :data="resultData" :stripe="true" @row-click="onRowClick">
             <e-table-column prop="Name" label="Name">
                 <template slot-scope="scope">
                     <i :class="objectIcon(scope.row)"></i>
@@ -52,11 +55,24 @@ export default {
     props: {
         storeName: { type: String, required: true }
     },
+    computed: {
+        sepPaths() {
+            var paths = [{Name: 'Home', Path: '/'}]
+            if (this.curPath === '/') {
+                return paths
+            }
+            var sr = this.curPath.split('/')
+            for (var i = 1; i < sr.length; ++i) {
+                var p = sr.slice(0, i + 1).join('/')
+                paths.push({Name: sr[i], Path: p})
+            }
+            return paths
+        }
+    },
 
     methods: {
         listObjects() {
             var _this = this
-            console.log(this.curPath)
             this.$channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.curPath]).then(res => {
                 // _this.preBtnVisible = true
                 // _this.nextBtnVisible = true
@@ -81,6 +97,10 @@ export default {
             // }
             // this.page = [null]
             // this.currentPage = 0
+            this.listObjects()
+        },
+        onSepPathClick(path) {
+            this.curPath = path
             this.listObjects()
         },
         onDownload(row) {
@@ -152,22 +172,22 @@ export default {
 }
 </script>
 <style scoped>
-.search {
+.toolbar {
     margin-bottom: 10px;
 }
 
-.search .searchInput {
+.sep-path {
+    float: left;
+    margin-top: 6px;
+}
+
+.searchInput {
     width: 200px;
-    float: left
+    float: left;
+    margin-right: 5px;
 }
 
-.pagination {
+.toolbar-right {
     float: right
-}
-</style>
-
-<style>
-.objectsTable>.el-table__body-wrapper>.el-table__body>tbody>tr {
-    cursor: pointer
 }
 </style>
