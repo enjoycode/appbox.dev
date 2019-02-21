@@ -19,13 +19,13 @@
         <e-table class="objectsTable" :data="resultData" :stripe="true" @row-click="onRowClick">
             <e-table-column prop="Name" label="Name">
                 <template slot-scope="scope">
-                    <e-icon :name="objectIcon(scope.row)"></e-icon>
-                    <span style="margin-left: 10px">{{ objectName(scope.row) }}</span>
+                    <i :class="objectIcon(scope.row)"></i>
+                    <span style="margin-left: 10px">{{ scope.row.Name }}</span>
                 </template>
             </e-table-column>
             <e-table-column prop="Size" :formatter="formatSize" label="Size">
             </e-table-column>
-            <e-table-column prop="LastModified" :formatter="formatDate" label="LastModified">
+            <e-table-column prop="ModifiedTime" :formatter="formatDate" label="LastModified">
             </e-table-column>
             <e-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
@@ -42,14 +42,9 @@ export default {
     data() {
         return {
             resultData: [],
-            nextMarker: null,
-            pageSize: 10,
-            filter: null,
             keyWords: '',
-            folder: '',
-            page: [null],
-            currentPage: 0,
-            preBtnVisible: true,
+            curPath: '/', // 当前路径
+            preBtnVisible: false,
             nextBtnVisible: false
         }
     },
@@ -59,54 +54,37 @@ export default {
     },
 
     methods: {
-        GetList() {
-            // 清空当前填充的数据
-            this.resultData = []
+        listObjects() {
             var _this = this
-            this.filter = this.folder ? (this.folder + this.keyWords) : this.keyWords
-            console.log(this.filter)
-            this.$channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.page[this.currentPage], this.pageSize, this.filter]).then(res => {
-                _this.preBtnVisible = true
-                _this.nextBtnVisible = true
-                _this.nextMarker = res.NextMarker
-                // 如果folder不为空则说明有上页，则在列表的前面添加返回上一级，type==999
-                if (_this.folder) {
-                    var preFolder = { Name: '#', Size: 0, LastModified: null }
-                    _this.resultData.push(preFolder)
-                }
-                res.BlobObjectInfo.forEach(function (element) {
-                    // 如果Name是以/结尾，且LastModified不为空则说明这个object是不存在的那个object，不添加入数组
-                    if (!(element.Name.charAt(element.Name.length - 1) === '/' && element.LastModified)) {
-                        var startPosition = element.Name.indexOf(_this.folder) + (_this.folder ? _this.folder.length : 0)
-                        var endPosition = element.Name.length
-                        element.Name = element.Name.substring(startPosition, endPosition)
-                        _this.resultData.push(element)
-                    }
-                })
-                if (_this.currentPage === 0) {
-                    _this.preBtnVisible = true
-                } else {
-                    _this.preBtnVisible = false
-                }
-                if (!_this.nextMarker) {
-                    _this.nextBtnVisible = true
-                } else {
-                    _this.nextBtnVisible = false
-                }
+            console.log(this.curPath)
+            this.$channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.curPath]).then(res => {
+                // _this.preBtnVisible = true
+                // _this.nextBtnVisible = true
+                _this.resultData = res
+                // if (_this.currentPage === 0) {
+                //     _this.preBtnVisible = true
+                // } else {
+                //     _this.preBtnVisible = false
+                // }
+                // if (!_this.nextMarker) {
+                //     _this.nextBtnVisible = true
+                // } else {
+                //     _this.nextBtnVisible = false
+                // }
             }).catch(err => {
                 _this.$message.error(err)
             })
         },
         onSearch() {
-            if (!this.nextMarker) {
-                this.nextBtnVisible = false
-            }
-            this.page = [null]
-            this.currentPage = 0
-            this.GetList()
+            // if (!this.nextMarker) {
+            //     this.nextBtnVisible = false
+            // }
+            // this.page = [null]
+            // this.currentPage = 0
+            this.listObjects()
         },
         onDownload(row) {
-            window.location.href = '/api/Blob/Download?storeName=' + this.storeName + '&path=' + this.folder + row.Name
+            window.location.href = '/api/Blob/Download?storeName=' + this.storeName + '&path=' + this.curPath + row.Name
         },
         onDelete(row) {
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -115,12 +93,12 @@ export default {
                 type: 'warning'
             }).then(() => {
                 var _this = this
-                this.$channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, this.folder + row.Name]).then(res => {
+                this.$channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, this.curPath + row.Name]).then(res => {
                     this.$message({
                         type: 'success',
                         message: '删除成功!'
                     })
-                    _this.GetList()
+                    _this.listObjects()
                 }).catch(err => {
                     _this.$message.error(err)
                 })
@@ -128,33 +106,24 @@ export default {
             })
         },
         onPrePage() {
-            this.currentPage = this.currentPage - 1
-            this.GetList()
+            // this.currentPage = this.currentPage - 1
+            // this.listObjects()
         },
         onNextPage() {
-            this.page.push(this.nextMarker)
-            this.currentPage = this.currentPage + 1
-            this.GetList()
+            // this.page.push(this.nextMarker)
+            // this.currentPage = this.currentPage + 1
+            // this.listObjects()
         },
         onRowClick(row, event, column) {
-            console.log(this.folder)
-            if (row.Name.charAt(row.Name.length - 1) === '/') {
-                this.folder += row.Name
-                this.page = [null]
-                this.currentPage = 0
-                this.keyWords = ''
-            } else if (row.Name === '#') {
-                var arr = this.folder.split('/')
-                var l = (arr[arr.length - 2]).length + 1
-                this.folder = this.folder.substring(0, this.folder.length - l)
-                this.page = [null]
-                this.currentPage = 0
-                this.keyWords = ''
-                console.log(this.folder)
-            } else {
+            if (row.IsFile) {
                 return
             }
-            this.GetList()
+            if (this.curPath === '/') {
+                this.curPath += row.Name
+            } else {
+                this.curPath += '/' + row.Name
+            }
+            this.listObjects()
         },
         formatDate(row, column, cellValue) {
             if (cellValue && !(row.Name.charAt(row.Name.length - 1) === '/')) {
@@ -173,21 +142,12 @@ export default {
             }
         },
         objectIcon(row) {
-            if (row.Name.charAt(row.Name.length - 1) === '/') {
-                return 'folder'
-            }
-            return 'file-o'
-        },
-        objectName(row) {
-            if (row.Name === '#') {
-                return '返回上一级'
-            }
-            return row.Name
+            return row.IsFile ? 'fas fa-file' : 'fas fa-folder'
         }
     },
 
     mounted() {
-        this.GetList()
+        this.listObjects()
     }
 }
 </script>
