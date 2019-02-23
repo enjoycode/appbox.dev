@@ -3,6 +3,7 @@
 // 2. 利用利用typescriptServices编译转换vue的script
 
 import DesignStore from '../../DesignStore'
+import ModelRefTransformers from './Transformer'
 const tempCompiler = require('./TemplateCompiler') // require('vue-template-compiler')
 const es2015Compiler = require('vue-template-es2015-compiler')
 
@@ -39,14 +40,21 @@ export default function (ts, template, script, hashId, viewModelId) {
         templateResult.staticRenderFns = '[' + templateResult.staticRenderFns.map(toES2015Template).join(',') + ']'
 
         // 2.转换脚本, 注意：sourceMap由typescriptServices的编译选项直接处理
-        // 参考: https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
-        // 另参考: http://www.typescriptlang.org/play/playgroud.js内的transpileModule()
-        var scriptErrors = []
-        const scriptResult = ts.transpile(script, { sourceMap: false }, undefined, scriptErrors) // todo:待用ts.transpileModule实现
-        if (scriptErrors.length > 0) {
+        // https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
+        // http://www.typescriptlang.org/play/playgroud.js内的transpileModule()
+        var transpileOptions = {
+            compilerOptions: { sourceMap: false },
+            fileName: 'aa.ts',
+            reportDiagnostics: true,
+            moduleName: undefined,
+            renamedDependencies: undefined,
+            transformers: ModelRefTransformers
+        }
+        const output = ts.transpileModule(script, transpileOptions)
+        if (output.diagnostics.length > 0) {
             errs = []
-            for (i = 0; i < scriptErrors.length; i++) {
-                element = scriptErrors[i]
+            for (i = 0; i < output.diagnostics.length; i++) {
+                element = output.diagnostics[i]
                 errs.push({ Model: viewModelId, Location: '脚本:' + element.start + ',' + element.length, Info: element.messageText })
             }
             DesignStore.errors.update(viewModelId, errs)
@@ -54,7 +62,7 @@ export default function (ts, template, script, hashId, viewModelId) {
         }
 
         // 3.输出
-        var res = scriptResult + '\n//# sourceURL=' + viewModelId + '.js'
+        var res = output.outputText + '\n//# sourceURL=' + viewModelId + '.js'
         return { code: res, template: templateResult }
     } catch (error) {
         return { error }
