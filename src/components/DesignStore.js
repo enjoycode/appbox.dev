@@ -1,4 +1,5 @@
 // 用于设计时全局状态与事件管理
+// TODO: rename to DesignContext
 
 import Vue from 'vue'
 
