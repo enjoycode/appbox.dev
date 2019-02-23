@@ -6,8 +6,16 @@
 
 const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
     (rootNode: T) => {
+        // 先根据文件名通过DesignContext找到相应的设计器's Model，用于记录相关模型的引用位置
+        //var fileName: string = (rootNode as ts.SourceFile).fileName;
+        console.log(rootNode.getSourceFile().fileName);
+
         function visit(node: ts.Node): ts.Node {
             // console.log("Visiting " + ts.SyntaxKind[node.kind]);
+            // if (node.kind == ts.SyntaxKind.StringLiteral) {
+            //     const stringLiteral = node as ts.StringLiteral;
+            //     console.log(stringLiteral.text);
+            // }
             return ts.visitEachChild(node, visit, context);
         }
         

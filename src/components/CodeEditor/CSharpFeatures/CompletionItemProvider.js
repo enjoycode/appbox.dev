@@ -7,7 +7,7 @@ export default {
         var wordAtPosition = model.getWordAtPosition(position) // getWordUntilPosition()
         if (wordAtPosition) {
             wordToComplete = wordAtPosition.word
-            console.log("WordToComplete: ", wordToComplete)
+            // console.log("WordToComplete: ", wordToComplete)
         }
 
         return DesignStore.channel.invoke('sys.DesignService.GetCompletion',

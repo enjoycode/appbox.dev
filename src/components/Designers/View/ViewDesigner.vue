@@ -118,8 +118,7 @@
         },
         computed: {
             fileName() {
-                var sr = this.target.ID.split('.')
-                return sr[0] + '.Views.' + sr[1] + '.vue'
+                return this.target.App + '.Views.' + this.target.Name + '.vue'
             },
             previewUrl() {
                 return document.location.href.replace('/IDE', '/preview')
@@ -150,7 +149,7 @@
             }
         },
         mounted() {
-            this.hashID = hash(this.target.ID).toString(16)
+            this.hashID = hash(this.target.ID).toString(16) // TODO: fix it
             this.debouncedBuild = debounce(this.build, 600) // 延迟600ms才进行预览
         },
 
