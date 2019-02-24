@@ -1,9 +1,9 @@
 // 删除实体成员
 
 import store from '../DesignStore'
-import { Message, MessageBox } from 'easeui'
+import { Message, MessageBox } from 'element-ui'
 
-module.exports = function () {
+export default function () {
     var activeDesigner = store.designers.getActiveDesigner()
     if (!activeDesigner || !activeDesigner.currentMember) {
         Message.warning('请选择要删除的成员')

@@ -101,4 +101,4 @@ ToolBoxGroup.Set('Navigation', 'server', navigationItems)
 ToolBoxGroup.Set('Others', 'life-ring', otherItems)
 
 const ControlToolBox = ToolBoxGroup.Get()
-module.exports = ControlToolBox
+export default ControlToolBox

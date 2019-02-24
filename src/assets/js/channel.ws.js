@@ -1,4 +1,4 @@
-import { Message } from 'easeui'
+import { Message } from 'element-ui'
 import store from '../../components/DesignStore'
 import axios from 'axios'
 import rjson from './refJSON'

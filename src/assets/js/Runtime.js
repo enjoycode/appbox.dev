@@ -8,6 +8,7 @@ const _isAlipay = /alipayclient/i.test(navigator.userAgent)
 export default {
 
     _isDevelopment: false,
+    cookie: null,
 
     isAndroid() { return _isAndroid },
     isIpad() { return _isIpad },

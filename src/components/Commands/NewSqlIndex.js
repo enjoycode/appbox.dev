@@ -3,9 +3,9 @@
 import Vue from 'vue'
 import Dialog from './NewSqlIndexDialog'
 import store from '../DesignStore'
-import { Message } from 'easeui'
+import { Message } from 'element-ui'
 
-module.exports = function () {
+export default function () {
     var designer = store.designers.getActiveDesigner()
     if (designer && designer.designerType === 'EntityDesigner' && !designer.isDTO) {
         var dlg = Vue.component('NewSqlIndexDialog', Dialog)

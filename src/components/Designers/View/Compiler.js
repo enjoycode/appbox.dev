@@ -4,7 +4,7 @@
 
 import DesignStore from '../../DesignStore'
 import ModelRefTransformers from './Transformer'
-const tempCompiler = require('./TemplateCompiler') // require('vue-template-compiler')
+import tempCompiler from './TemplateCompiler/build'
 const es2015Compiler = require('vue-template-es2015-compiler')
 
 function toES2015Template(code) {

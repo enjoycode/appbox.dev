@@ -3,7 +3,7 @@
 import store from '../DesignStore'
 import DesignNodeType from '../../enums/DesignNodeType'
 
-module.exports = function () {
+export default function () {
     var node = store.tree.currentNode
     if (node) {
         // 已经签出或被其他人签出处理

@@ -1,9 +1,9 @@
 // 删除索引
 
 import store from '../DesignStore'
-import { Message, MessageBox } from 'easeui'
+import { Message, MessageBox } from 'element-ui'
 
-module.exports = function () {
+export default function () {
     var designer = store.designers.getActiveDesigner()
     if (!designer || designer.designerType !== 'EntityDesigner' || designer.storeType !== 'Sql') {
         Message.warning('请在映射至Sql存储的实体设计器内进行此操作')

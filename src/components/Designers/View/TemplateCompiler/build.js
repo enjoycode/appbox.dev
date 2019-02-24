@@ -2,8 +2,6 @@
 
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var deindent = _interopDefault(require('de-indent'));
@@ -4743,9 +4741,10 @@ var compile$1 = ref$1.compile;
 var compileToFunctions$1 = ref$1.compileToFunctions;
 
 /*  */
-
-exports.parseComponent = parseComponent;
-exports.compile = compile;
-exports.compileToFunctions = compileToFunctions;
-exports.ssrCompile = compile$1;
-exports.ssrCompileToFunctions = compileToFunctions$1;
+export default {
+  parseComponent: parseComponent,
+  compile: compile,
+  compileToFunctions: compileToFunctions,
+  ssrCompile: compile$1,
+  ssrCompileToFunctions: compileToFunctions$1
+}

@@ -1,10 +1,10 @@
 // 查找实体成员的引用项
 
 import store from '../DesignStore'
-import { Message } from 'easeui'
+import { Message } from 'element-ui'
 import ModelReferenceType from '../../enums/ModelReferenceType'
 
-module.exports = function () {
+export default function () {
     var entityDesigner = store.designers.getActiveDesigner()
     if (!entityDesigner || !entityDesigner.currentMember) {
         Message.warning('请选择实体成员')

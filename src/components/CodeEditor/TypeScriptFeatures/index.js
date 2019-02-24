@@ -1,5 +1,5 @@
 
-export default function () {
+export default function (monaco) {
     // validation settings
     // monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
     //     noSemanticValidation: true,
@@ -7,14 +7,14 @@ export default function () {
     // })
 
     // compiler options
-    window.monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
         // target: monaco.languages.typescript.ScriptTarget.ES6,
         allowNonTsExtensions: true,
         experimentalDecorators: true
     })
 
     // extra libraries
-    window.monaco.languages.typescript.javascriptDefaults.addExtraLib([
+    monaco.languages.typescript.javascriptDefaults.addExtraLib([
         'declare class Cookie {',
         '   get(name:string,options:any | undefined):any;',
         '   set(name:string,value:any,options:any | undefined):string;',

@@ -1,9 +1,9 @@
 // 删除实体成员
 
 import store from '../DesignStore'
-import { Message, MessageBox } from 'easeui'
+import { Message, MessageBox } from 'element-ui'
 
-module.exports = function () {
+export default function () {
     var designer = store.designers.getActiveDesigner()
     if (!designer || designer.designerType !== 'EntityDesigner' || !designer.currentMember) {
         Message.warning('请在实体设计器内选择要删除的成员再进行此操作')

@@ -4,7 +4,7 @@ import Vue from 'vue'
 import Dialog from './NewEnumModelDialog'
 import store from '../DesignStore'
 
-module.exports = function () {
+export default function () {
     var dlg = Vue.component('NewEnumModelDialog', Dialog)
     store.ide.showDialog(dlg)
 }

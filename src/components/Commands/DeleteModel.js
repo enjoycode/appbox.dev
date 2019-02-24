@@ -1,9 +1,9 @@
 // 删除模型
 
-import { Message, MessageBox } from 'easeui'
+import { Message, MessageBox } from 'element-ui'
 import store from '../DesignStore'
 
-module.exports = function () {
+export default function () {
     var selectNode = store.tree.currentNode
     if (!selectNode) {
         Message.warning('请选择要删除的节点')

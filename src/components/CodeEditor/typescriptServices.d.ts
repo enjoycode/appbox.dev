@@ -14,7 +14,7 @@ and limitations under the License.
 ***************************************************************************** */
 
 declare namespace ts {
-    const versionMajorMinor = "3.3";
+    const versionMajorMinor = "3.1";
     /** The version of the TypeScript compiler release */
     const version: string;
 }
@@ -5562,4 +5562,8 @@ declare namespace ts {
      * @param compilerOptions Optional compiler options.
      */
     function transform<T extends Node>(source: T | T[], transformers: TransformerFactory<T>[], compilerOptions?: CompilerOptions): TransformationResult<T>;
+}
+
+declare module "monaco-editor/esm/vs/language/typescript/lib/typescriptServices" {
+    export = ts
 }

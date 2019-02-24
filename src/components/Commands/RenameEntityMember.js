@@ -2,11 +2,11 @@
 
 import Vue from 'vue'
 import store from '../DesignStore'
-import { Message } from 'easeui'
+import { Message } from 'element-ui'
 import RenameDialog from './RenameDialog'
 import ModelReferenceType from '../../enums/ModelReferenceType'
 
-module.exports = function () {
+export default function () {
     var entityDesigner = store.designers.getActiveDesigner()
     if (!entityDesigner || !entityDesigner.currentMember) {
         Message.warning('请选择实体成员')
