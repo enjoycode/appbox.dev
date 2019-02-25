@@ -67,7 +67,7 @@
 
 <script>
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { monaco, ts } from '../../CodeEditor/EditorService'
+import { monaco, ts, extraLibs } from '../../CodeEditor/EditorService' //TODO: remove it
 import compiler from './Compiler'
 import scopeStyle from './ScopeStyle'
 import debounce from 'lodash.debounce'
@@ -159,14 +159,7 @@ export default {
         onEditorMounted() {
             var _this = this
             this.initEditorCommands() // 开始设置快捷键
-            // 开始加载typescriptServices
-            // window.require(['vs/language/typescript/lib/typescriptServices'], (tss) => {
-            //     _this.typescriptServices = tss
-            //     if (_this.needPreview) {
-            //         _this.needPreview = false
-            //         _this.build()
-            //     }
-            // })
+            extraLibs.ensureLoad() // 测试加载模型引用
             this.loadModel(false) // 开始加载模型
         },
         // 设置编辑器快捷键
