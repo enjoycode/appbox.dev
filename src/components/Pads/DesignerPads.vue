@@ -10,24 +10,18 @@
 
 <script>
     import Welcome from '../Designers/Welcome'
-    import BlobDesigner from '../Designers/DataStore/BlobStore/BlobDesigner'
-    import ServiceDesigner from '../Designers/Service/ServiceDesigner'
-    import EntityDesigner from '../Designers/Entity/EntityDesigner'
-    import EnumDesigner from '../Designers/Enum/EnumDesigner'
-    import ViewDesigner from '../Designers/View/ViewDesigner'
-    import WorkflowDesigner from '../Designers/Workflow/WorkflowDesigner'
-    import ReportDesigner from '../Designers/Report/ReportDesigner'
-    import ResourcePads from '../Designers/Resource/ResourcePads'
     import store from '../DesignStore'
     import DesignNodeType from '../../enums/DesignNodeType'
 
+    const EntityDesigner = () => import('../Designers/Entity/EntityDesigner')
+    const EnumDesigner = () => import('../Designers/Enum/EnumDesigner')
+    const BlobDesigner = () => import('../Designers/DataStore/BlobStore/BlobDesigner')
+    const ViewDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/View/ViewDesigner')
+    const ServiceDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/Service/ServiceDesigner')
+    const WorkflowDesigner = () => import('../Designers/Workflow/WorkflowDesigner')
+    const ReportDesigner = () => import('../Designers/Report/ReportDesigner')
+
     export default {
-        components: {
-            ServiceDesigner: ServiceDesigner,
-            EntityDesigner: EntityDesigner,
-            EnumDesigner: EnumDesigner,
-            ViewDesigner: ViewDesigner
-        },
         data() {
             return {
                 currentTab: 'Welcome',
@@ -90,8 +84,10 @@
                     target: node,
                     designer: null
                 }
+                
+                console.log(ViewDesigner)
+                
                 switch (node.Type) {
-                    case DesignNodeType.ResourcesNode: tab.designer = ResourcePads; break
                     case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break
                     case DesignNodeType.EntityModelNode: tab.designer = EntityDesigner; break
                     case DesignNodeType.ViewModelNode: tab.designer = ViewDesigner; break
