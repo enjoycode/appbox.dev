@@ -19,7 +19,30 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
             //     console.log(stringLiteral.text);
             // }
             if (node.kind == ts.SyntaxKind.CallExpression) {
-                console.log(node.getFullText());
+                // 判断是否服务调用
+                const callNode = node as ts.CallExpression;
+                var isServiceCall: boolean = false;
+                if (callNode.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                    const method = callNode.expression as ts.PropertyAccessExpression;
+                    if (method.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                        const service = method.expression as ts.PropertyAccessExpression;
+                        if (service.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                            const appServices = service.expression as ts.PropertyAccessExpression;
+                            if (appServices.name.text == "Services" && appServices.expression.kind == ts.SyntaxKind.Identifier) {
+                                isServiceCall = true; // TODO:检查Application是否存在
+                            }
+                        }
+                    }
+                }
+                if (isServiceCall) {
+                    let identifier = ts.createIdentifier("this"); // TODO:考虑指向$runtime.channel
+                    let exp = ts.createPropertyAccess(identifier, "$channel");
+                    exp = ts.createPropertyAccess(exp, "invoke");
+
+                    let arg1 = ts.createStringLiteral(callNode.expression.getText().replace(".Services.", "."));
+                    let arg2 = ts.createArrayLiteral(callNode.arguments);
+                    return ts.createCall(exp, [], [arg1, arg2]);
+                }
             }
 
             return ts.visitEachChild(node, visit, context);
