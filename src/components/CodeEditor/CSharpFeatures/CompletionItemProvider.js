@@ -10,7 +10,14 @@ export default {
             // console.log("WordToComplete: ", wordToComplete)
         }
 
-        return DesignStore.channel.invoke('sys.DesignService.GetCompletion',
-            [1, model.fileName, position.lineNumber, position.column, wordToComplete])
+        var promise = new Promise((resolve, reject) => {
+            var args = [1, model.fileName, position.lineNumber, position.column, wordToComplete]
+            DesignStore.channel.invoke('sys.DesignService.GetCompletion', args).then(res => {
+                resolve({suggestions: res})
+            }).catch(err => {
+                reject(err)
+            });
+		})
+		return promise
     }
 }

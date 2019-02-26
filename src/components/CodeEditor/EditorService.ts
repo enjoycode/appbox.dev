@@ -9,7 +9,7 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languag
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
 import CSharpFeatures from './CSharpFeatures'
 import TypeScriptFeatures from './TypeScriptFeatures'
-// import DesignStore from '@/components/DesignStore'
+import DesignStore from '@/components/DesignStore'
 
 CSharpFeatures(monaco)
 TypeScriptFeatures(monaco)
@@ -37,12 +37,20 @@ class ExtraLibs {
         }
         this.hasLoad = true;
 
-        var t = monaco.languages.typescript.javascriptDefaults.addExtraLib(this.testGenServiceCode(), 'sys.Services.HelloService.d.ts');
-        this.libs.push(new ModelLib('sys.Services.HelloService', t));
-    }
+        var ls = monaco.languages.typescript.javascriptDefaults;
 
-    testGenServiceCode(): string {
-        return 'declare namespace sys.Services.HelloService { function sayHello(): string; }'
+        //异步加载所有服务模型的声明
+        DesignStore.channel.invoke("sys.DesignService.GenTSDeclare", [null]).then(res => {
+            for (let i = 0; i < res.length; i++) {
+                const element = res[i];
+                var t = ls.addExtraLib(element.Declare, element.Name + '.d.ts');
+                this.libs.push(new ModelLib(element.Name, t));
+            }
+        }).catch(err => {
+            console.log("加载服务声明错误: " + err); // TODO: show to IDE output pad.
+        });
+
+        //同步生成实体、枚举、视图模型声明
     }
 
 }

@@ -18,6 +18,10 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
             //     const stringLiteral = node as ts.StringLiteral;
             //     console.log(stringLiteral.text);
             // }
+            if (node.kind == ts.SyntaxKind.CallExpression) {
+                console.log(node.getFullText());
+            }
+
             return ts.visitEachChild(node, visit, context);
         }
     

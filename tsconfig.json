@@ -6,7 +6,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "jsx": "preserve",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
