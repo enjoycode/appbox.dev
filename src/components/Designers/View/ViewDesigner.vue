@@ -67,7 +67,7 @@
 
 <script>
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { monaco, ts, extraLibs } from '../../CodeEditor/EditorService' //TODO: remove it
+import { monaco, ts, modelLibs } from '../../CodeEditor/EditorService' //TODO: remove it
 import compiler from './Compiler'
 import scopeStyle from './ScopeStyle'
 import debounce from 'lodash.debounce'
@@ -158,9 +158,9 @@ export default {
         // 代码编辑器初始化后开始加载服务代码
         onEditorMounted() {
             var _this = this
-            this.initEditorCommands() // 开始设置快捷键
-            extraLibs.ensureLoad() // 测试加载模型引用
-            this.loadModel(false) // 开始加载模型
+            this.initEditorCommands()   // 开始设置快捷键
+            modelLibs.ensureLoad()      // 确认已加载模型声明
+            this.loadModel(false)       // 开始加载模型
         },
         // 设置编辑器快捷键
         initEditorCommands() {

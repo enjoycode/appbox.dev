@@ -14,6 +14,11 @@ import DesignStore from '@/components/DesignStore'
 CSharpFeatures(monaco)
 TypeScriptFeatures(monaco)
 
+interface ServiceDeclare {
+    Name: string;
+    Declare: string;
+}
+
 class ModelLib {
     readonly name: string;
     readonly target: monaco.IDisposable;
@@ -24,7 +29,7 @@ class ModelLib {
     }
 }
 
-class ExtraLibs {
+class ModelLibManager {
     private hasLoad: boolean; // 是否已经加载过
     private libs: ModelLib[] = [];
 
@@ -37,10 +42,9 @@ class ExtraLibs {
         }
         this.hasLoad = true;
 
-        var ls = monaco.languages.typescript.javascriptDefaults;
-
         //异步加载所有服务模型的声明
-        DesignStore.channel.invoke("sys.DesignService.GenTSDeclare", [null]).then(res => {
+        var ls = monaco.languages.typescript.javascriptDefaults;
+        DesignStore.channel.invoke("sys.DesignService.GenServiceDeclare", [null]).then(res => {
             for (let i = 0; i < res.length; i++) {
                 const element = res[i];
                 var t = ls.addExtraLib(element.Declare, element.Name + '.d.ts');
@@ -53,9 +57,31 @@ class ExtraLibs {
         //同步生成实体、枚举、视图模型声明
     }
 
+    /**
+     * 用于保存服务模型后更新声明
+     * @param serviceModelId 服务模型标识
+     */
+    updateService(serviceModelId: string) {
+        DesignStore.channel.invoke("sys.DesignService.GenServiceDeclare", [serviceModelId]).then(res => {
+            var element = res[0] as ServiceDeclare;
+            var ls = monaco.languages.typescript.javascriptDefaults;
+            // 先移除旧的
+            let index = this.libs.findIndex(t => t.name == element.Name);
+            if (index >= 0) {
+                this.libs[index].target.dispose();
+                this.libs.splice(0, 1);
+            }
+            // 再重新加入
+            var t = ls.addExtraLib(element.Declare, element.Name + '.d.ts');
+            this.libs.push(new ModelLib(element.Name, t));
+        }).catch(err => {
+            console.log("更新服务声明错误: " + err); // TODO: show to IDE output pad.
+        });
+    }
+
 }
 
-let extraLibs = new ExtraLibs();
+let modelLibs = new ModelLibManager();
 
 export { monaco, ts }
-export { extraLibs }
+export { modelLibs }
