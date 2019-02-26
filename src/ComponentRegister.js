@@ -2,13 +2,17 @@ import Vue from 'vue'
 import { Message, MessageBox, Loading, Notification } from 'element-ui'
 import { Toast, Indicator, InfiniteScroll, Lazyload } from 'mint-ui'
 
-// 注意基本样式已由以上import导入
+// 基本样式导入
+require('element-ui/lib/theme-chalk/message.css')
+require('element-ui/lib/theme-chalk/message-box.css')
+require('element-ui/lib/theme-chalk/loading.css')
+require('element-ui/lib/theme-chalk/notification.css')
+require('element-ui/lib/theme-chalk/icon.css')
 
 require('@fortawesome/fontawesome-free/css/fontawesome.min.css')
 require('@fortawesome/fontawesome-free/css/solid.min.css')
 require('@fortawesome/fontawesome-free/css/regular.min.css')
 require('@fortawesome/fontawesome-free/css/brands.min.css')
-require('element-ui/lib/theme-chalk/icon.css')
 
 export default function () {
     // 注册全局异步组件
