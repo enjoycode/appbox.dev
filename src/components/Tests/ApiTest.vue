@@ -82,7 +82,7 @@
                 // console.log(_this.$refs.btInvoke.type)
                 _this.loading = true
                 var _args = JSON.parse(this.args) // var _args = common.fromRefJson(this.args) //将Json字串转换为对象
-                this.$channel.invoke(this.service, _args).then(res => {
+                $runtime.channel.invoke(this.service, _args).then(res => {
                     _this.loading = false
                     _this.result = JSON.stringify(res) // _this.result = common.toRefJson(res, true)
                 }).catch(err => {

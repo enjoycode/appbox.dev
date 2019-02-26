@@ -28,7 +28,7 @@
             onLoginClick() {
                 var _this = this
                 _this.loading = true
-                this.$channel.login(this.user, this.pwd).then(res => {
+                $runtime.channel.login(this.user, this.pwd).then(res => {
                     _this.$router.replace('IDE')
                 }).catch(err => {
                     _this.loading = false

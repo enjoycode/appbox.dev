@@ -196,7 +196,7 @@ export default {
         },
         loadModel(byCheckout) {
             var _this = this
-            this.$channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
                 _this.onModelLoaded(res, byCheckout)
             }).catch(err => {
                 _this.$message.error('加载视图代码失败: ' + err)
@@ -238,7 +238,7 @@ export default {
         /** 改变路由设置 */
         changeRouteSetting() {
             let _this = this
-            this.$channel.invoke('sys.DesignService.ChangeRouteSetting', [this.target.ID, this.routeEnable, this.routePath])
+            $runtime.channel.invoke('sys.DesignService.ChangeRouteSetting', [this.target.ID, this.routeEnable, this.routePath])
                 .then(res => {
                     _this.routeDialogVisible = false
                 })
@@ -327,7 +327,7 @@ export default {
             }
 
             var _this = this
-            this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID, template, script, styles, JSON.stringify(runtimeCode)]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID, template, script, styles, JSON.stringify(runtimeCode)]).then(res => {
                 _this.$message.success('Save view succeed.')
             }).catch(err => {
                 _this.$message.error(err)
@@ -341,6 +341,7 @@ export default {
 
                 // 注入预览窗口所需要的全局变量
                 this.$nextTick(() => {
+                    this.$refs.previewFrame.contentWindow.$runtime = $runtime
                     this.$refs.previewFrame.contentWindow.$store = store
                     this.$refs.previewFrame.contentWindow.$designer = this
                 })

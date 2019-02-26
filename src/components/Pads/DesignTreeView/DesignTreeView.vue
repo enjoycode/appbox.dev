@@ -234,7 +234,7 @@
                 // if (node.Type === DesignNodeType.ModelRootNode) {
                 //     this.loading = true
                 //     let _this = this
-                //     this.$channel.invoke('sys.DesignService.RefreshModelRoot', [node.ID]).then(res => {
+                //     $runtime.channel.invoke('sys.DesignService.RefreshModelRoot', [node.ID]).then(res => {
                 //         node.Nodes = res // todo:如何处理已展开的节点?
                 //         _this.loading = false
                 //     }).catch(err => {
@@ -321,7 +321,7 @@
                 let target = e.target.node.data
                 let args = [source.Type, source.ID, target.Type, target.ID, e.position]
                 let _this = this
-                this.$channel.invoke('sys.DesignService.DragNode', args).catch(err => {
+                $runtime.channel.invoke('sys.DesignService.DragNode', args).catch(err => {
                     _this.$message.error(err)
                 })
             }
@@ -331,7 +331,7 @@
             store.tree = this
             var _this = this
             this.loading = true
-            this.$channel.invoke('sys.DesignService.LoadDesignTree', []).then(res => {
+            $runtime.channel.invoke('sys.DesignService.LoadDesignTree', []).then(res => {
                 _this.designNodes = res
                 _this.loading = false
             }).catch(err => {

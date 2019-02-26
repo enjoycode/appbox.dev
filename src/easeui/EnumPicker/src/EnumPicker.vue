@@ -43,7 +43,7 @@
             mounted() {
                 if(this.enumModel){
                     var _this = this
-                    this.$channel.invoke('sys.DesignService.GetEnumItems', [this.enumModel]).then(res => {
+                    $runtime.channel.invoke('sys.DesignService.GetEnumItems', [this.enumModel]).then(res => {
                         _this.enumItems = res
                         if(!_this.currentValue){
                             _this.currentValue = res[0].Value

@@ -61,7 +61,7 @@ export default {
                     _this.viewModel.LocalizedName
                     ]
                 // 获取实体属性
-                this.$channel.invoke('sys.DesignService.NewEnumItem', args).then(res => {
+                $runtime.channel.invoke('sys.DesignService.NewEnumItem', args).then(res => {
                     // 根据返回结果添加新节点
                     node.addMember(res)
                     _this.$message.success('添加成功')

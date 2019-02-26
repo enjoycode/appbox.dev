@@ -20,7 +20,7 @@ export default {
     methods: {
         loadData() {
             var _this = this
-            this.$channel.invoke('sys.DesignService.LoadEntityData', [this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.LoadEntityData', [this.target.ID]).then(res => {
                 for (const prop in res[0]) {
                     if (res[0].hasOwnProperty(prop) && prop !== '$T') {
                         _this.columns.push(prop)

@@ -6,7 +6,6 @@ import Vue from 'vue'
 let eventBus = new Vue()
 
 export default {
-    channel: null, // 指向通道，仅方便使用
     router: null, // 指向路由，仅方便使用
     ide: null, // 指向AppStudio实例
     tree: null, // 指向DesignTreeView实例

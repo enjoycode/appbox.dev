@@ -66,7 +66,7 @@
 
                 var _this = this
                 let args = [this.dlgProps.targetType, this.dlgProps.targetModel, this.dlgProps.oldName, this.newName]
-                this.$channel.invoke('sys.DesignService.Rename', args).then(res => {
+                $runtime.channel.invoke('sys.DesignService.Rename', args).then(res => {
                     _this.running = false
                     _this.caDisabled = false
                     _this.$message.success('重命名成功!')

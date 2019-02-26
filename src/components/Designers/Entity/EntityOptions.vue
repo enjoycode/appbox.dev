@@ -83,7 +83,7 @@ export default {
         onPartitionKeysChanged(e) {
             let args = [this.target.ID, 'PartitionKeys', JSON.stringify(this.options.PartitionKeys)]
             let _this = this
-            this.$channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
+            $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
                 _this.oldPartitionKeys = _this.options.PartitionKeys.slice()
                 // 主键改变后同步刷新前端所有成员的AllowNull属性，后端已处理
                 _this.members.forEach(m => {

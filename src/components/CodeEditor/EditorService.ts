@@ -9,7 +9,6 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languag
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
 import CSharpFeatures from './CSharpFeatures'
 import TypeScriptFeatures from './TypeScriptFeatures'
-import DesignStore from '@/components/DesignStore'
 
 CSharpFeatures(monaco)
 TypeScriptFeatures(monaco)
@@ -44,7 +43,7 @@ class ModelLibManager {
 
         //异步加载所有服务模型的声明
         var ls = monaco.languages.typescript.javascriptDefaults;
-        DesignStore.channel.invoke("sys.DesignService.GenServiceDeclare", [null]).then(res => {
+        $runtime.channel.invoke("sys.DesignService.GenServiceDeclare", [null]).then(res => {
             for (let i = 0; i < res.length; i++) {
                 const element = res[i];
                 var t = ls.addExtraLib(element.Declare, element.Name + '.d.ts');
@@ -62,7 +61,7 @@ class ModelLibManager {
      * @param serviceModelId 服务模型标识
      */
     updateService(serviceModelId: string) {
-        DesignStore.channel.invoke("sys.DesignService.GenServiceDeclare", [serviceModelId]).then(res => {
+        $runtime.channel.invoke("sys.DesignService.GenServiceDeclare", [serviceModelId]).then(res => {
             var element = res[0] as ServiceDeclare;
             var ls = monaco.languages.typescript.javascriptDefaults;
             // 先移除旧的

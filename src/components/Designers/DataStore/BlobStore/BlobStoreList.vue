@@ -98,7 +98,7 @@ export default {
     methods: {
         listObjects() {
             var _this = this
-            this.$channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.curPath]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.curPath]).then(res => {
                 // _this.preBtnVisible = true
                 // _this.nextBtnVisible = true
                 _this.resultData = res
@@ -138,7 +138,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 var _this = this
-                this.$channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, this.curPath + row.Name]).then(res => {
+                $runtime.channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, this.curPath + row.Name]).then(res => {
                     this.$message({
                         type: 'success',
                         message: '删除成功!'

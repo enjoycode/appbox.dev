@@ -14,7 +14,7 @@ export default function () {
     var memberName = entityDesigner.currentMember.Name
 
     let args = [ModelReferenceType.EntityMemberName, modelId, memberName]
-    store.channel.invoke('sys.DesignService.FindUsages', args).then(res => {
+    $runtime.channel.invoke('sys.DesignService.FindUsages', args).then(res => {
         store.usages.update(res)
     }).catch(err => {
         Message.error(err)

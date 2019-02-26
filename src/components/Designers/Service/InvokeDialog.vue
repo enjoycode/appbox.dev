@@ -55,7 +55,7 @@
                 var _this = this
                 this.loading = true
                 let service = this.dlgProps.Service + '.' + this.dlgProps.Method.Name
-                this.$channel.invoke(service, args).then(res => {
+                $runtime.channel.invoke(service, args).then(res => {
                     _this.loading = false
                     _this.result = JSON.stringify(res)
                 }).catch(err => {

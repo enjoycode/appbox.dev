@@ -37,7 +37,7 @@ export default {
 
             var node = store.tree.currentNode
             var _this = this
-            store.channel.invoke('sys.DesignService.NewViewModel', [node.Type, node.ID, this.newname]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.NewViewModel', [node.Type, node.ID, this.newname]).then(res => {
                 store.tree.onNewNode(res)
                 _this.$message.success('New view succeed.')
                 _this.running = false

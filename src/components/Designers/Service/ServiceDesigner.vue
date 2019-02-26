@@ -88,7 +88,7 @@ export default {
 
         loadModel(byCheckout) {
             var _this = this
-            this.$channel.invoke('sys.DesignService.OpenServiceModel', [this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.OpenServiceModel', [this.target.ID]).then(res => {
                 _this.onModelLoaded(res, byCheckout)
             }).catch(err => {
                 _this.$message.error('加载服务代码失败: ' + err)
@@ -113,7 +113,7 @@ export default {
             // todo:***** 临时修复monaco升级至0.9.0的问题，原本event.range，现在event.changes[].range
             for (var i = 0; i < event.changes.length; i++) {
                 var change = event.changes[i]
-                this.$channel.invoke('sys.DesignService.ChangeBuffer', [1, this.target.ID,
+                $runtime.channel.invoke('sys.DesignService.ChangeBuffer', [1, this.target.ID,
                     change.range.startLineNumber, change.range.startColumn,
                     change.range.endLineNumber, change.range.endColumn, change.text]).catch(err => {
                         _this.$message.warning('提交代码变更错误: ' + err)
@@ -125,7 +125,7 @@ export default {
         /** 延迟检查代码有效性 */
         checkCode() {
             let _this = this
-            this.$channel.invoke('sys.DesignService.CheckCode', [1, this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.CheckCode', [1, this.target.ID]).then(res => {
                 if (res && res.length > 0) {
                     var errs = []
                     for (var i = 0; i < res.length; i++) {
@@ -144,7 +144,7 @@ export default {
         save() {
             let node = this.target
             let _this = this
-            this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
                 _this.$message.success('保存成功')
                 modelLibs.updateService(this.target.ID)
             }).catch(err => {
@@ -173,7 +173,7 @@ export default {
             // 先获取服务方法
             let position = this.$refs.editor.getPosition()
             let args = [this.target.ID, position.lineNumber, position.column]
-            this.$channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
+            $runtime.channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
                 var method = JSON.parse(res)
                 for (var i = 0; i < method.Args.length; i++) {
                     method.Args[i].Value = ''
@@ -192,7 +192,7 @@ export default {
             let position = this.$refs.editor.getPosition()
             var breakpoints = this.$refs.editor.getBreakpoints()
             let args = [this.target.ID, position.lineNumber, position.column]
-            this.$channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
+            $runtime.channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
                 var method = JSON.parse(res)
                 for (var i = 0; i < method.Args.length; i++) {
                     method.Args[i].Value = ''
@@ -216,7 +216,7 @@ export default {
                 let thread = this.hitBreakpoint.Thread
                 this.hitBreakpoint = null
                 this.$refs.editor.highlightBreakline(-1) // 取消当前高亮
-                this.$channel.invoke('sys.DesignService.ContinueBreakpoint', [thread]).then(res => {
+                $runtime.channel.invoke('sys.DesignService.ContinueBreakpoint', [thread]).then(res => {
                     // do nothing
                 }).catch(err => {
                     _this.$message.error('继续执行错误: ' + err)

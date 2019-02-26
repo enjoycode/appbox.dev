@@ -71,7 +71,6 @@
             }
         },
         mounted: function () {
-            store.channel = this.$channel
             store.ide = this // 设置设计时存储实例
 
             // 移除文本选中

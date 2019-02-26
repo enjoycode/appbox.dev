@@ -21,7 +21,7 @@ export default function () {
         type: 'warning'
     }).then(() => {
         let args = [designer.target.ID, 'DeleteIndex', index.ID]
-        store.channel.invoke('sys.DesignService.ChangeSqlOptions', args).then(res => {
+        $runtime.channel.invoke('sys.DesignService.ChangeSqlOptions', args).then(res => {
             designer.removeIndex(index)
         }).catch(err => {
             Message.error(err)

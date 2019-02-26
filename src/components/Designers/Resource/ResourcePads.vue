@@ -49,7 +49,7 @@
                 store.ide.showDialog(newResourceDialog)
             },
             onDeleteResource() {
-                this.$channel.invoke('sys.DesignService.DeleteResource', [this.currentRow.ID]).then(res => {
+                $runtime.channel.invoke('sys.DesignService.DeleteResource', [this.currentRow.ID]).then(res => {
                     let index = this.ResourceNode.findIndex(t => t.ID === this.currentRow.ID)
                     this.ResourceNode.splice(index, 1)
                 }).catch(err => {
@@ -84,7 +84,7 @@
         },
         mounted() {
             store.onEvent('resourceUploadSuccess', this.onResourceUploadSuccess)
-            this.$channel.invoke('sys.DesignService.GetResourceInfos', [this.target.AppID, 1]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.GetResourceInfos', [this.target.AppID, 1]).then(res => {
                 this.ResourceNode = res
                 console.log(res)
             }).catch(err => {

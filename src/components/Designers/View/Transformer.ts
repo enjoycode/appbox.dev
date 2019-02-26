@@ -35,8 +35,8 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
                     }
                 }
                 if (isServiceCall) {
-                    let identifier = ts.createIdentifier("this"); // TODO:考虑指向$runtime.channel
-                    let exp = ts.createPropertyAccess(identifier, "$channel");
+                    let identifier = ts.createIdentifier("$runtime");
+                    let exp = ts.createPropertyAccess(identifier, "channel");
                     exp = ts.createPropertyAccess(exp, "invoke");
 
                     let arg1 = ts.createStringLiteral(callNode.expression.getText().replace(".Services.", "."));

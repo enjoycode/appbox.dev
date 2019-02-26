@@ -23,7 +23,7 @@ export default {
             console.warn('尚未实现')
             // let node = this.target
             // let _this = this
-            // this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
+            // $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
             //     _this.$message.success('保存成功')
             // }).catch(err => {
             //     _this.$message.error('保存失败: ' + err)
@@ -35,8 +35,8 @@ export default {
         var _this = this
         this.$nextTick(() => {
             // 先初始化DesignSurface.DesignService实例
-            var designService = new WorkflowDesignService(this.$refs.designView.designSurface, this.$channel, this.target.ID)
-            this.$channel.invoke('sys.DesignService.OpenWorkflowModel', [this.target.ID]).then(res => {
+            var designService = new WorkflowDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
+            $runtime.channel.invoke('sys.DesignService.OpenWorkflowModel', [this.target.ID]).then(res => {
                 designService.LoadDesignersFromServer(res)
             }).catch(err => {
                 _this.$message.error(err.toString())

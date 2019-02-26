@@ -23,7 +23,7 @@ export default function () {
         type: 'warning'
     }).then(() => {
         // 获取实体属性
-        store.channel.invoke('sys.DesignService.DeleteEntityMember', [modelId, memberName]).then(res => {
+        $runtime.channel.invoke('sys.DesignService.DeleteEntityMember', [modelId, memberName]).then(res => {
             // 判断结果是否是引用列表
             if (res && res.length) {
                 store.usages.update(res)

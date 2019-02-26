@@ -208,7 +208,7 @@ export default {
         },
         save() {
             var _that = this
-            this.$channel.invoke('sys.DesignService.SaveModel', [this.target.Type, this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.SaveModel', [this.target.Type, this.target.ID]).then(res => {
                 _that.$message.success('保存成功')
             }).catch(err => {
                 _that.$message.error('保存失败: ' + err)
@@ -216,7 +216,7 @@ export default {
         },
         refresh() {
             var _this = this
-            this.$channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
                 _this.isDTO = res.isDTO
                 _this.isNew = res.IsNew
                 _this.members = res.Members

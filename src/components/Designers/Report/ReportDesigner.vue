@@ -25,7 +25,7 @@ export default {
         save() {
             let node = this.target
             let _this = this
-            this.$channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
                 _this.$message.success('保存成功')
             }).catch(err => {
                 _this.$message.error('保存失败: ' + err)
@@ -49,8 +49,8 @@ export default {
         var _this = this
         // 先初始化DesignSurface.DesignService实例
         this.$nextTick(() => {
-            this.designService = new ReportDesignService(this.$refs.designView.designSurface, this.$channel, this.target.ID)
-            this.$channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
+            this.designService = new ReportDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
+            $runtime.channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
                 // 开始转换服务端返回的报表项
                 this.designService.LoadDesignersFromServer(res)
             }).catch(err => {

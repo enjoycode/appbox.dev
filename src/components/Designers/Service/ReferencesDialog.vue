@@ -87,7 +87,7 @@
             },
             onOkClick() {
                 let _this = this
-                this.$channel.invoke('sys.DesignService.UpdateReferences', [this.targetNode.ID, this.references]).catch(err => {
+                $runtime.channel.invoke('sys.DesignService.UpdateReferences', [this.targetNode.ID, this.references]).catch(err => {
                     _this.$message.error('更新服务依赖失败: ' + err)
                 })
             },
@@ -104,7 +104,7 @@
             let designer = store.designers.getActiveDesigner()
             this.targetNode = designer.target
             var _this = this
-            this.$channel.invoke('sys.DesignService.GetReferences', [this.targetNode.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.GetReferences', [this.targetNode.ID]).then(res => {
                 let d = JSON.parse(res)
                 if (d.AppDeps) {
                     for (var i = 0; i < d.AppDeps.length; i++) {

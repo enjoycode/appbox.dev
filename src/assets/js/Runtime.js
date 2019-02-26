@@ -9,12 +9,16 @@ export default {
 
     _isDevelopment: false,
     cookie: null,
+    channel: null,
 
     isAndroid() { return _isAndroid },
     isIpad() { return _isIpad },
     isIphone() { return _isIphone },
     isWechat() { return _isWechat },
     isAlipay() { return _isAlipay },
+    /**
+     * 用于预览窗口判断是否正在设计时
+     */
     isDevelopment() { return this._isDevelopment },
 
     /** 获取微信JS SDK */
