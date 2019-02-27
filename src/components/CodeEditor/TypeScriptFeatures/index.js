@@ -30,6 +30,7 @@ export default function (monaco) {
         '   isDevelopment(): boolean;',
         '   getWxSdk(): Promise<any>;',
         '}',
+        'declare const $runtime: Runtime;',
         'declare class UserInfo {',
         '   readonly id: string;',
         '   readonly name: string;',
@@ -37,7 +38,7 @@ export default function (monaco) {
         '}',
         'declare class Channel {',
         '   /** 调用业务服务 */',
-        '   invoke(service: string, args: any[]): Promise<any>;',
+        '   invoke(service: string, args: any[]): Promise<any>;', // TODO:移除
         '   /** 通过用户名密码登录，外部用户需指定外部用户模型标识 */',
         '   login(user: string, pwd: string, external: string | undefined): Promise<UserInfo>;',
         '   /** 通过第三方token验证登录，如: 微信OpenID */',
