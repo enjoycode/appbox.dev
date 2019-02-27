@@ -11,7 +11,7 @@
                 </e-select>
             </e-form-item>
             <e-form-item label="Order:" v-show="indexInfo.Fields.length > 0">
-                <span v-for="item in indexInfo.Fields">{{ item.Name }}:
+                <span v-for="item in indexInfo.Fields" :key="item.Name">{{ item.Name }}:
                     <e-switch v-model="item.OrderDesc" active-text="DESC" inactive-text="ASC"></e-switch>
                     &nbsp;
                 </span>

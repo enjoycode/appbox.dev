@@ -4,7 +4,7 @@
         </e-transfer>
         <div slot="footer">
             <input ref="input" @change="onFileChange" :multiple="false" accept=".dll,.so,.dylib" style="width:0px; visibility: hidden;"
-                type="file"></input>
+                type="file">
             <e-button type="primary" @click="onUpload">上传第三方组件</e-button>
             <e-button @click="visible = false">取 消</e-button>
             <e-button type="primary" @click="onOkClick">确 定</e-button>

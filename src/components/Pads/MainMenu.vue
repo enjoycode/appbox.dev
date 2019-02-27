@@ -2,13 +2,13 @@
     <div class="mainMenu">
         <e-menu mode="horizontal" @select="onSelect" background-color="#464b5b" text-color="#fff" active-text-color="#fff">
             <template v-for="sub in nodes">
-                <e-submenu :index="sub.index">
+                <e-submenu :index="sub.index" :key="sub.index">
                     <template slot="title">
                         <i v-if="sub.icon" :class="sub.icon"></i>
                         {{sub.title}}
                     </template>
-                    <template v-for="(item, key) in sub.nodes">
-                        <e-menu-item :index="item.index">
+                    <template v-for="item in sub.nodes">
+                        <e-menu-item :index="item.index" :key="item.index">
                             <i v-if="item.icon" :class="item.icon"></i> {{item.title}}
                         </e-menu-item>
                     </template>
@@ -89,7 +89,7 @@
                 {
                     title: 'Report',
                     icon: null,
-                    index: 'rpd',
+                    index: 'report',
                     nodes: [
                         { title: 'Add Row', icon: '', index: 'InsertRow' },
                         { title: 'Add Column', icon: '', index: 'InsertColumn' },
@@ -100,10 +100,10 @@
                 {
                     title: 'AppStore',
                     icon: null,
-                    index: 'pm',
+                    index: 'appstore',
                     nodes: [
-                        { title: 'Export View Model', icon: 'fas fa-cloud-upload-alt fa-fw', index: 'ExportApp' },
-                        { title: 'Import View Model', icon: 'fas fa-cloud-download-alt fa-fw', index: 'ImportApp' },
+                        { title: 'Export View Model', icon: 'fas fa-cloud-upload-alt fa-fw', index: 'ExportViewModel' },
+                        { title: 'Import View Model', icon: 'fas fa-cloud-download-alt fa-fw', index: 'ImportViewModel' },
                         { title: 'Export Application', icon: 'fas fa-cloud-upload-alt fa-fw', index: 'ExportApp' },
                         { title: 'Import Application', icon: 'fas fa-cloud-download-alt fa-fw', index: 'ImportApp' }
                     ]
