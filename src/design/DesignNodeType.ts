@@ -1,4 +1,4 @@
-enum DesignNodeType
+const enum DesignNodeType
 {
     ApplicationRoot = 0,
     DataStoreRootNode = 1, //TODO: remove
