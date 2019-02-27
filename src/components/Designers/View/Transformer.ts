@@ -49,9 +49,9 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
                 if (view.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
                     const appViews = view.expression as ts.PropertyAccessExpression;
                     if (appViews.name.text == "Views" && appViews.expression.kind == ts.SyntaxKind.Identifier) {
-                        //TODO: 同上检查Application
+                        const app = appViews.expression as ts.Identifier; //TODO: 同上检查Application
                         let identifier = ts.createIdentifier("View");
-                        let arg = ts.createStringLiteral(node.getText());
+                        let arg = ts.createStringLiteral(app.text + "." + view.name.text);
                         return ts.createCall(identifier, [], [arg]);
                     }
                 }
