@@ -67,9 +67,6 @@
             },
             onCurrentNodeChanged(node) {
                 var key = node.ID + '-' + node.Type
-                if (node.Type === 5) {
-                    key = node.AppID + '.' + node.ID + '-' + node.Type
-                }
                 // 检查是否已打开
                 for (var index = 0; index < this.openedTabs.length; index++) {
                     if (this.openedTabs[index].name === key) {
@@ -84,7 +81,6 @@
                     target: node,
                     designer: null
                 }
-                
                 switch (node.Type) {
                     case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break
                     case DesignNodeType.EntityModelNode: tab.designer = EntityDesigner; break
@@ -95,7 +91,6 @@
                     case DesignNodeType.BlobStoreNode: tab.designer = BlobDesigner; break
                     default: return
                 }
-
                 this.openedTabs.push(tab)
                 this.currentTab = tab.name
             },

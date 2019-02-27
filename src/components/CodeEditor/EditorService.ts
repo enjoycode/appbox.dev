@@ -9,6 +9,10 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languag
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
 import CSharpFeatures from './CSharpFeatures'
 import TypeScriptFeatures from './TypeScriptFeatures'
+import { IModelNode, IDesignNode } from '@/design/IDesignNode'
+import store from '@/design/DesignStore'
+import DesignNodeType from '@/design/DesignNodeType';
+import ModelType from '@/design/ModelType';
 
 CSharpFeatures(monaco)
 TypeScriptFeatures(monaco)
@@ -41,19 +45,28 @@ class ModelLibManager {
         }
         this.hasLoad = true;
 
+        // monaco.languages.typescript.javascriptDefaults.addExtraLib('declare namespace sys {const a: string;}', 'a.d.ts');
+
         //异步加载所有服务模型的声明
-        var ls = monaco.languages.typescript.javascriptDefaults;
+        let ls = monaco.languages.typescript.javascriptDefaults;
         $runtime.channel.invoke("sys.DesignService.GenServiceDeclare", [null]).then(res => {
-            for (let i = 0; i < res.length; i++) {
-                const element = res[i];
-                var t = ls.addExtraLib(element.Declare, element.Name + '.d.ts');
-                this.libs.push(new ModelLib(element.Name, t));
-            }
+            let declares = res as ServiceDeclare[];
+            declares.forEach(d => {
+                let t = ls.addExtraLib(d.Declare, d.Name + '.d.ts');
+                this.libs.push(new ModelLib(d.Name, t));
+            });
         }).catch(err => {
             console.log("加载服务声明错误: " + err); // TODO: show to IDE output pad.
         });
 
         //同步生成实体、枚举、视图模型声明
+        let viewNodes = store.tree.getAllModelNodes(DesignNodeType.ViewModelNode, ModelType.View) as IDesignNode[];
+        viewNodes.forEach(n => {
+            let node = n as IModelNode;
+            let name = node.App +'.Views.' + n.Name;
+            let t = ls.addExtraLib(this.genViewDeclare(node), name + '.d.ts');
+            this.libs.push(new ModelLib(name, t));
+        });
     }
 
     /**
@@ -62,24 +75,30 @@ class ModelLibManager {
      */
     updateService(serviceModelId: string) {
         $runtime.channel.invoke("sys.DesignService.GenServiceDeclare", [serviceModelId]).then(res => {
-            var element = res[0] as ServiceDeclare;
-            var ls = monaco.languages.typescript.javascriptDefaults;
+            let declare = res[0] as ServiceDeclare;
+            let ls = monaco.languages.typescript.javascriptDefaults;
             // 先移除旧的
-            let index = this.libs.findIndex(t => t.name == element.Name);
+            let index = this.libs.findIndex(t => t.name == declare.Name);
             if (index >= 0) {
                 this.libs[index].target.dispose();
                 this.libs.splice(0, 1);
             }
             // 再重新加入
-            var t = ls.addExtraLib(element.Declare, element.Name + '.d.ts');
-            this.libs.push(new ModelLib(element.Name, t));
+            let t = ls.addExtraLib(declare.Declare, declare.Name + '.d.ts');
+            this.libs.push(new ModelLib(declare.Name, t));
         }).catch(err => {
             console.log("更新服务声明错误: " + err); // TODO: show to IDE output pad.
         });
     }
 
-    private GenViewDeclare() {
-        
+    /** 生成ViewModel的声明 */
+    private genViewDeclare(viewNode: IModelNode): string { //TODO:考虑ViewDesigner编译生成,然后保存至ViewModel
+        let d = "declare namespace ";
+        d += viewNode.App;
+        d += ".Views{const ";
+        d += viewNode.Name;
+        d += ":Promise<Component>;}";
+        return d;
     }
 
 }

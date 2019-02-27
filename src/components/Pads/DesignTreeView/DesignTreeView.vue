@@ -84,7 +84,7 @@ export default Vue.extend({
             (this.$refs.designTree as any).filter(val)
         }
     },
-    
+
     methods: {
         filterNode(value, data) {
             if (!value) return true
@@ -170,28 +170,36 @@ export default Vue.extend({
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[], DesignNodeType.EntityModelNode, ModelType.Entity, true)
         },
 
+        getAllModelNodes(nodeType: DesignNodeType, modelType: ModelType): IDesignNode[] {
+            let result: IDesignNode[] = [];
+            this.loopGetModelNodes(this.designNodes as IDesignNode[], result, nodeType, modelType, false);
+            return result;
+        },
+
         /** 从树中获取指定类型的模型节点 */
         loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[], nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean) {
-            result = result || [];
-            let _that = this;
-
             nodes.forEach(node => {
-                if (node.Type == DesignNodeType.ApplicationNode && groupByApp) {
-                    result.push(_that.shallowCloneNode(node));
+                if (node.Type == DesignNodeType.ApplicationNode) {
+                    if (groupByApp) {
+                        result.push(this.shallowCloneNode(node));
+                    }
+                    this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp);
                 } else if (node.Type == nodeType) {
                     if (groupByApp) {
                         let group = result.find(t => t.ID == (node as IModelNode).App);
-                        group.Nodes.push(_that.shallowCloneNode(node));
+                        group.Nodes.push(this.shallowCloneNode(node));
                     } else {
                         result.push(node); //直接引用
                     }
                 } else if (node.Type == DesignNodeType.ModelRootNode) {
-                    let rootNodeTargetType = parseInt(node.ID.split('-')[1]) as ModelType;
-                    if (rootNodeTargetType == modelType) {
-                        _that.loopGetModelNodes(nodes, result, nodeType, modelType, groupByApp);
+                    if (node.Nodes && node.Nodes.length > 0) {
+                        let rootNodeTargetType = parseInt(node.ID.split('-')[1]) as ModelType;
+                        if (rootNodeTargetType == modelType) {
+                            this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp);
+                        }
                     }
-                } else if (node.Nodes && node.Nodes.length > 0) {
-                    _that.loopGetModelNodes(nodes, result, nodeType, modelType, groupByApp);
+                } else if (node.Nodes && node.Nodes.length > 0) { //其他包含下级的节点
+                    this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp);
                 }
             });
         },
@@ -208,6 +216,7 @@ export default Vue.extend({
             }
             return o as IDesignNode
         },
+
         /** 重新刷新节点，主要用于签出状态变更 */
         refreshNode(node) {
             var temp = node.Text

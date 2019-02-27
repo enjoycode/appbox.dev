@@ -1,4 +1,4 @@
-const enum ModelType {
+enum ModelType {
     Enum = 0,
     Entity = 1,
     Event = 2,

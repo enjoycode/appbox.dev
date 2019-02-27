@@ -1,4 +1,4 @@
-const enum ModelReferenceType {
+enum ModelReferenceType {
     ApplicationID,
     EntityModelID,
     EntityMemberName,
