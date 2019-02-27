@@ -60,7 +60,7 @@ export default function (ts, template, script, hashId, viewModelId) {
             DesignStore.errors.update(viewModelId, errs)
             throw new Error('脚本编译错误')
         }
-        console.log(output.outputText)
+        // console.log(output.outputText)
 
         // 3.输出
         var res = output.outputText + '\n//# sourceURL=' + viewModelId + '.js'
