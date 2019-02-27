@@ -43,8 +43,20 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
                     let arg2 = ts.createArrayLiteral(callNode.arguments);
                     return ts.createCall(exp, [], [arg1, arg2]);
                 }
+            } else if (node.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                // 判断是否异步组件
+                const view = node as ts.PropertyAccessExpression;
+                if (view.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
+                    const appViews = view.expression as ts.PropertyAccessExpression;
+                    if (appViews.name.text == "Views" && appViews.expression.kind == ts.SyntaxKind.Identifier) {
+                        //TODO: 同上检查Application
+                        let identifier = ts.createIdentifier("View");
+                        let arg = ts.createStringLiteral(node.getText());
+                        return ts.createCall(identifier, [], [arg]);
+                    }
+                }
             }
-
+            
             return ts.visitEachChild(node, visit, context);
         }
     
