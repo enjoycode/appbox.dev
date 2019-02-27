@@ -1,6 +1,6 @@
-import Rectangle from '../Canvas/Drawing/Rectangle'
-import BoundsSpecified from '../Canvas/Enums/BoundsSpecified'
-import ItemDesigner from '../Canvas/Designers/ItemDesigner'
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
+import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
+import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
 
 export default class TestShape extends ItemDesigner {
 

@@ -17,7 +17,7 @@
 <script>
     import ControlToolBox from './ControlToolBox'
     import ToolInfoDialog from './ToolInfoDialog'
-    import store from '../../DesignStore'
+    import store from '@/design/DesignStore'
 
     export default {
         name: 'ToolBoxTreeView',

@@ -28,7 +28,7 @@
     import DesignerPads from '@/components/Pads/DesignerPads'
     import BottomPads from '@/components/Pads/BottomPads'
     import StatePads from '@/components/Pads/StatePads'
-    import store from './DesignStore'
+    import store from '@/design/DesignStore'
 
     export default {
         data() {

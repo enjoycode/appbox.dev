@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Dialog from './NewApplicationDialog'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 
 export default function() {
     var dlg = Vue.component('NewApplicationDialog', Dialog)

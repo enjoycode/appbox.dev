@@ -16,8 +16,8 @@
 </template>
 
 <script>
-    import store from '../../DesignStore'
-    import DesignNodeType from '../../../enums/DesignNodeType'
+    import store from '@/design/DesignStore'
+    import DesignNodeType from '@/design/DesignNodeType'
 
     const iconClasses = {
         n0: 'fas fa-folder fa-fw',
@@ -163,16 +163,6 @@
             getAllEntityNodes(result) {
                 result = result || []
                 this.loopGetEntityNodes(this.designNodes, result)
-            },
-            /** 获取所有SqlStore和TableStore节点，用于新建实体时选择映射的存储 */
-            getAllSqlAndTableNodes() {
-                var result = []
-                this.designNodes[0].Nodes.forEach(node => {
-                    if (node.StoreType === 0 || node.StoreType === 1) {
-                        result.push(node)
-                    }
-                })
-                return result
             },
             // 取出设计树中的所有Entity并根据application分组
             // result为数组 然后传入

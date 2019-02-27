@@ -1,7 +1,7 @@
 // 签出设计节点以准备编辑
 
-import store from '../DesignStore'
-import DesignNodeType from '../../enums/DesignNodeType'
+import store from '@/design/DesignStore'
+import DesignNodeType from '@/design/DesignNodeType'
 
 export default function () {
     var node = store.tree.currentNode

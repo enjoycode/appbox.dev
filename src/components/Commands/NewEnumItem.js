@@ -2,7 +2,7 @@
 
 import Vue from 'vue'
 import Dialog from './NewEnumItemDialog'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 
 export default function () {
     var dlg = Vue.component('NewEnumItemDialog', Dialog)

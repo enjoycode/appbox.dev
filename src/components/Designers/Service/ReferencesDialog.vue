@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import store from '../../DesignStore'
+    import store from '@/design/DesignStore'
     import axios from 'axios'
 
     const sysDeps = [

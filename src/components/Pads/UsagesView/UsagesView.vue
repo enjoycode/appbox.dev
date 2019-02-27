@@ -20,7 +20,7 @@
 </template>
 
 <script>
-    import DesignStore from '../../DesignStore'
+    import DesignStore from '@/design/DesignStore'
 
     export default {
         data() {

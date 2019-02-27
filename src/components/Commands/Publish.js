@@ -2,7 +2,7 @@
 
 import Vue from 'vue'
 import Dialog from './PublishDialog'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 
 export default function() {
     var dlg = Vue.component('PublishDialog', Dialog)

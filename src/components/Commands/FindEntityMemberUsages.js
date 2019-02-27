@@ -1,8 +1,8 @@
 // 查找实体成员的引用项
 
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 import { Message } from 'element-ui'
-import ModelReferenceType from '../../enums/ModelReferenceType'
+import ModelReferenceType from '@/design/ModelReferenceType'
 
 export default function () {
     var entityDesigner = store.designers.getActiveDesigner()

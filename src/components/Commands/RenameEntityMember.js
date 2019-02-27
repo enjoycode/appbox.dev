@@ -1,10 +1,10 @@
 // 重命名实体成员
 
 import Vue from 'vue'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 import { Message } from 'element-ui'
 import RenameDialog from './RenameDialog'
-import ModelReferenceType from '../../enums/ModelReferenceType'
+import ModelReferenceType from '@/design/ModelReferenceType'
 
 export default function () {
     var entityDesigner = store.designers.getActiveDesigner()

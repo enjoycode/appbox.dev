@@ -2,7 +2,7 @@
 // 1. 预编译vue模版为render函数
 // 2. 利用利用typescriptServices编译转换vue的script
 
-import DesignStore from '../../DesignStore'
+import DesignStore from '@/design/DesignStore'
 import ModelRefTransformers from './Transformer'
 import tempCompiler from './TemplateCompiler/build'
 const es2015Compiler = require('vue-template-es2015-compiler')
@@ -60,6 +60,7 @@ export default function (ts, template, script, hashId, viewModelId) {
             DesignStore.errors.update(viewModelId, errs)
             throw new Error('脚本编译错误')
         }
+        console.log(output.outputText)
 
         // 3.输出
         var res = output.outputText + '\n//# sourceURL=' + viewModelId + '.js'

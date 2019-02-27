@@ -72,7 +72,7 @@ import compiler from './Compiler'
 import scopeStyle from './ScopeStyle'
 import debounce from 'lodash.debounce'
 import UglifyJS from './UglifyJS'
-import store from '../../DesignStore'
+import store from '@/design/DesignStore'
 
 // 缩放参考https://collaboration133.com/how-to-scale-iframe-content-in-ie-chrome-firefox-and-safari/2717/
 

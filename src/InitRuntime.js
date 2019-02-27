@@ -1,5 +1,5 @@
 import router from './router'
-import store from './components/DesignStore'
+import store from '@/design/DesignStore'
 import Channel from '@/assets/js/channel.ws'
 import cookie from '@/assets/js/cookie'
 import Runtime from '@/assets/js/Runtime'

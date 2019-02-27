@@ -33,7 +33,7 @@
 </template>
 
 <script>
-    import store from '../DesignStore'
+    import store from '@/design/DesignStore'
 
     export default {
         props: ['dlgProps'], // {target, targetModel, targetType, oldName} 重命名的目标对象, 重命名对象的类型，参考枚举ModelReferenceType

@@ -78,6 +78,10 @@ class ModelLibManager {
         });
     }
 
+    private GenViewDeclare() {
+        
+    }
+
 }
 
 let modelLibs = new ModelLibManager();

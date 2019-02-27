@@ -1,9 +1,9 @@
 import { Message } from 'element-ui'
-import store from '../../components/DesignStore'
+import store from '@/design/DesignStore'
 import axios from 'axios'
 import rjson from './refJSON'
 import jsonp from './jsonp'
-import DebugService from '../../components/Designers/Service/DebugService'
+import DebugService from '@/components/Designers/Service/DebugService'
 
 var socket
 

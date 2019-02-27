@@ -68,7 +68,7 @@
 </template>
 
 <script>
-    import store from '../DesignStore'
+    import store from '@/design/DesignStore'
     import DataFieldTypes from '../Designers/Entity/DataFieldTypes'
 
     export default {

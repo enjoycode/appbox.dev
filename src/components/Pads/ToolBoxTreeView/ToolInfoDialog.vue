@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import store from '../../DesignStore'
+import store from '@/design/DesignStore'
 import DialogInfo from './DialogInfo'
 
 export default {

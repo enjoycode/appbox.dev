@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    import store from '../DesignStore'
+    import store from '@/design/DesignStore'
 
     export default {
         data() {

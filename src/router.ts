@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Meta from 'vue-meta';
-import Login from '@/components/Login.vue';
+import Login from '@/views/Login.vue';
 
 Vue.use(Router);
 Vue.use(Meta, { keyName: 'head' });
@@ -18,17 +18,17 @@ export default new Router({
         {
             path: '/ide',
             name: 'IDE',
-            component: () => import(/* webpackChunkName: "appstudio" */ './components/AppStudio.vue'),
+            component: () => import(/* webpackChunkName: "appstudio" */ '@/views/AppStudio.vue'),
         },
         {
             path: '/preview',
             name: 'Preview',
-            component: () => import(/* webpackChunkName: "preview" */ './components/Designers/View/Previewer.vue'),
+            component: () => import(/* webpackChunkName: "preview" */ '@/components/Designers/View/Previewer.vue'),
         },
-        {
-            path: '/apitest',
-            name: 'ApiTest',
-            component: () => import(/* webpackChunkName: "apitest" */ './components/Tests/ApiTest.vue'),
-        }
+        // {
+        //     path: '/apitest',
+        //     name: 'ApiTest',
+        //     component: () => import(/* webpackChunkName: "apitest" */ './views/Tests/ApiTest.vue'),
+        // }
     ]
 });

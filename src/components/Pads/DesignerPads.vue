@@ -10,8 +10,8 @@
 
 <script>
     import Welcome from '../Designers/Welcome'
-    import store from '../DesignStore'
-    import DesignNodeType from '../../enums/DesignNodeType'
+    import store from '@/design/DesignStore'
+    import DesignNodeType from '@/design/DesignNodeType'
 
     const EntityDesigner = () => import('../Designers/Entity/EntityDesigner')
     const EnumDesigner = () => import('../Designers/Enum/EnumDesigner')

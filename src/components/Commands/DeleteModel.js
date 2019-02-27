@@ -1,7 +1,7 @@
 // 删除模型
 
 import { Message, MessageBox } from 'element-ui'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 
 export default function () {
     var selectNode = store.tree.currentNode

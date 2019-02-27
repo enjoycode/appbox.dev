@@ -28,7 +28,7 @@
 
 <script>
     import axios from 'axios'
-    import store from '../../DesignStore'
+    import store from '@/design/DesignStore'
     import newResourceDialog from './NewResourceDialog'
     export default {
         data() {

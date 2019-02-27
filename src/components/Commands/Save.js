@@ -1,6 +1,6 @@
 // 保存当前的模型
 
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 import { Message } from 'element-ui'
 
 export default function () {

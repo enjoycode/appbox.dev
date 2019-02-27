@@ -2,7 +2,7 @@
 
 import Vue from 'vue'
 import Dialog from './NewSqlIndexDialog'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 import { Message } from 'element-ui'
 
 export default function () {

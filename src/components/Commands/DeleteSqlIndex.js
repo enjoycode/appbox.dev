@@ -1,6 +1,6 @@
 // 删除索引
 
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 import { Message, MessageBox } from 'element-ui'
 
 export default function () {

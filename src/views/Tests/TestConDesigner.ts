@@ -1,12 +1,12 @@
-import ConnectionDesigner from '../Canvas/Designers/ConnectionDesigner'
-import Rectangle from '../Canvas/Drawing/Rectangle'
-import Point from '../Canvas/Drawing/Point'
-import BoundsSpecified from '../Canvas/Enums/BoundsSpecified'
-import IShape from '../Canvas/Interfaces/IShape'
-import { PathGeometry } from '../Canvas/Core/Geometries/PathGeometry'
-import FillRule from '../Canvas/Core/Geometries/PathGeometry'
-import PathFigure from '../Canvas/Core/Segments'
-import { LineSegment } from '../Canvas/Core/Segments'
+import ConnectionDesigner from '@/components/Canvas/Designers/ConnectionDesigner'
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
+import Point from '@/components/Canvas/Drawing/Point'
+import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
+import IShape from '@/components/Canvas/Interfaces/IShape'
+import { PathGeometry } from '@/components/Canvas/Core/Geometries/PathGeometry'
+import FillRule from '@/components/Canvas/Core/Geometries/PathGeometry'
+import PathFigure from '@/components/Canvas/Core/Segments'
+import { LineSegment } from '@/components/Canvas/Core/Segments'
 
 export default class TestConDesigner {
 

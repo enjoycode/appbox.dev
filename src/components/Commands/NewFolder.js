@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Dialog from './NewFolderDialog'
-import store from '../DesignStore'
+import store from '@/design/DesignStore'
 
 export default function() {
     var dlg = Vue.component('NewFolderDialog', Dialog)
