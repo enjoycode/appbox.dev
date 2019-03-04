@@ -9,7 +9,7 @@
             </e-table-column>
             <e-table-column label="Value">
                 <template slot-scope="scope">
-                    <e-textbox-cell v-model="scope.row.Value"></e-textbox-cell>
+                    <e-input v-model="scope.row.Value" size="small"></e-input>
                 </template>
             </e-table-column>
         </e-table>
