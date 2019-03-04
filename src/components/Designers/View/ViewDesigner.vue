@@ -28,15 +28,15 @@
                 </e-select>
 
                 <!-- 路由设置对话框 -->
-                <e-dialog title="Route" width="400px" :visible.sync="routeDialogVisible">
-                    <e-form label-width="90px">
+                <e-dialog title="Route" width="500px" :visible.sync="routeDialogVisible">
+                    <e-form label-width="120px">
                         <e-form-item>
                             <e-checkbox v-model="routeEnable" :disabled="readOnly">List in route</e-checkbox>
                         </e-form-item>
                         <e-form-item label="Custom Path:">
                             <e-input v-model="routePath" :disabled="readOnly"></e-input>
                         </e-form-item>
-                        <e-form-item label="Bind Permission:">
+                        <!-- <e-form-item label="Bind Permission:">
                             <e-select :disabled="readOnly" v-model="permissionValue" clearable placeholder="权限">
                                 <e-option label="管理员1" value="1">
                                 </e-option>
@@ -45,7 +45,7 @@
                                 <e-option label="管理员3" value="3">
                                 </e-option>
                             </e-select>
-                        </e-form-item>
+                        </e-form-item> -->
                     </e-form>
                     <span slot="footer" class="dialog-footer">
                         <e-button @click="routeDialogVisible = false">Cancel</e-button>
