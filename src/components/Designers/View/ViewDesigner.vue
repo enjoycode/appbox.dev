@@ -266,7 +266,7 @@ export default {
             var scopedStyle = ''
 
             // 先转换编译模版及脚本
-            const compiledCode = compiler(ts, template, script, this.hashID, this.target.ID)
+            const compiledCode = compiler(ts, template, script, this.hashID, this.target.App + '.' + this.target.Name)
             if (compiledCode.error) {
                 console.log('编译错误: ' + compiledCode.error.message)
                 return

@@ -31,10 +31,10 @@ export default function (ts, template, script, hashId, viewModelId) {
             var errs = []
             for (var i = 0; i < templateResult.errors.length; i++) {
                 var element = templateResult.errors[i]
-                errs.push({ Model: viewModelId, Location: '模版', Info: element }) // todo:暂无法定位行列
+                errs.push({ Model: viewModelId, Location: 'Template', Info: element }) // todo:暂无法定位行列
             }
             DesignStore.errors.update(viewModelId, errs)
-            throw new Error('模版编译错误')
+            throw new Error('Template compile error')
         }
         templateResult.render = toES2015Template(templateResult.render)
         templateResult.staticRenderFns = '[' + templateResult.staticRenderFns.map(toES2015Template).join(',') + ']'
@@ -44,7 +44,7 @@ export default function (ts, template, script, hashId, viewModelId) {
         // http://www.typescriptlang.org/play/playgroud.js内的transpileModule()
         var transpileOptions = {
             compilerOptions: { sourceMap: false },
-            fileName: 'aa.ts',
+            fileName: viewModelId + '.ts',
             reportDiagnostics: true,
             moduleName: undefined,
             renamedDependencies: undefined,
@@ -55,10 +55,10 @@ export default function (ts, template, script, hashId, viewModelId) {
             errs = []
             for (i = 0; i < output.diagnostics.length; i++) {
                 element = output.diagnostics[i]
-                errs.push({ Model: viewModelId, Location: '脚本:' + element.start + ',' + element.length, Info: element.messageText })
+                errs.push({ Model: viewModelId, Location: 'Script:' + element.start + ',' + element.length, Info: element.messageText })
             }
             DesignStore.errors.update(viewModelId, errs)
-            throw new Error('脚本编译错误')
+            throw new Error('Script compile error')
         }
         // console.log(output.outputText)
 
