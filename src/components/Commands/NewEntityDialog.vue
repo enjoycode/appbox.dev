@@ -44,7 +44,7 @@
                     Name: '',
                     LocalizedName: '',
                     DTO: false,
-                    EntityModelType: 0,
+                    EntityModelType: 0, //继承与非继承的
                     Inherit: null
                 },
                 rules: {
