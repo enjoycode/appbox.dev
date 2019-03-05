@@ -7,7 +7,6 @@ const selectorParser = require('postcss-selector-parser')
  */
 export default function scopeStyle(styles, hashId) {
     const id = 'data-v-' + hashId
-
     var root = postcss.parse(styles)
     const keyframes = Object.create(null)
 
@@ -51,7 +50,7 @@ export default function scopeStyle(styles, hashId) {
                     attribute: id
                 }))
             })
-        }).process(node.selector).result
+        }).processSync(node.selector)
     })
 
     // If keyframes are found in this <style>, find and rewrite animation names

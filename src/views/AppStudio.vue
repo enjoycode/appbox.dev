@@ -60,7 +60,6 @@
                 store.tree.selectNode(data)
             },
             onLeftPadsChange(visible) {
-                console.log(visible)
                 if (visible) {
                     this.leftPadsPanelSize = 300
                     this.leftPadsHandlerSize = 3
