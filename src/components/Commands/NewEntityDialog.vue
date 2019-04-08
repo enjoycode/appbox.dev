@@ -78,7 +78,7 @@
                         this.entityModel.Inherit
                     ]
                     // 获取实体属性
-                    t$runtime.channel.invoke('sys.DesignService.NewEntityModel', args).then(res => {
+                    $runtime.channel.invoke('sys.DesignService.NewEntityModel', args).then(res => {
                         // 根据返回结果添加新节点
                         store.tree.onNewNode(res)
                         _this.$message.success('添加成功')
