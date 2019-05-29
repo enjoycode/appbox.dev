@@ -9,19 +9,21 @@
                     <e-option v-for="item in memberTypes" :key="item.value" :label="item.text" :value="item.value"></e-option>
                 </e-select>
             </e-form-item>
-            <template v-if="viewModel.EntityMemberType === 0"> <!--DataField属性-->
+            <!--DataField属性-->
+            <template v-if="viewModel.EntityMemberType === 0"> 
                 <e-form-item prop="EntityFieldType" label="FieldType:">
-                    <e-select v-model="viewModel.EntityFieldType">
+                    <e-select v-model="viewModel.EntityFieldType" key="s-fieldtype">
                         <e-option v-for="item in fieldTypes" :key="item.value" :label="item.text" :value="item.value"></e-option>
                     </e-select>
                 </e-form-item>
             </template>
-            <template v-if="viewModel.EntityMemberType === 2"> <!--EntityRef属性-->
-                <e-form-item prop="IsReverse" label="IsReverse">
+            <!--EntityRef属性-->
+            <template v-if="viewModel.EntityMemberType === 2"> 
+                <!-- <e-form-item prop="IsReverse" label="IsReverse:">
                     <e-checkbox v-model="viewModel.IsReverse"></e-checkbox>
-                </e-form-item>
-                <e-form-item prop="RefIds" :required="true" label="Ref Target">
-                    <e-select v-model="viewModel.RefIds" multiple filterable>
+                </e-form-item> -->
+                <e-form-item prop="RefIds" label="Ref Target:">
+                    <e-select v-model="viewModel.RefIds" multiple filterable key="s-refids">
                         <e-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
                             <e-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
                             </e-option>
@@ -29,9 +31,10 @@
                     </e-select>
                 </e-form-item>
             </template>
+            <!--EntitySet属性-->
             <template v-if="viewModel.EntityMemberType === 3">
-                <e-form-item prop="SetId" :required="true" label="Ref Target">
-                    <e-select v-model="viewModel.SetId" :filterable="true">
+                <e-form-item prop="SetId" :required="true" label="Ref Target:">
+                    <e-select v-model="viewModel.SetId" filterable key="s-setid">
                         <!--<e-option-group
                             v-for="group in RefTreeData"
                             :key="group.ID"
@@ -54,11 +57,9 @@
             <e-form-item prop="AllowNull" label="AllowNull:">
                 <e-switch v-model="viewModel.AllowNull"></e-switch>
             </e-form-item>
-            <template v-if="!viewModel.AllowNull">
-                <e-form-item prop="DefaultValue" label="DefaultValue:">
-                    <e-input v-model="viewModel.DefaultValue"></e-input>
-                </e-form-item>
-            </template>
+            <e-form-item prop="DefaultValue" label="DefaultValue:" v-if="!viewModel.AllowNull">
+                <e-input v-model="viewModel.DefaultValue"></e-input>
+            </e-form-item>
         </e-form>
         <div slot="footer" class="dialog-footer">
             <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
@@ -94,12 +95,12 @@
                     Name: [
                         { validator: this.validateName, trigger: 'change' }
                     ],
-                    RefIds: [
-                        { validator: this.validateRefIds, trigger: 'change' }
-                    ],
-                    SetId: [
-                        { validator: this.validateSetId, trigger: 'change' }
-                    ]
+                    // RefIds: [
+                    //     { validator: this.validateRefIds, trigger: 'change' }
+                    // ],
+                    // SetId: [
+                    //     { validator: this.validateSetId, trigger: 'change' }
+                    // ]
                 },
                 onRenderContent: (h, node) => {
                     // return h('span', {staticClass: 'el-tree-node__label'}, node.data.Text)
@@ -178,18 +179,18 @@
                 // TODO 验证名称的合法性
                 callback()
             },
-            validateRefIds(rule, value, callback) {
-                if (!value || value.length === 0) {
-                    return callback(new Error('Please choose a EntityRef'))
-                }
-                callback()
-            },
-            validateSetId(rule, value, callback) {
-                if (!value) {
-                    return callback(new Error('请选择引用实体类'))
-                }
-                callback()
-            }
+            // validateRefIds(rule, value, callback) {
+            //     if (!value || value.length === 0) {
+            //         return callback(new Error('Please choose a EntityRef'))
+            //     }
+            //     callback()
+            // },
+            // validateSetId(rule, value, callback) {
+            //     if (!value) {
+            //         return callback(new Error('请选择引用实体类'))
+            //     }
+            //     callback()
+            // }
         },
         mounted() {
             this.designer = store.designers.getActiveDesigner()
