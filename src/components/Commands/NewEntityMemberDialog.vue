@@ -19,9 +19,6 @@
             </template>
             <!--EntityRef属性-->
             <template v-if="viewModel.EntityMemberType === 2"> 
-                <!-- <e-form-item prop="IsReverse" label="IsReverse:">
-                    <e-checkbox v-model="viewModel.IsReverse"></e-checkbox>
-                </e-form-item> -->
                 <e-form-item prop="RefIds" label="Ref Target:">
                     <e-select v-model="viewModel.RefIds" multiple filterable key="s-refids">
                         <e-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
@@ -30,31 +27,20 @@
                         </e-option-group>
                     </e-select>
                 </e-form-item>
+                <!-- <e-form-item prop="IsReverse" label="IsReverse:">
+                    <e-checkbox v-model="viewModel.IsReverse"></e-checkbox>
+                </e-form-item> -->
             </template>
             <!--EntitySet属性-->
             <template v-if="viewModel.EntityMemberType === 3">
                 <e-form-item prop="SetId" :required="true" label="Ref Target:">
                     <e-select v-model="viewModel.SetId" filterable key="s-setid">
-                        <!--<e-option-group
-                            v-for="group in RefTreeData"
-                            :key="group.ID"
-                            :label="group.Text"
-                            :value="group.ID">
-                            <e-option
-                                v-for="item in group.Nodes"
-                                :key="item.ID"
-                                :label="item.Name"
-                                :value="item.ID">
-                            </e-option>
-                        </e-option-group>-->
-                        <e-option v-for="item in SetTreeData" :key="item.EntityID" :label="item.Name" :value="item">
-                            <span style="float: left">{{ item.Name }}</span>
-                            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.EntityID }}</span>
+                        <e-option v-for="item in SetTreeData" :key="item.Path" :label="item.Path" :value="item">
                         </e-option>
                     </e-select>
                 </e-form-item>
             </template>
-            <e-form-item prop="AllowNull" label="AllowNull:">
+            <e-form-item prop="AllowNull" label="AllowNull:" v-if="viewModel.EntityMemberType !== 3" >
                 <e-switch v-model="viewModel.AllowNull"></e-switch>
             </e-form-item>
             <e-form-item prop="DefaultValue" label="DefaultValue:" v-if="!viewModel.AllowNull">
@@ -197,13 +183,13 @@
 
             if (!this.designer.isDTO) {
                 store.tree.getAllEntityNodes(this.RefTreeData)
-                // TODO: 获取所有引用指定模型标识的EntityRef Member集合
-                // var modelId = this.designer.target.ID
-                // $runtime.channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {
-                //     this.SetTreeData = res
-                // }).catch(err => {
-                //     this.$message.error(err)
-                // })
+                // 获取所有引用指定模型标识的EntityRef Member集合
+                var modelId = this.designer.target.ID
+                $runtime.channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {
+                    this.SetTreeData = res
+                }).catch(err => {
+                    this.$message.error(err)
+                })
             }
         }
     }
