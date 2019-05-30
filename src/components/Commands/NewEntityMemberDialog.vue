@@ -140,7 +140,7 @@
                     } else if (this.viewModel.EntityMemberType === 3) { // EntitySet
                         var setId = this.viewModel.SetId
                         args.push(setId.EntityID)
-                        args.push(setId.Name)
+                        args.push(setId.MemberID)
                     }
 
                     // 获取实体属性
