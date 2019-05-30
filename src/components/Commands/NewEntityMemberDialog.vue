@@ -138,9 +138,8 @@
                         args.push(refIdStr)
                         args.push(this.viewModel.IsReverse)
                     } else if (this.viewModel.EntityMemberType === 3) { // EntitySet
-                        var setId = this.viewModel.SetId
-                        args.push(setId.EntityID)
-                        args.push(setId.MemberID)
+                        args.push(this.viewModel.SetId.EntityID)
+                        args.push(this.viewModel.SetId.MemberID)
                     }
 
                     // 获取实体属性
