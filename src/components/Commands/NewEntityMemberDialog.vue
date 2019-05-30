@@ -1,5 +1,5 @@
 <template>
-    <e-dialog title="New Entity Member" width="600px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <e-dialog title="New Entity Member" width="400px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <e-form :model="viewModel" ref="viewModel" :rules="rules" label-width="120px" label-position="right">
             <e-form-item prop="Name" :required="true" label="Name:">
                 <e-input v-model="viewModel.Name"></e-input>
