@@ -2,7 +2,7 @@
 
 /** 还原对象引用关系 */
 function resolveObjRef(root) {
-    const idProp = 'ID'
+    const idProp = 'Id'
     const refProp = '$R'
     const typeProp = '$T'
     var objrefs = {}
@@ -38,7 +38,7 @@ function resolveObjRef(root) {
 
 /** 解决对象引用关系，注意:返回新对象实例 */
 function solveObjRef(root) {
-    const idProp = 'ID'
+    const idProp = 'Id'
     const refProp = '$R'
     const typeProp = '$T'
     var objrefs = []
