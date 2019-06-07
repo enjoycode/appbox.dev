@@ -302,7 +302,7 @@ export default {
             }
 
             let node = this.target
-            // 先压缩编译好的代码
+            // 先压缩编译好的代码 TODO:待解决mangle组件名称至如i，vue运行时warn
             // https://github.com/mishoo/UglifyJS2
             let minifyRes = UglifyJS.minify(this.runtimeCode, {
                 parse: {
