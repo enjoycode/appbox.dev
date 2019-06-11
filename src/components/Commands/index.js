@@ -10,6 +10,7 @@ import NewEnumModelCommand from './NewEnumModel'
 import NewEnumItemCommand from './NewEnumItem'
 import DeleteEnumItemCommand from './DeleteEnumItem'
 import NewApplicationCommand from './NewApplication'
+import NewPermissionCommand from './NewPermission'
 import NewFolderCommand from './NewFolder'
 import NewServiceCommand from './NewService'
 import StartDebugCommand from './StartDebug'
@@ -28,6 +29,7 @@ export default {
     NewEntity: NewEntityCommand,
     DeleteModel: DeleteModelCommand,
     NewEntityMember: NewEntityMemberCommand,
+    NewPermission : NewPermissionCommand,
     DeleteEntityMember: DeleteEntityMemberCommand,
     NewEnumModel: NewEnumModelCommand,
     NewEnumItem: NewEnumItemCommand,

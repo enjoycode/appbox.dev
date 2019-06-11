@@ -37,7 +37,7 @@
                         { title: 'Service', icon: 'fas fa-cog fa-fw', index: 'NewService' },
                         { title: 'View', icon: 'far fa-window-maximize fa-fw', index: 'NewViewModel' },
                         { title: 'Enum', icon: 'fas fa-th-list fa-fw', index: 'NewEnumModel' },
-                        { title: 'Permission', icon: 'fas fa-lock fa-fw', index: 'NewPermissionModel' }
+                        { title: 'Permission', icon: 'fas fa-lock fa-fw', index: 'NewPermission' }
                     ]
                 },
                 {

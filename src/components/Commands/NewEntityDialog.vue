@@ -81,7 +81,7 @@
                     $runtime.channel.invoke('sys.DesignService.NewEntityModel', args).then(res => {
                         // 根据返回结果添加新节点
                         store.tree.onNewNode(res)
-                        _this.$message.success('添加成功')
+                        _this.$message.success('Create entity succeed')
                         _this.visible = false
                         _this.caDisabled = false
                     }).catch(err => {
