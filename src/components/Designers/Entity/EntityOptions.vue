@@ -180,6 +180,7 @@ export default {
         addPartitionKey() {
             this.addPKDlgVisible = false
             this.options.PartitionKeys.push(Object.assign({}, this.newPartitionKey))
+            this.onPartitionKeysChanged()
         },
         removePartitionKey() {
             if (!this.currentPartitionKey) {
@@ -187,6 +188,7 @@ export default {
             } else {
                 let index = this.options.PartitionKeys.findIndex(t => t.MemberId === this.currentPartitionKey.MemberId)
                 this.options.PartitionKeys.splice(index, 1)
+                this.onPartitionKeysChanged()
             }
         },
         onPartitionKeysChanged(e) {
