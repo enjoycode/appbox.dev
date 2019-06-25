@@ -39,7 +39,7 @@
                 <e-form-item label="Member:">
                     <e-select v-model="newPartitionKey.MemberId">
                         <e-option v-for="item in allPartitionKeys" :key="item.MemberId" :value="item.MemberId" :label="item.Name"
-                            :disabled="disabledMember(options, item.Name)"></e-option>
+                            :disabled="disabledMember(options, item.MemberId)"></e-option>
                     </e-select>
                 </e-form-item>
                 <e-form-item label="Rule:">
@@ -160,8 +160,8 @@ export default {
             this.currentIndex = newRow
         },
         /** 用于判断该成员是否可选作为分区键 */
-        disabledMember(target, memberName) {
-            if (target.PartitionKeys.find(t => t.Name === memberName)) {
+        disabledMember(target, memberId) {
+            if (target.PartitionKeys.find(t => t.MemberId === memberId)) {
                 return true
             }
             return false
