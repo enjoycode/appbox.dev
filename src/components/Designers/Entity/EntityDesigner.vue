@@ -103,7 +103,7 @@ export default {
             currentMemberTitle: null, // 属性面板中成员的标题,
             expressionDialog: null, // ToString表达式编辑器对话框
             options: {
-                PartitionKeys: [], // 分工键列表
+                PartitionKeys: [], // 分区键列表
                 Indexes: [] // 索引列表
             }
         }
