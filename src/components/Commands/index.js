@@ -17,8 +17,6 @@ import StartDebugCommand from './StartDebug'
 import ContinueBreakpointCommand from './ContinueBreakpoint'
 import FindEntityMemberUsagesCommand from './FindEntityMemberUsages'
 import RenameEntityMemberCommand from './RenameEntityMember'
-import NewSqlIndexCommand from './NewSqlIndex'
-import DeleteSqlIndexCommand from './DeleteSqlIndex'
 import InvokeServiceCommand from './InvokeService'
 
 export default {
@@ -41,7 +39,5 @@ export default {
     StartDebug: StartDebugCommand,
     ContinueBreakpoint: ContinueBreakpointCommand,
     FindEntityMemberUsages: FindEntityMemberUsagesCommand,
-    RenameEntityMember: RenameEntityMemberCommand,
-    NewSqlIndex: NewSqlIndexCommand,
-    DeleteSqlIndex: DeleteSqlIndexCommand
+    RenameEntityMember: RenameEntityMemberCommand
 }

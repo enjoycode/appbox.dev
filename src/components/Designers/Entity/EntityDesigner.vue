@@ -182,23 +182,6 @@ export default {
             this.members.splice(index, 1)
         },
 
-        /** ----索引操作---- */
-        addIndex(indexData) {
-            this.sqlOptions.Indexes.push(indexData)
-        },
-        getCurrentIndex() {
-            if (!this.$refs.sqlOptions) {
-                return null
-            }
-            return this.$refs.sqlOptions.currentIndex
-        },
-        removeIndex(indexData) {
-            let at = this.sqlOptions.Indexes.indexOf(indexData)
-            if (at >= 0) {
-                this.sqlOptions.Indexes.splice(at, 1)
-            }
-        },
-
         /** ----EntityModel.ToStringExpression表达式编辑器---- */
         onOpenExpressionEditor() {
             this.expressionDialog = Vue.component('ExpressionEditorDialog', ExpressionDialog)

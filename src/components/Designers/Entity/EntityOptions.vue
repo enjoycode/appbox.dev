@@ -19,7 +19,7 @@
         <!-- Indexes -->
         <h3>Indexs:</h3>
         <e-button-group>
-            <e-button type="primary" icon="el-icon-circle-plus" size="small">Add</e-button>
+            <e-button @click="addIndexDlgVisible=true" type="primary" icon="el-icon-circle-plus" size="small">Add</e-button>
             <e-button type="primary" icon="el-icon-remove" size="small">Remove</e-button>
         </e-button-group>
         <e-table :data="options.Indexes" @current-change="onCurrentIndexChanged"
@@ -33,9 +33,9 @@
             </e-table-column>
         </e-table>
 
-        <!-- 对话框 -->
+        <!-- 添加分区键对话框 -->
         <e-dialog title="Add PartitionKey" :visible.sync="addPKDlgVisible">
-            <e-form v-model="newPartitionKey" label-width="200px" size="small">
+            <e-form v-model="newPartitionKey" label-width="100px" size="small">
                 <e-form-item label="Member:">
                     <e-select v-model="newPartitionKey.MemberId">
                         <e-option v-for="item in allPartitionKeys" :key="item.MemberId" :value="item.MemberId" :label="item.Name"
@@ -65,6 +65,33 @@
             <span slot="footer" class="dialog-footer">
                 <e-button @click="addPKDlgVisible = false">Cancel</e-button>
                 <e-button type="primary" @click="addPartitionKey">OK</e-button>
+            </span>
+        </e-dialog>
+        <!-- 添加索引对话框 -->
+        <e-dialog title="Add Index" :visible.sync="addIndexDlgVisible" width="500px">
+            <e-form :model="newIndex" label-width="100px" size="small">
+                <e-form-item prop="Name" label="Name:">
+                    <e-input v-model="newIndex.Name"></e-input>
+                </e-form-item>
+                <e-form-item label="Fields:">
+                    <e-select v-model="newIndex.Fields" value-key="MID" multiple style="width:100%">
+                        <e-option v-for="item in members" :key="item.ID" :label="item.Name" :value="{Name: item.Name, MID: item.ID, OrderByDesc: false}">
+                        </e-option>
+                    </e-select>
+                </e-form-item>
+                <e-form-item label="Orders:">
+                    <span v-for="item in newIndex.Fields" :key="item.MID">{{ item.Name }}:
+                        <e-switch v-model="item.OrderDesc" active-text="DESC" inactive-text="ASC"></e-switch>
+                        <br/>
+                    </span>
+                </e-form-item>
+                <e-form-item label="">
+                    <e-checkbox v-model="newIndex.Unique">Unique</e-checkbox>
+                </e-form-item>
+            </e-form>
+            <span slot="footer" class="dialog-footer">
+                <e-button @click="addIndexDlgVisible = false">Cancel</e-button>
+                <e-button type="primary" @click="addIndex">OK</e-button>
             </span>
         </e-dialog>
     </div>
@@ -112,7 +139,9 @@ export default {
     data() {
         return {
             addPKDlgVisible: false, //添加分区键对话框是否显示
+            addIndexDlgVisible: false, //添加索引对话框是否显示
             newPartitionKey: { MemberId: 0, Rule: PartitionKeyRule.None, RuleArg: 0, OrderByDesc: false }, //新的分区键
+            newIndex: { Name: '', Unique: false, Fields: [] }, //新的索引
             currentPartitionKey: null, //当前选择的分区键
             currentIndex: null,  //当前选择的索引
             oldPartitionKeys: [], //暂存旧的分区键，用于更改失败后恢复
@@ -206,6 +235,43 @@ export default {
                 _this.options.PartitionKeys = _this.oldPartitionKeys
                 _this.$message.error('Change PartitionKeys error: ' + err)
             })
+        },
+        /**添加索引*/
+        addIndex() {
+            this.addIndexDlgVisible = false
+
+            //TODO: check name exists
+            if (!this.newIndex.Name) {
+                this.$message.error('Index has no name')
+                return
+            }
+            if (this.newIndex.Fields.length === 0) {
+                this.$message.error('Index has no fields')
+                return
+            }
+
+            let args = [this.target.ID, 'AddIndex', JSON.stringify(this.newIndex)]
+            let _this = this
+            $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
+                _this.options.Indexes.push(res)
+            }).catch(err => {
+                _this.$message.error('Add index error: ' + err)
+            })
+        },
+        removeIndex() {
+            //TODO: check selected index
+            MessageBox.confirm('确定删除选中的索引吗？', 'Confirm', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+            }).then(() => {
+                let args = [designer.target.ID, 'DeleteIndex', index.ID]
+                $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
+                    //TODO: remove it from options.Indexes
+                }).catch(err => {
+                    Message.error(err)
+                })
+            }).catch(() => {/*此处点击了取消按钮*/})
         }
     },
     mounted() {

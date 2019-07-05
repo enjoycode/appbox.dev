@@ -59,8 +59,6 @@
                     nodes: [
                         { title: 'New Member', icon: 'fas fa-columns fa-fw', index: 'NewEntityMember' },
                         { title: 'Delete Member', icon: 'fas fa-trash fa-fw', index: 'DeleteEntityMember' },
-                        { title: 'New Index', icon: 'fas fa-sort-alpha-down fa-fw', index: 'NewSqlIndex' },
-                        { title: 'Delete Index', icon: 'fas fa-trash fa-fw', index: 'DeleteSqlIndex' },
                         { title: 'Find Member Usages', icon: 'fas fa-link fa-fw', index: 'FindEntityMemberUsages' },
                         { title: 'Rename Member', icon: 'fas fa-edit fa-fw', index: 'RenameEntityMember' }
                     ]
