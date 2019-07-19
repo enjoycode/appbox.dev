@@ -31,6 +31,7 @@
                     <e-checkbox v-model="scope.row.Unique" disabled></e-checkbox>
                 </template>
             </e-table-column>
+            <e-table-column prop="State" label="State" width="180" align="center"></e-table-column>
         </e-table>
 
         <!-- 添加分区键对话框 -->
