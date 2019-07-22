@@ -20,10 +20,9 @@
         <h3>Indexs:</h3>
         <e-button-group>
             <e-button @click="addIndexDlgVisible=true" type="primary" icon="el-icon-circle-plus" size="small">Add</e-button>
-            <e-button type="primary" icon="el-icon-remove" size="small">Remove</e-button>
+            <e-button @click="removeIndex" type="primary" icon="el-icon-remove" size="small">Remove</e-button>
         </e-button-group>
-        <e-table :data="options.Indexes" @current-change="onCurrentIndexChanged"
-            highlight-current-row border empty-text=" ">
+        <e-table :data="options.Indexes" @current-change="onCurrentIndexChanged" highlight-current-row border empty-text=" ">
             <e-table-column prop="Name" label="Name" width="300"></e-table-column>
             <e-table-column prop="Fields" label="Fields" :formatter="indexFieldsFormat"></e-table-column>
             <e-table-column prop="Unique" label="Unique" width="180" align="center">
@@ -260,17 +259,23 @@ export default {
             })
         },
         removeIndex() {
-            //TODO: check selected index
-            MessageBox.confirm('确定删除选中的索引吗？', 'Confirm', {
+            if (!this.currentIndex) {
+                this.$message('Please select index first!')
+                return;
+            }
+            let that = this
+            this.$msgbox.confirm('Are you sure to drop selected index？', 'Confirm', {
                 confirmButtonText: 'OK',
                 cancelButtonText: 'Cancel',
                 type: 'warning'
             }).then(() => {
-                let args = [designer.target.ID, 'DeleteIndex', index.ID]
+                let args = [that.target.ID, 'RemoveIndex', that.currentIndex.ID]
+                let _this = that
                 $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
-                    //TODO: remove it from options.Indexes
+                    let index = _this.options.Indexes.findIndex(t => t.ID === _this.currentIndex.ID)
+                    _this.options.Indexes.splice(index, 1)
                 }).catch(err => {
-                    Message.error(err)
+                    _this.$message.error('Drop index error:' + err)
                 })
             }).catch(() => {/*此处点击了取消按钮*/})
         }
