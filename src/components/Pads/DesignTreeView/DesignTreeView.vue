@@ -7,9 +7,12 @@
             </div>
         </div>
         <div class="tree-pane">
-            <el-tree class="designTree" ref="designTree" dragdrop v-loading="loading" node-key="ID" :current-node-key="currentNodeKey"
-                @current-change="onCurrentChanged" @dragStart="onDragStart" @dragOver="onDragOver" @dragEnd="onDragEnd" :render-content="onRenderContent"
-                :filter-node-method="filterNode" :data="designNodes" :props="treeOption" highlight-current :default-expanded-keys="['Applications','sys']">
+            <el-tree class="designTree" ref="designTree" draggable highlight-current v-loading="loading" 
+                node-key="ID" :current-node-key="currentNodeKey"
+                @current-change="onCurrentChanged" :render-content="onRenderContent"
+                @node-drop="onDrop" :allow-drag="allowDrag" :allow-drop="allowDrop"
+                :filter-node-method="filterNode" :data="designNodes" :props="treeOption" 
+                :default-expanded-keys="['Applications','sys']">
             </el-tree>
         </div>
     </div>
@@ -273,52 +276,52 @@ export default Vue.extend({
                 return null
             }
         },
-        onDragStart(e) { // 用于判断节点是否可拖动
-            let nodeData = e.source.node.data
-            let nodeType = nodeData.Type
+        allowDrag(node) { // 用于判断节点是否可拖动
+            let nodeType = node.data.Type
             if (nodeType === DesignNodeType.FolderNode) { // FolderNode判断模型根节点是否签出
-                let rootNode = this.getParentNodeByType(e.source.node, DesignNodeType.ModelRootNode)
+                let rootNode = this.getParentNodeByType(node, DesignNodeType.ModelRootNode)
                 if (!rootNode || rootNode.data.CheckoutBy !== 'Me') {
-                    e.cancel = true
+                    return false
                 }
             } else if (nodeType >= DesignNodeType.EntityModelNode && nodeType <= DesignNodeType.ReportModelNode) { // 模型节点判断当前节点及模型根节点是否签出
-                if (nodeData.CheckoutBy !== 'Me') {
-                    e.cancel = true
+                if (node.data.CheckoutBy !== 'Me') {
+                    return false
                 } else {
-                    let rootNode = this.getParentNodeByType(e.source.node, DesignNodeType.ModelRootNode)
+                    let rootNode = this.getParentNodeByType(node, DesignNodeType.ModelRootNode)
                     if (!rootNode || rootNode.data.CheckoutBy !== 'Me') {
-                        e.cancel = true
+                        return false
                     }
                 }
             } else {
-                e.cancel = true
+                return false
             }
+            return true
         },
-        onDragOver(e) { // 用于判断是否允许drop
-            let snode = e.source.node.data
-            let tnode = e.target.node.data
-            e.cancel = false // 默认允许
+        allowDrop(dragNode, dropNode, type) { // 用于判断是否允许drop
+            let snode = dragNode.data
+            let tnode = dropNode.data
             if (snode.Type === DesignNodeType.FolderNode) { // 源为FolderNode
                 if (tnode.Type !== DesignNodeType.FolderNode && tnode.Type !== DesignNodeType.ModelRootNode) { // 目标为模型节点
-                    e.cancel = true
-                } else if (e.position !== 2) { // 暂不支持排序
-                    e.cancel = true
+                    return false
+                } else if (type !== 'inner') { // 暂不支持排序
+                    return false
                 }
             } else { // 源为ModelNode
                 if (tnode.Type === DesignNodeType.FolderNode || tnode.Type === DesignNodeType.ModelRootNode) { // 目标为Folder或ModelRoot
-                    let targetAppNode = this.getParentNodeByType(e.target.node, DesignNodeType.ApplicationNode)
-                    if (targetAppNode.data.ID !== snode.AppID || e.position !== 2) {
-                        e.cancel = true
+                    let targetAppNode = this.getParentNodeByType(dropNode, DesignNodeType.ApplicationNode)
+                    if (targetAppNode.data.ID !== snode.AppID || type !== 'inner') {
+                        return false
                     }
                 } else {
-                    e.cancel = true
+                    return false
                 }
             }
+            return true
         },
-        onDragEnd(e) {
-            let source = e.source.node.data
-            let target = e.target.node.data
-            let args = [source.Type, source.ID, target.Type, target.ID, e.position]
+        onDrop(dragNode, dropNode, type, ev) {
+            let source = dragNode.data
+            let target = dropNode.data
+            let args = [source.Type, source.ID, target.Type, target.ID, type]
             let _this = this
             $runtime.channel.invoke('sys.DesignService.DragNode', args).catch(err => {
                 _this.$message.error(err)
