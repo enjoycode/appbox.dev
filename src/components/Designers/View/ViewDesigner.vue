@@ -1,57 +1,57 @@
 <template>
-    <e-splitter :pin-second="false" :minSize="640" :visible="panelVisible" handlerColor="#a2a2a2" :size="640">
+    <ex-splitter :pin-second="false" :minSize="640" :visible="panelVisible" handlerColor="#a2a2a2" :size="640">
         <!-- 左边编辑区域 -->
         <div slot="panel1" style="height: 100%">
             <div class="editorTool">
-                <e-radio-group fill="#3982b6" v-model="editMode" size="mini">
-                    <e-radio-button label="template">Template</e-radio-button>
-                    <e-radio-button label="script">Script</e-radio-button>
-                    <e-radio-button label="style">Style</e-radio-button>
-                </e-radio-group>
-                <e-button size="mini" @click="routeDialogVisible = true">Route</e-button>
-                <e-button size="mini" :type="designButton" @click="switchPreviewPanel">Preview</e-button>
-                <e-select v-if="panelVisible === 'both'" style="width: 120px" size="mini" v-model="deviceValue" placeholder="尺寸">
-                    <e-option label="Responsive" value="Responsive">
-                    </e-option>
-                    <e-option label="iphone5" value="iphone5">
-                    </e-option>
-                    <e-option label="ipad" value="ipad">
-                    </e-option>
-                </e-select>
-                <e-select v-if="panelVisible === 'both'" style="width:80px" size="mini" v-model="deviceZoom" placeholder="缩放">
-                    <e-option label="100%" value="100%">
-                    </e-option>
-                    <e-option label="75%" value="75%">
-                    </e-option>
-                    <e-option label="50%" value="50%">
-                    </e-option>
-                </e-select>
+                <el-radio-group fill="#3982b6" v-model="editMode" size="mini">
+                    <el-radio-button label="template">Template</el-radio-button>
+                    <el-radio-button label="script">Script</el-radio-button>
+                    <el-radio-button label="style">Style</el-radio-button>
+                </el-radio-group>
+                <el-button size="mini" @click="routeDialogVisible = true">Route</el-button>
+                <el-button size="mini" :type="designButton" @click="switchPreviewPanel">Preview</el-button>
+                <el-select v-if="panelVisible === 'both'" style="width: 120px" size="mini" v-model="deviceValue" placeholder="尺寸">
+                    <el-option label="Responsive" value="Responsive">
+                    </el-option>
+                    <el-option label="iphone5" value="iphone5">
+                    </el-option>
+                    <el-option label="ipad" value="ipad">
+                    </el-option>
+                </el-select>
+                <el-select v-if="panelVisible === 'both'" style="width:80px" size="mini" v-model="deviceZoom" placeholder="缩放">
+                    <el-option label="100%" value="100%">
+                    </el-option>
+                    <el-option label="75%" value="75%">
+                    </el-option>
+                    <el-option label="50%" value="50%">
+                    </el-option>
+                </el-select>
 
                 <!-- 路由设置对话框 -->
-                <e-dialog title="Route" width="500px" :visible.sync="routeDialogVisible">
-                    <e-form label-width="120px">
-                        <e-form-item>
-                            <e-checkbox v-model="routeEnable" :disabled="readOnly">List in route</e-checkbox>
-                        </e-form-item>
-                        <e-form-item label="Custom Path:">
-                            <e-input v-model="routePath" :disabled="readOnly"></e-input>
-                        </e-form-item>
-                        <!-- <e-form-item label="Bind Permission:">
-                            <e-select :disabled="readOnly" v-model="permissionValue" clearable placeholder="权限">
-                                <e-option label="管理员1" value="1">
-                                </e-option>
-                                <e-option label="管理员2" value="2">
-                                </e-option>
-                                <e-option label="管理员3" value="3">
-                                </e-option>
-                            </e-select>
-                        </e-form-item> -->
-                    </e-form>
+                <el-dialog title="Route" width="500px" :visible.sync="routeDialogVisible">
+                    <el-form label-width="120px">
+                        <el-form-item>
+                            <el-checkbox v-model="routeEnable" :disabled="readOnly">List in route</el-checkbox>
+                        </el-form-item>
+                        <el-form-item label="Custom Path:">
+                            <el-input v-model="routePath" :disabled="readOnly"></el-input>
+                        </el-form-item>
+                        <!-- <el-form-item label="Bind Permission:">
+                            <el-select :disabled="readOnly" v-model="permissionValue" clearable placeholder="权限">
+                                <el-option label="管理员1" value="1">
+                                </el-option>
+                                <el-option label="管理员2" value="2">
+                                </el-option>
+                                <el-option label="管理员3" value="3">
+                                </el-option>
+                            </el-select>
+                        </el-form-item> -->
+                    </el-form>
                     <span slot="footer" class="dialog-footer">
-                        <e-button @click="routeDialogVisible = false">Cancel</e-button>
-                        <e-button :disabled="readOnly" type="primary" @click="changeRouteSetting">OK</e-button>
+                        <el-button @click="routeDialogVisible = false">Cancel</el-button>
+                        <el-button :disabled="readOnly" type="primary" @click="changeRouteSetting">OK</el-button>
                     </span>
-                </e-dialog>
+                </el-dialog>
             </div>
             <div class="editorPanel" ref="editorPanel">
                 <code-editor ref="editor" height="100%" language="html" :fileName="fileName" @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
@@ -62,7 +62,7 @@
             <iframe ref="previewFrame" class="previewFrame" sandbox="allow-modals allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
                 :width="domWidth" :height="domHeight" frameborder="0" :src="previewUrl"></iframe>
         </div>
-    </e-splitter>
+    </ex-splitter>
 </template>
 
 <script>

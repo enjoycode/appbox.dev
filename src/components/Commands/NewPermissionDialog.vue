@@ -1,18 +1,18 @@
 <template>
-    <e-dialog title="New Permission" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <e-form :model="permissionModel" ref="frmModel" :rules="rules" label-width="120px" label-position="right">
-            <e-form-item prop="Name" :required="true" label="Name:">
-                <e-input v-model="permissionModel.Name"></e-input>
-            </e-form-item>
-            <e-form-item prop="Remark" label="Remark:">
-                <e-input v-model="permissionModel.Remark" ></e-input>
-            </e-form-item>
-        </e-form>
+    <el-dialog title="New Permission" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+        <el-form :model="permissionModel" ref="frmModel" :rules="rules" label-width="120px" label-position="right">
+            <el-form-item prop="Name" :required="true" label="Name:">
+                <el-input v-model="permissionModel.Name"></el-input>
+            </el-form-item>
+            <el-form-item prop="Remark" label="Remark:">
+                <el-input v-model="permissionModel.Remark" ></el-input>
+            </el-form-item>
+        </el-form>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="submit('frmModel')">OK</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="submit('frmModel')">OK</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

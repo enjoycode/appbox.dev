@@ -1,57 +1,57 @@
 <template>
-    <e-dialog title="New Entity Member" width="400px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <e-form :model="viewModel" ref="viewModel" :rules="rules" label-width="120px" label-position="right">
-            <e-form-item prop="Name" :required="true" label="Name:">
-                <e-input v-model="viewModel.Name"></e-input>
-            </e-form-item>
-            <e-form-item prop="EntityMemberType" label="MemberType:">
-                <e-select v-model="viewModel.EntityMemberType">
-                    <e-option v-for="item in memberTypes" :key="item.value" :label="item.text" :value="item.value"></e-option>
-                </e-select>
-            </e-form-item>
+    <el-dialog title="New Entity Member" width="400px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+        <el-form :model="viewModel" ref="viewModel" :rules="rules" label-width="120px" label-position="right">
+            <el-form-item prop="Name" :required="true" label="Name:">
+                <el-input v-model="viewModel.Name"></el-input>
+            </el-form-item>
+            <el-form-item prop="EntityMemberType" label="MemberType:">
+                <el-select v-model="viewModel.EntityMemberType">
+                    <el-option v-for="item in memberTypes" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
             <!--DataField属性-->
             <template v-if="viewModel.EntityMemberType === 0"> 
-                <e-form-item prop="EntityFieldType" label="FieldType:">
-                    <e-select v-model="viewModel.EntityFieldType" key="s-fieldtype">
-                        <e-option v-for="item in fieldTypes" :key="item.value" :label="item.text" :value="item.value"></e-option>
-                    </e-select>
-                </e-form-item>
+                <el-form-item prop="EntityFieldType" label="FieldType:">
+                    <el-select v-model="viewModel.EntityFieldType" key="s-fieldtype">
+                        <el-option v-for="item in fieldTypes" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    </el-select>
+                </el-form-item>
             </template>
             <!--EntityRef属性-->
             <template v-if="viewModel.EntityMemberType === 2"> 
-                <e-form-item prop="RefIds" label="Ref Target:">
-                    <e-select v-model="viewModel.RefIds" multiple filterable key="s-refids">
-                        <e-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
-                            <e-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
-                            </e-option>
-                        </e-option-group>
-                    </e-select>
-                </e-form-item>
-                <!-- <e-form-item prop="IsReverse" label="IsReverse:">
-                    <e-checkbox v-model="viewModel.IsReverse"></e-checkbox>
-                </e-form-item> -->
+                <el-form-item prop="RefIds" label="Ref Target:">
+                    <el-select v-model="viewModel.RefIds" multiple filterable key="s-refids">
+                        <el-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
+                            <el-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
+                            </el-option>
+                        </el-option-group>
+                    </el-select>
+                </el-form-item>
+                <!-- <el-form-item prop="IsReverse" label="IsReverse:">
+                    <el-checkbox v-model="viewModel.IsReverse"></el-checkbox>
+                </el-form-item> -->
             </template>
             <!--EntitySet属性-->
             <template v-if="viewModel.EntityMemberType === 3">
-                <e-form-item prop="SetId" :required="true" label="Ref Target:">
-                    <e-select v-model="viewModel.SetId" filterable key="s-setid">
-                        <e-option v-for="item in SetTreeData" :key="item.Path" :label="item.Path" :value="item">
-                        </e-option>
-                    </e-select>
-                </e-form-item>
+                <el-form-item prop="SetId" :required="true" label="Ref Target:">
+                    <el-select v-model="viewModel.SetId" filterable key="s-setid">
+                        <el-option v-for="item in SetTreeData" :key="item.Path" :label="item.Path" :value="item">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
             </template>
-            <e-form-item prop="AllowNull" label="AllowNull:" v-if="viewModel.EntityMemberType !== 3" >
-                <e-switch v-model="viewModel.AllowNull"></e-switch>
-            </e-form-item>
-            <e-form-item prop="DefaultValue" label="DefaultValue:" v-if="!viewModel.AllowNull">
-                <e-input v-model="viewModel.DefaultValue"></e-input>
-            </e-form-item>
-        </e-form>
+            <el-form-item prop="AllowNull" label="AllowNull:" v-if="viewModel.EntityMemberType !== 3" >
+                <el-switch v-model="viewModel.AllowNull"></el-switch>
+            </el-form-item>
+            <el-form-item prop="DefaultValue" label="DefaultValue:" v-if="!viewModel.AllowNull">
+                <el-input v-model="viewModel.DefaultValue"></el-input>
+            </el-form-item>
+        </el-form>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="submit('viewModel')">OK</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="submit('viewModel')">OK</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>
@@ -92,7 +92,7 @@
                     // return h('span', {staticClass: 'el-tree-node__label'}, node.data.Text)
                     var checkbox
                     if (node.data.Type === 20) {
-                        checkbox = <e-checkbox checked="{node.node.checked}"></e-checkbox>
+                        checkbox = <el-checkbox checked="{node.node.checked}"></el-checkbox>
                     }
                     return (<span class="el-tree-node__label">{checkbox} {node.data.Text}</span>)
                 }

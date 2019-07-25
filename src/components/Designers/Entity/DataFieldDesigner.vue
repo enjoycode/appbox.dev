@@ -1,27 +1,27 @@
 <template>
-    <e-form :model="target" label-position="right" size="mini" label-width="120px">
-        <e-form-item prop="Name" label="Name">
-            <e-input :disabled="true" :value="target.Name"></e-input>
-        </e-form-item>
-        <e-form-item label="LocalizedName">
-            <e-input v-model="target.LocalizedName" @change="onLocalizedNameChanged"></e-input>
-        </e-form-item>
-        <e-form-item prop="DataType" :required="true" label="DataType">
-            <e-select v-model="target.DataType" @change="onDataTypeChanged" :disabled="true">
-                <e-option v-for="item in DataFieldTypes" :key="item.value" :label="item.text" :value="item.value">
-                </e-option>
-            </e-select>
-        </e-form-item>
-        <e-form-item prop="EnumModelID" v-if="target.DataType === 8" :required="true" label="EnumModelID">
-            <e-select v-model="target.EnumModelID" @change="onEnumModelIDChanged" placeholder="请选择">
-                <e-option v-for="item in enums" :key="item.ID" :label="item.ID" :value="item.ID">
-                </e-option>
-            </e-select>
-        </e-form-item>
-        <e-form-item label="AllowNull" v-if="canEditAllowNull">
-            <e-checkbox v-model="target.AllowNull" @change="onAllowNullChanged"></e-checkbox>
-        </e-form-item>
-    </e-form>
+    <el-form :model="target" label-position="right" size="mini" label-width="120px">
+        <el-form-item prop="Name" label="Name">
+            <el-input :disabled="true" :value="target.Name"></el-input>
+        </el-form-item>
+        <el-form-item label="LocalizedName">
+            <el-input v-model="target.LocalizedName" @change="onLocalizedNameChanged"></el-input>
+        </el-form-item>
+        <el-form-item prop="DataType" :required="true" label="DataType">
+            <el-select v-model="target.DataType" @change="onDataTypeChanged" :disabled="true">
+                <el-option v-for="item in DataFieldTypes" :key="item.value" :label="item.text" :value="item.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item prop="EnumModelID" v-if="target.DataType === 8" :required="true" label="EnumModelID">
+            <el-select v-model="target.EnumModelID" @change="onEnumModelIDChanged" placeholder="请选择">
+                <el-option v-for="item in enums" :key="item.ID" :label="item.ID" :value="item.ID">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="AllowNull" v-if="canEditAllowNull">
+            <el-checkbox v-model="target.AllowNull" @change="onAllowNullChanged"></el-checkbox>
+        </el-form-item>
+    </el-form>
 </template>
 
 <script>

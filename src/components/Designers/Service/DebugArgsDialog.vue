@@ -1,22 +1,22 @@
 <template>
-    <e-dialog class="dialog" title="请输入调试参数" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog class="dialog" title="请输入调试参数" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <span>调试方法: {{dlgProps.ModelID + "." + dlgProps.Method.Name}}</span>
-        <e-table :data="dlgProps.Method.Args" border highlight-current-row>
-            <e-table-column prop="Name" label="参数名" width="120" align="center">
-            </e-table-column>
-            <e-table-column prop="Type" label="参数类型" width="180">
-            </e-table-column>
-            <e-table-column label="参数值">
+        <el-table :data="dlgProps.Method.Args" border highlight-current-row>
+            <el-table-column prop="Name" label="参数名" width="120" align="center">
+            </el-table-column>
+            <el-table-column prop="Type" label="参数类型" width="180">
+            </el-table-column>
+            <el-table-column label="参数值">
                 <template slot-scope="scope">
-                    <e-textbox-cell v-model="scope.row.Value"></e-textbox-cell>
+                    <ex-textbox-cell v-model="scope.row.Value"></ex-textbox-cell>
                 </template>
-            </e-table-column>
-        </e-table>
+            </el-table-column>
+        </el-table>
         <div slot="footer">
-            <e-button @click="visible = false">取 消</e-button>
-            <e-button type="primary" @click="onOkClick">开 始</e-button>
+            <el-button @click="visible = false">取 消</el-button>
+            <el-button type="primary" @click="onOkClick">开 始</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

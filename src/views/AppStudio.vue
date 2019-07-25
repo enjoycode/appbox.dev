@@ -4,15 +4,15 @@
         <main-menu class="ide-menu"></main-menu>
         <!-- body -->
         <div class="ide-body">
-            <e-splitter :pin-second="false" :minSize="50" :handlerSize="leftPadsHandlerSize" handlerColor="#f1f1f1" :size="leftPadsPanelSize">
+            <ex-splitter :pin-second="false" :minSize="50" :handlerSize="leftPadsHandlerSize" handlerColor="#f1f1f1" :size="leftPadsPanelSize">
                 <!--左边Pads-->
                 <left-pads slot="panel1" class="ide-left" @leftpadsEvent="onLeftPadsChange"></left-pads>
-                <e-splitter slot="panel2" vertical :size="150" handlerColor="#fff">
+                <ex-splitter slot="panel2" vertical :size="150" handlerColor="#fff">
                     <!--主编辑区域Pads-->
                     <designer-pads slot="panel1" class="ide-designers" @currentTabChanged="designTabChanged"></designer-pads>
                     <bottom-pads slot="panel2" class="ide-bottom"></bottom-pads>
-                </e-splitter>
-            </e-splitter>
+                </ex-splitter>
+            </ex-splitter>
 
             <!--对话框占位-->
             <component v-if="activeDialog" :is="activeDialog" :dlgProps="dlgProps" @close="closeDialog"></component>

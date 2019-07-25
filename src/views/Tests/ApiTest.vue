@@ -1,34 +1,34 @@
 <template>
     <div style="height:500px">
         <splitter :size="400">
-            <e-card slot="panel1" style="width:350px; margin: 10px;">
+            <el-card slot="panel1" style="width:350px; margin: 10px;">
                 <p slot="title">
-                    <e-icon type="ios-refresh"></e-icon> Api调用测试 </p>
+                    <el-icon type="ios-refresh"></el-icon> Api调用测试 </p>
                 <p>Service:</p>
-                <e-input v-model="service" placeholder="eg:sys.AdminService.TestMethod"></e-input>
+                <el-input v-model="service" placeholder="eg:sys.AdminService.TestMethod"></el-input>
                 <p>Arguments:</p>
-                <e-input v-model="args" type="textarea" placeholder='eg:["Arg1","Arg2"]'></e-input>
+                <el-input v-model="args" type="textarea" placeholder='eg:["Arg1","Arg2"]'></el-input>
                 <br>
                 <br>
-                <e-button ref="btInvoke" type="primary" icon="ios-search" :loading="loading" @click="onClick">Invoke</e-button>
-                <e-button ref="btInvoke" type="primary" icon="ios-search" :loading="loading" @click="onConnection">Connection</e-button>
+                <el-button ref="btInvoke" type="primary" icon="ios-search" :loading="loading" @click="onClick">Invoke</el-button>
+                <el-button ref="btInvoke" type="primary" icon="ios-search" :loading="loading" @click="onConnection">Connection</el-button>
                 <p>Result:</p>
-                <e-input v-model="result" type="textarea" placeholder='调用结果'></e-input>
-            </e-card>
+                <el-input v-model="result" type="textarea" placeholder='调用结果'></el-input>
+            </el-card>
             <div slot="panel2" style="height:100%;">
-                <e-table :data="sales" border highlight-current-row>
-                    <e-table-column prop="日期" label="日期" width="120" align="center">
+                <el-table :data="sales" border highlight-current-row>
+                    <el-table-column prop="日期" label="日期" width="120" align="center">
                         <template slot-scope="scope">
                             <textbox-cell v-model="scope.row.日期"></textbox-cell>
                         </template>
-                    </e-table-column>
-                    <e-table-column label="销售额" width="180">
+                    </el-table-column>
+                    <el-table-column label="销售额" width="180">
                         <template slot-scope="scope">
                             <textbox-cell v-model="scope.row.销售额"></textbox-cell>
                         </template>
-                    </e-table-column>
-                </e-table>
-                <e-chart-line :data="chartData"></e-chart-line>
+                    </el-table-column>
+                </el-table>
+                <ve-line :data="chartData"></ve-line>
             </div>
         </splitter>
     </div>

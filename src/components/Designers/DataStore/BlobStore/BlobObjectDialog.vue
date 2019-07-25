@@ -1,5 +1,5 @@
 <template>
-    <e-dialog title="预览" size="small" :visible.sync="visible" :close-on-click-modal="true" @close="onClose">
+    <el-dialog title="预览" size="small" :visible.sync="visible" :close-on-click-modal="true" @close="onClose">
 
-    </e-dialog>
+    </el-dialog>
 </template>

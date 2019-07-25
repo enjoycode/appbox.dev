@@ -1,3 +1,3 @@
-import ESplitter from './Splitter.vue'
+import ExSplitter from './Splitter.vue'
 
-export default ESplitter
+export default ExSplitter

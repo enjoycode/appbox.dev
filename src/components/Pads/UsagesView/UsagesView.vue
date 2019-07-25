@@ -1,22 +1,22 @@
 <template>
-    <e-table height="100%" :data="usages" size="small" class="viewpad" border empty-text=" ">
-        <e-table-column prop="Type" label="Type" :width="100">
-        </e-table-column>
-        <e-table-column prop="Model" label="Model" :width="200">
-        </e-table-column>
-        <e-table-column prop="Location" label="Position">
-        </e-table-column>
-        <e-table-column fixed="right" label="Action" width="230">
+    <el-table height="100%" :data="usages" size="small" class="viewpad" border empty-text=" ">
+        <el-table-column prop="Type" label="Type" :width="100">
+        </el-table-column>
+        <el-table-column prop="Model" label="Model" :width="200">
+        </el-table-column>
+        <el-table-column prop="Location" label="Position">
+        </el-table-column>
+        <el-table-column fixed="right" label="Action" width="230">
             <template slot-scope="scope">
-                <e-button @click.native.prevent="checkout(scope.$index, scope.row)" type="text" size="small">
+                <el-button @click.native.prevent="checkout(scope.$index, scope.row)" type="text" size="small">
                     Checkout
-                </e-button>
-                <e-button @click.native.prevent="jumpto(scope.$index, scope.row)" type="text" size="small">
+                </el-button>
+                <el-button @click.native.prevent="jumpto(scope.$index, scope.row)" type="text" size="small">
                     Jumpto
-                </e-button>
+                </el-button>
             </template>
-        </e-table-column>
-    </e-table>
+        </el-table-column>
+    </el-table>
 </template>
 
 <script>

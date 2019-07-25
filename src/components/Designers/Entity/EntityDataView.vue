@@ -1,8 +1,8 @@
 <template>
-    <e-table :data="rows" highlight-current-row border height="100%" empty-text=" ">
-        <e-table-column v-for="item in columns" :prop="item" :label="item" :key="item" :formatter="formatCell">
-        </e-table-column>
-    </e-table>
+    <el-table :data="rows" highlight-current-row border height="100%" empty-text=" ">
+        <el-table-column v-for="item in columns" :prop="item" :label="item" :key="item" :formatter="formatCell">
+        </el-table-column>
+    </el-table>
 </template>
 
 <script>

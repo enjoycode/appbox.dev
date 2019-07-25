@@ -1,25 +1,25 @@
 <template>
-    <e-dialog title="添加资源" size="small" :visible.sync="visible" :close-on-click-modal="true" @close="onClose">
-        <e-form :model="form" label-width="100px" label-position="right">
-            <e-form-item label="资源名称" porp="name">
-                <e-input v-model="form.name"></e-input>
-            </e-form-item>
-            <e-form-item label="资源类型" porp="type">
-                <e-select v-model="form.type" placeholder="请资源类型">
-                    <e-option label="图片" value="1"></e-option>
-                </e-select>
-            </e-form-item>
-            <e-form-item>
-                <e-upload class="upload-demo" :data="form" ref="upload" :multiple="false" :on-success="handleSuccess" :on-error="handleError" :on-change="handleChange" :action="action" :on-remove="handleRemove" :auto-upload="false" list-type="picture">
-                    <e-button slot="trigger" size="small" type="primary">选取文件</e-button>
+    <el-dialog title="添加资源" size="small" :visible.sync="visible" :close-on-click-modal="true" @close="onClose">
+        <el-form :model="form" label-width="100px" label-position="right">
+            <el-form-item label="资源名称" porp="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="资源类型" porp="type">
+                <el-select v-model="form.type" placeholder="请资源类型">
+                    <el-option label="图片" value="1"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-upload class="upload-demo" :data="form" ref="upload" :multiple="false" :on-success="handleSuccess" :on-error="handleError" :on-change="handleChange" :action="action" :on-remove="handleRemove" :auto-upload="false" list-type="picture">
+                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-                </e-upload>
-            </e-form-item>
-        </e-form>
+                </el-upload>
+            </el-form-item>
+        </el-form>
         <div slot="footer">
-            <e-button type="primary" @click="submitUpload">保存</e-button>
+            <el-button type="primary" @click="submitUpload">保存</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

@@ -1,11 +1,11 @@
 <template>
-    <e-dialog title="表达式编辑器" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog title="表达式编辑器" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <expression-editor ref="editor" :ownerType="ownerType" :ownerID="ownerID" :propertyName="propertyName"></expression-editor>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">取 消</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="onOkClick">确 定</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">取 消</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="onOkClick">确 定</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

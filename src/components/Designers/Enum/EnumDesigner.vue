@@ -1,49 +1,49 @@
 <template>
-    <e-splitter :minSize="300" handlerColor="#f1f1f1" :size="300">
+    <ex-splitter :minSize="300" handlerColor="#f1f1f1" :size="300">
         <div slot="panel1" class="entityTable">
-            <e-table ref="memberTable" :data="tableData" height="100%" @current-change="currentRowChange" :stripe="true" highlight-current-row border>
-                <e-table-column prop="Name" label="Name" width="180" align="center">
-                </e-table-column>
-                <e-table-column prop="Value" label="Value" width="180" align="center">
-                </e-table-column>
-                <e-table-column width="180" prop="LocalizedName" label="LocalizeName" align="center">
-                </e-table-column>
-            </e-table>
+            <el-table ref="memberTable" :data="tableData" height="100%" @current-change="currentRowChange" :stripe="true" highlight-current-row border>
+                <el-table-column prop="Name" label="Name" width="180" align="center">
+                </el-table-column>
+                <el-table-column prop="Value" label="Value" width="180" align="center">
+                </el-table-column>
+                <el-table-column width="180" prop="LocalizedName" label="LocalizeName" align="center">
+                </el-table-column>
+            </el-table>
         </div>
         <div slot="panel2" class="ide-property-panel">
-            <e-collapse class="ide-property-collapse" :value="collapseValue">
-                <e-collapse-item title="Enum Properties" name="1">
-                    <e-form label-position="right" label-width="120px">
-                        <e-form-item label="ID">
-                            <e-input size="small" v-model="target.ID" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="AppID">
-                            <e-input size="small" v-model="target.AppID" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="Model Name">
-                            <e-input size="small" v-model="target.Text" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="SortNo">
-                            <e-input size="small" v-model="target.SortNo" :disabled="true"></e-input>
-                        </e-form-item>
-                    </e-form>
-                </e-collapse-item>
-                <e-collapse-item title="Enum Items 属性" v-if="currentMember" name="2">
-                    <e-form label-position="right" label-width="120px">
-                        <e-form-item label="Name">
-                            <e-input size="small" v-model="currentMember.Name" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="Value">
-                            <e-input-number size="small" :min="0" @change="onItemValueChange" v-model="currentMember.Value"></e-input-number>
-                        </e-form-item>
-                        <e-form-item label="LocalizedName">
-                            <e-input size="small" @change="onItemLocalizedNameChange" v-model="currentMember.LocalizedName"></e-input>
-                        </e-form-item>
-                    </e-form>
-                </e-collapse-item>
-            </e-collapse>
+            <el-collapse class="ide-property-collapse" :value="collapseValue">
+                <el-collapse-item title="Enum Properties" name="1">
+                    <el-form label-position="right" label-width="120px">
+                        <el-form-item label="ID">
+                            <el-input size="small" v-model="target.ID" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="AppID">
+                            <el-input size="small" v-model="target.AppID" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Model Name">
+                            <el-input size="small" v-model="target.Text" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="SortNo">
+                            <el-input size="small" v-model="target.SortNo" :disabled="true"></el-input>
+                        </el-form-item>
+                    </el-form>
+                </el-collapse-item>
+                <el-collapse-item title="Enum Items 属性" v-if="currentMember" name="2">
+                    <el-form label-position="right" label-width="120px">
+                        <el-form-item label="Name">
+                            <el-input size="small" v-model="currentMember.Name" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Value">
+                            <el-input-number size="small" :min="0" @change="onItemValueChange" v-model="currentMember.Value"></el-input-number>
+                        </el-form-item>
+                        <el-form-item label="LocalizedName">
+                            <el-input size="small" @change="onItemLocalizedNameChange" v-model="currentMember.LocalizedName"></el-input>
+                        </el-form-item>
+                    </el-form>
+                </el-collapse-item>
+            </el-collapse>
         </div>
-    </e-splitter>
+    </ex-splitter>
 </template>
 
 <script>

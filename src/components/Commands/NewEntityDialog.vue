@@ -1,33 +1,33 @@
 <template>
-    <e-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <e-form :model="entityModel" ref="entityModel" :rules="rules" label-width="120px" label-position="right">
-            <e-form-item prop="Name" :required="true" label="Name:">
-                <e-input v-model="entityModel.Name"></e-input>
-            </e-form-item>
-            <e-form-item prop="LocalizedName" label="Comment:">
-                <e-input v-model="entityModel.LocalizedName"></e-input>
-            </e-form-item>
-            <e-form-item prop="DTO" label="DTO:">
-                <e-switch v-model="entityModel.DTO"></e-switch>
-            </e-form-item>
-            <e-form-item v-if="entityModel.DTO===false" prop="EntityModelType" label="Inherits:">
-                <e-radio class="radio" v-model="entityModel.EntityModelType" :label="0">NonInherits</e-radio>
-                <e-radio class="radio" v-model="entityModel.EntityModelType" :label="1">Inherits</e-radio>
-            </e-form-item>
-            <e-form-item v-if="entityModel.EntityModelType === 1" prop="Inherit" label="BaseEntity:">
-                <e-select v-model="entityModel.Inherit" filterable>
-                    <e-option-group v-for="group in InheritNodes" :key="group.ID" :label="group.Text" :value="group.ID">
-                        <e-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
-                        </e-option>
-                    </e-option-group>
-                </e-select>
-            </e-form-item>
-        </e-form>
+    <el-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+        <el-form :model="entityModel" ref="entityModel" :rules="rules" label-width="120px" label-position="right">
+            <el-form-item prop="Name" :required="true" label="Name:">
+                <el-input v-model="entityModel.Name"></el-input>
+            </el-form-item>
+            <el-form-item prop="LocalizedName" label="Comment:">
+                <el-input v-model="entityModel.LocalizedName"></el-input>
+            </el-form-item>
+            <el-form-item prop="DTO" label="DTO:">
+                <el-switch v-model="entityModel.DTO"></el-switch>
+            </el-form-item>
+            <el-form-item v-if="entityModel.DTO===false" prop="EntityModelType" label="Inherits:">
+                <el-radio class="radio" v-model="entityModel.EntityModelType" :label="0">NonInherits</el-radio>
+                <el-radio class="radio" v-model="entityModel.EntityModelType" :label="1">Inherits</el-radio>
+            </el-form-item>
+            <el-form-item v-if="entityModel.EntityModelType === 1" prop="Inherit" label="BaseEntity:">
+                <el-select v-model="entityModel.Inherit" filterable>
+                    <el-option-group v-for="group in InheritNodes" :key="group.ID" :label="group.Text" :value="group.ID">
+                        <el-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
+                        </el-option>
+                    </el-option-group>
+                </el-select>
+            </el-form-item>
+        </el-form>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="submit('entityModel')">OK</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="submit('entityModel')">OK</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

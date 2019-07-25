@@ -1,28 +1,28 @@
 <template>
     <div class="resourcePads">
-        <e-card>
+        <el-card>
             <div slot="header">
-                <e-row type="flex" align="middle" :gutter="10">
-                    <e-col :span="3">
-                        <e-button type="primary" size="small" icon="plus" @click="onOpenNewResourceDlg">添加资源</e-button>
-                    </e-col>
-                    <e-col :span="3">
-                        <e-button type="danger" size="small" icon="delete" @click="onDeleteResource">删除资源</e-button>
-                    </e-col>
-                </e-row>
+                <el-row type="flex" align="middle" :gutter="10">
+                    <el-col :span="3">
+                        <el-button type="primary" size="small" icon="plus" @click="onOpenNewResourceDlg">添加资源</el-button>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-button type="danger" size="small" icon="delete" @click="onDeleteResource">删除资源</el-button>
+                    </el-col>
+                </el-row>
             </div>
-            <e-table ref="resourceTable" :data="ResourceNode" :stripe="true" highlight-current-row border @current-change="onCurentChange">
-                <e-table-column prop="Name" label="Name" align="center">
-                </e-table-column>
-                <e-table-column label="ImageValue" align="center">
+            <el-table ref="resourceTable" :data="ResourceNode" :stripe="true" highlight-current-row border @current-change="onCurentChange">
+                <el-table-column prop="Name" label="Name" align="center">
+                </el-table-column>
+                <el-table-column label="ImageValue" align="center">
                     <template slot-scope="scope">
                         <img class="resourceImage" :src="imgFormatter(scope.row)">
                     </template>
-                </e-table-column>
-                <e-table-column prop="ImageSize" label="Size" align="center">
-                </e-table-column>
-            </e-table>
-        </e-card>
+                </el-table-column>
+                <el-table-column prop="ImageSize" label="Size" align="center">
+                </el-table-column>
+            </el-table>
+        </el-card>
     </div>
 </template>
 

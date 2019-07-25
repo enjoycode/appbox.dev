@@ -1,26 +1,26 @@
 <template>
-    <e-dialog class="dialog" title="Invoke Service" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog class="dialog" title="Invoke Service" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <span>Method: {{dlgProps.Service + "." + dlgProps.Method.Name}}</span>
         <br/><br/>
-        <e-table :data="dlgProps.Method.Args" border highlight-current-row empty-text=" ">
-            <e-table-column prop="Name" label="Parameter" width="120" align="center">
-            </e-table-column>
-            <e-table-column prop="Type" label="Type" width="180">
-            </e-table-column>
-            <e-table-column label="Value">
+        <el-table :data="dlgProps.Method.Args" border highlight-current-row empty-text=" ">
+            <el-table-column prop="Name" label="Parameter" width="120" align="center">
+            </el-table-column>
+            <el-table-column prop="Type" label="Type" width="180">
+            </el-table-column>
+            <el-table-column label="Value">
                 <template slot-scope="scope">
-                    <e-input v-model="scope.row.Value" size="small"></e-input>
+                    <el-input v-model="scope.row.Value" size="small"></el-input>
                 </template>
-            </e-table-column>
-        </e-table>
+            </el-table-column>
+        </el-table>
         <br/>
         <p>Result:</p>
-        <e-input v-model="result" type="textarea" placeholder='Invoke Result with Json format'></e-input>
+        <el-input v-model="result" type="textarea" placeholder='Invoke Result with Json format'></el-input>
         <div slot="footer">
-            <e-button @click="visible = false">Close</e-button>
-            <e-button type="primary" icon="ios-search" :loading="loading" @click="onInvoke">Invoke</e-button>
+            <el-button @click="visible = false">Close</el-button>
+            <el-button type="primary" icon="ios-search" :loading="loading" @click="onInvoke">Invoke</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

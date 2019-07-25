@@ -1,15 +1,15 @@
 <template>
     <div class="ide-property-panel">
         <h4 class="propertyPanel-title">{{ownerType}}</h4>
-        <e-collapse class="ide-property-collapse" :value="expands">
-            <e-collapse-item v-for="catalog in catalogs" :key="catalog.name" :title="catalog.name" :name="catalog.name">
-                <e-form label-position="right" size="mini" label-width="100px">
-                    <e-form-item v-for="item in catalog.items" :key="item.title" :label="item.title">
+        <el-collapse class="ide-property-collapse" :value="expands">
+            <el-collapse-item v-for="catalog in catalogs" :key="catalog.name" :title="catalog.name" :name="catalog.name">
+                <el-form label-position="right" size="mini" label-width="100px">
+                    <el-form-item v-for="item in catalog.items" :key="item.title" :label="item.title">
                         <component :is="item.editor" :target="item"></component>
-                    </e-form-item>
-                </e-form>
-            </e-collapse-item>
-        </e-collapse>
+                    </el-form-item>
+                </el-form>
+            </el-collapse-item>
+        </el-collapse>
     </div>
 </template>
 

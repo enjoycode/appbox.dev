@@ -1,12 +1,12 @@
 <template>
-    <e-table height="100%" :data="errors" size="small" class="errorpad" border empty-text=" ">
-        <e-table-column prop="Model" label="Model" :width="200">
-        </e-table-column>
-        <e-table-column prop="Location" label="Position" :width="200">
-        </e-table-column>
-        <e-table-column prop="Info" label="Info">
-        </e-table-column>
-    </e-table>
+    <el-table height="100%" :data="errors" size="small" class="errorpad" border empty-text=" ">
+        <el-table-column prop="Model" label="Model" :width="200">
+        </el-table-column>
+        <el-table-column prop="Location" label="Position" :width="200">
+        </el-table-column>
+        <el-table-column prop="Info" label="Info">
+        </el-table-column>
+    </el-table>
 </template>
 
 <script>

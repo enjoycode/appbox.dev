@@ -1,15 +1,15 @@
 <template>
-    <e-form :model="target" size="mini" label-position="right" label-width="120px">
-        <e-form-item prop="Name" label="Name">
-            <e-input :disabled="true" v-model="Name"></e-input>
-        </e-form-item>
-        <e-form-item label="LocalizedName">
-            <e-input v-model="LocalizedName"></e-input>
-        </e-form-item>
-        <e-form-item label="RefModelID">
-            <e-input v-model="RefModelID" :disabled="true"></e-input>
-        </e-form-item>
-    </e-form>
+    <el-form :model="target" size="mini" label-position="right" label-width="120px">
+        <el-form-item prop="Name" label="Name">
+            <el-input :disabled="true" v-model="Name"></el-input>
+        </el-form-item>
+        <el-form-item label="LocalizedName">
+            <el-input v-model="LocalizedName"></el-input>
+        </el-form-item>
+        <el-form-item label="RefModelID">
+            <el-input v-model="RefModelID" :disabled="true"></el-input>
+        </el-form-item>
+    </el-form>
 </template>
 
 <script>

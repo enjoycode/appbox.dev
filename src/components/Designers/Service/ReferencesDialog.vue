@@ -1,15 +1,15 @@
 <template>
-    <e-dialog class="dialog" width="800px" title="服务依赖管理" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <e-transfer filterable v-model="references" :data="source" :titles="['可选项','已选项']">
-        </e-transfer>
+    <el-dialog class="dialog" width="800px" title="服务依赖管理" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+        <el-transfer filterable v-model="references" :data="source" :titles="['可选项','已选项']">
+        </el-transfer>
         <div slot="footer">
             <input ref="input" @change="onFileChange" :multiple="false" accept=".dll,.so,.dylib" style="width:0px; visibility: hidden;"
                 type="file">
-            <e-button type="primary" @click="onUpload">上传第三方组件</e-button>
-            <e-button @click="visible = false">取 消</e-button>
-            <e-button type="primary" @click="onOkClick">确 定</e-button>
+            <el-button type="primary" @click="onUpload">上传第三方组件</el-button>
+            <el-button @click="visible = false">取 消</el-button>
+            <el-button type="primary" @click="onOkClick">确 定</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

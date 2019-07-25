@@ -1,21 +1,21 @@
 <template>
     <div>
         <div class="icons">
-            <e-menu :style="{ height:'100%', width:'50px' }" :default-active="activeMenu" @select="menuSelect" background-color="#464b5b"
+            <el-menu :style="{ height:'100%', width:'50px' }" :default-active="activeMenu" @select="menuSelect" background-color="#464b5b"
                 active-text-color="#fff">
-                <e-menu-item index="file" style="padding-left: 16px;font-size:22px">
+                <el-menu-item index="file" style="padding-left: 16px;font-size:22px">
                     <i class="fas fa-file"></i>
-                </e-menu-item>
-                <e-menu-item index="toolBox" style="padding-left: 13px;font-size:22px">
+                </el-menu-item>
+                <el-menu-item index="toolBox" style="padding-left: 13px;font-size:22px">
                     <i class="fas fa-wrench"></i>
-                </e-menu-item>
-                <e-menu-item index="debug" style="padding-left:13px;font-size:22px">
+                </el-menu-item>
+                <el-menu-item index="debug" style="padding-left:13px;font-size:22px">
                     <i class="fas fa-bug"></i>
-                </e-menu-item>
-                <e-menu-item index="4" style="padding-left: 13px;font-size:22px">
+                </el-menu-item>
+                <el-menu-item index="4" style="padding-left: 13px;font-size:22px">
                     <i class="fas fa-cog"></i>
-                </e-menu-item>
-            </e-menu>
+                </el-menu-item>
+            </el-menu>
         </div>
         <div class="mainView">
             <keep-alive>

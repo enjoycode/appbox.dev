@@ -1,5 +1,5 @@
 <template>
-    <e-splitter :size="300" @resize="onSplitterResize">
+    <ex-splitter :size="300" @resize="onSplitterResize">
         <!--画布面板-->
         <div slot="panel1" class="stage" ref="stage" :style="{ background: background }">
             <canvas ref="surface" style="z-index:1" class="layer"></canvas>
@@ -7,7 +7,7 @@
         </div>
         <!--属性面板-->
         <property-panel slot="panel2" ref="propertyPanel"></property-panel>
-    </e-splitter>
+    </ex-splitter>
 </template>
 
 <script>

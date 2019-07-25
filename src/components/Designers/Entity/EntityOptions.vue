@@ -2,98 +2,98 @@
     <div class="view">
         <!-- Partions -->
         <h3>Partitions:</h3>
-        <e-button-group>
-            <e-button @click="addPKDlgVisible=true" type="primary" icon="el-icon-circle-plus" size="small">Add</e-button>
-            <e-button @click="removePartitionKey" type="primary" icon="el-icon-remove" size="small">Remove</e-button>
-        </e-button-group>
-        <e-table :data="options.PartitionKeys" @current-change="onCurrentPKChanged" highlight-current-row border empty-text=" ">
-            <e-table-column prop="MemberId" label="Name" width="300" :formatter="pkNameFormat"></e-table-column>
-            <e-table-column prop="Rule" label="Rule" :formatter="pkRuleFormat"></e-table-column>
-            <e-table-column prop="OrderByDesc" label="OrderByDesc" width="180" align="center">
+        <el-button-group>
+            <el-button @click="addPKDlgVisible=true" type="primary" icon="el-icon-circle-plus" size="small">Add</el-button>
+            <el-button @click="removePartitionKey" type="primary" icon="el-icon-remove" size="small">Remove</el-button>
+        </el-button-group>
+        <el-table :data="options.PartitionKeys" @current-change="onCurrentPKChanged" highlight-current-row border empty-text=" ">
+            <el-table-column prop="MemberId" label="Name" width="300" :formatter="pkNameFormat"></el-table-column>
+            <el-table-column prop="Rule" label="Rule" :formatter="pkRuleFormat"></el-table-column>
+            <el-table-column prop="OrderByDesc" label="OrderByDesc" width="180" align="center">
                 <template slot-scope="scope">
-                    <e-checkbox v-model="scope.row.OrderByDesc" disabled></e-checkbox>
+                    <el-checkbox v-model="scope.row.OrderByDesc" disabled></el-checkbox>
                 </template>
-            </e-table-column>
-        </e-table>
+            </el-table-column>
+        </el-table>
 
         <!-- Indexes -->
         <h3>Indexs:</h3>
-        <e-button-group>
-            <e-button @click="addIndexDlgVisible=true" type="primary" icon="el-icon-circle-plus" size="small">Add</e-button>
-            <e-button @click="removeIndex" type="primary" icon="el-icon-remove" size="small">Remove</e-button>
-        </e-button-group>
-        <e-table :data="options.Indexes" @current-change="onCurrentIndexChanged" highlight-current-row border empty-text=" ">
-            <e-table-column prop="Name" label="Name" width="300"></e-table-column>
-            <e-table-column prop="Fields" label="Fields" :formatter="indexFieldsFormat"></e-table-column>
-            <e-table-column prop="Unique" label="Unique" width="180" align="center">
+        <el-button-group>
+            <el-button @click="addIndexDlgVisible=true" type="primary" icon="el-icon-circle-plus" size="small">Add</el-button>
+            <el-button @click="removeIndex" type="primary" icon="el-icon-remove" size="small">Remove</el-button>
+        </el-button-group>
+        <el-table :data="options.Indexes" @current-change="onCurrentIndexChanged" highlight-current-row border empty-text=" ">
+            <el-table-column prop="Name" label="Name" width="300"></el-table-column>
+            <el-table-column prop="Fields" label="Fields" :formatter="indexFieldsFormat"></el-table-column>
+            <el-table-column prop="Unique" label="Unique" width="180" align="center">
                 <template slot-scope="scope">
-                    <e-checkbox v-model="scope.row.Unique" disabled></e-checkbox>
+                    <el-checkbox v-model="scope.row.Unique" disabled></el-checkbox>
                 </template>
-            </e-table-column>
-            <e-table-column prop="State" label="State" width="180" align="center"></e-table-column>
-        </e-table>
+            </el-table-column>
+            <el-table-column prop="State" label="State" width="180" align="center"></el-table-column>
+        </el-table>
 
         <!-- 添加分区键对话框 -->
-        <e-dialog title="Add PartitionKey" :visible.sync="addPKDlgVisible">
-            <e-form v-model="newPartitionKey" label-width="100px" size="small">
-                <e-form-item label="Member:">
-                    <e-select v-model="newPartitionKey.MemberId">
-                        <e-option v-for="item in allPartitionKeys" :key="item.MemberId" :value="item.MemberId" :label="item.Name"
-                            :disabled="disabledMember(options, item.MemberId)"></e-option>
-                    </e-select>
-                </e-form-item>
-                <e-form-item label="Rule:">
-                    <e-select v-model="newPartitionKey.Rule" @change="onRuleChanged">
-                        <e-option v-for="item in allPKRules" :key="item.Id" :value="item.Id" :label="item.Name"
-                            :disabled="disableRule(item)"></e-option>
-                    </e-select>
-                </e-form-item>
-                <e-form-item v-if="newPartitionKey.Rule===1" label="Hash Num:">
-                    <e-select v-model="newPartitionKey.RuleArg" key="s-hashnums">
-                        <e-option v-for="item in hashNums" :key="item" :value="item"></e-option>
-                    </e-select>
-                </e-form-item>
-                <e-form-item v-if="newPartitionKey.Rule===2" label="Range:">
-                    <e-select v-model="newPartitionKey.RuleArg" key="s-periods">
-                        <e-option v-for="item in allDatePeriods" :key="item.Id" :value="item.Id" :label="item.Name"></e-option>
-                    </e-select>
-                </e-form-item>
-                <e-form-item label="OrderByDesc:">
-                    <e-switch v-model="newPartitionKey.OrderByDesc" active-text="DESC" inactive-text="ASC"></e-switch>
-                </e-form-item>
-            </e-form>
+        <el-dialog title="Add PartitionKey" :visible.sync="addPKDlgVisible">
+            <el-form v-model="newPartitionKey" label-width="100px" size="small">
+                <el-form-item label="Member:">
+                    <el-select v-model="newPartitionKey.MemberId">
+                        <el-option v-for="item in allPartitionKeys" :key="item.MemberId" :value="item.MemberId" :label="item.Name"
+                            :disabled="disabledMember(options, item.MemberId)"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Rule:">
+                    <el-select v-model="newPartitionKey.Rule" @change="onRuleChanged">
+                        <el-option v-for="item in allPKRules" :key="item.Id" :value="item.Id" :label="item.Name"
+                            :disabled="disableRule(item)"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-if="newPartitionKey.Rule===1" label="Hash Num:">
+                    <el-select v-model="newPartitionKey.RuleArg" key="s-hashnums">
+                        <el-option v-for="item in hashNums" :key="item" :value="item"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-if="newPartitionKey.Rule===2" label="Range:">
+                    <el-select v-model="newPartitionKey.RuleArg" key="s-periods">
+                        <el-option v-for="item in allDatePeriods" :key="item.Id" :value="item.Id" :label="item.Name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="OrderByDesc:">
+                    <el-switch v-model="newPartitionKey.OrderByDesc" active-text="DESC" inactive-text="ASC"></el-switch>
+                </el-form-item>
+            </el-form>
             <span slot="footer" class="dialog-footer">
-                <e-button @click="addPKDlgVisible = false">Cancel</e-button>
-                <e-button type="primary" @click="addPartitionKey">OK</e-button>
+                <el-button @click="addPKDlgVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="addPartitionKey">OK</el-button>
             </span>
-        </e-dialog>
+        </el-dialog>
         <!-- 添加索引对话框 -->
-        <e-dialog title="Add Index" :visible.sync="addIndexDlgVisible" width="500px">
-            <e-form :model="newIndex" label-width="100px" size="small">
-                <e-form-item prop="Name" label="Name:">
-                    <e-input v-model="newIndex.Name"></e-input>
-                </e-form-item>
-                <e-form-item label="Fields:">
-                    <e-select v-model="newIndex.Fields" value-key="MID" multiple style="width:100%">
-                        <e-option v-for="item in members" :key="item.ID" :label="item.Name" :value="{Name: item.Name, MID: item.ID, OrderByDesc: false}">
-                        </e-option>
-                    </e-select>
-                </e-form-item>
-                <e-form-item label="Orders:">
+        <el-dialog title="Add Index" :visible.sync="addIndexDlgVisible" width="500px">
+            <el-form :model="newIndex" label-width="100px" size="small">
+                <el-form-item prop="Name" label="Name:">
+                    <el-input v-model="newIndex.Name"></el-input>
+                </el-form-item>
+                <el-form-item label="Fields:">
+                    <el-select v-model="newIndex.Fields" value-key="MID" multiple style="width:100%">
+                        <el-option v-for="item in members" :key="item.ID" :label="item.Name" :value="{Name: item.Name, MID: item.ID, OrderByDesc: false}">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Orders:">
                     <span v-for="item in newIndex.Fields" :key="item.MID">{{ item.Name }}:
-                        <e-switch v-model="item.OrderDesc" active-text="DESC" inactive-text="ASC"></e-switch>
+                        <el-switch v-model="item.OrderDesc" active-text="DESC" inactive-text="ASC"></el-switch>
                         <br/>
                     </span>
-                </e-form-item>
-                <e-form-item label="">
-                    <e-checkbox v-model="newIndex.Unique">Unique</e-checkbox>
-                </e-form-item>
-            </e-form>
+                </el-form-item>
+                <el-form-item label="">
+                    <el-checkbox v-model="newIndex.Unique">Unique</el-checkbox>
+                </el-form-item>
+            </el-form>
             <span slot="footer" class="dialog-footer">
-                <e-button @click="addIndexDlgVisible = false">Cancel</e-button>
-                <e-button type="primary" @click="addIndex">OK</e-button>
+                <el-button @click="addIndexDlgVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="addIndex">OK</el-button>
             </span>
-        </e-dialog>
+        </el-dialog>
     </div>
 </template>
 

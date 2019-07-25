@@ -1,5 +1,5 @@
 <template>
-    <e-input :readonly="target.readonly" v-model.lazy="value"></e-input>
+    <el-input :readonly="target.readonly" v-model.lazy="value"></el-input>
 </template>
 
 <script>

@@ -1,32 +1,32 @@
 <template>
-    <e-splitter handlerColor="#f1f1f1" :size="300">
+    <ex-splitter handlerColor="#f1f1f1" :size="300">
         <div slot="panel1" style="height:100%" ref="serviceEditor">
             <code-editor height="100%" ref="editor" language="csharp" :fileName="fileName" @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
         </div>
         <div slot="panel2" class="ide-property-panel" ref="serviceProperty">
-            <e-collapse class="ide-property-collapse" value="1">
-                <e-collapse-item title="Service Properties" name="1">
-                    <e-form label-position="right" size="mini" label-width="120px">
-                        <e-form-item label="ID">
-                            <e-input v-model="target.ID" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="AppID">
-                            <e-input v-model="target.AppID" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="Model Name">
-                            <e-input v-model="target.Text" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="SortNo">
-                            <e-input v-model="target.SortNo" :disabled="true"></e-input>
-                        </e-form-item>
-                        <e-form-item label="References">
-                            <e-button @click="showRefsDlg" style="width:100%" :disabled="readOnly">...</e-button>
-                        </e-form-item>
-                    </e-form>
-                </e-collapse-item>
-            </e-collapse>
+            <el-collapse class="ide-property-collapse" value="1">
+                <el-collapse-item title="Service Properties" name="1">
+                    <el-form label-position="right" size="mini" label-width="120px">
+                        <el-form-item label="ID">
+                            <el-input v-model="target.ID" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="AppID">
+                            <el-input v-model="target.AppID" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Model Name">
+                            <el-input v-model="target.Text" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="SortNo">
+                            <el-input v-model="target.SortNo" :disabled="true"></el-input>
+                        </el-form-item>
+                        <el-form-item label="References">
+                            <el-button @click="showRefsDlg" style="width:100%" :disabled="readOnly">...</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-collapse-item>
+            </el-collapse>
         </div>
-    </e-splitter>
+    </ex-splitter>
 </template>
 
 <script>

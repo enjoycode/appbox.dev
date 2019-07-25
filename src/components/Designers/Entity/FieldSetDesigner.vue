@@ -1,21 +1,21 @@
 <template>
-    <e-form label-position="right" size="mini" label-width="120px">
-        <e-form-item prop="Name" label="Name">
-            <e-input :disabled="true" v-model="Name"></e-input>
-        </e-form-item>
-        <e-form-item label="LocalizedName">
-            <e-input v-model="LocalizedName"></e-input>
-        </e-form-item>
-        <e-form-item prop="DataType" :required="true" label="DataType">
-            <e-select v-model="DataType" placeholder="请选择">
-                <e-option v-for="item in DataFieldTypes" :key="item.value" :label="item.text" :value="item.value">
-                </e-option>
-            </e-select>
-        </e-form-item>
-        <!-- <e-form-item label="AllowNull">
-            <e-checkbox v-model="AllowNull"></e-checkbox>
-        </e-form-item> -->
-    </e-form>
+    <el-form label-position="right" size="mini" label-width="120px">
+        <el-form-item prop="Name" label="Name">
+            <el-input :disabled="true" v-model="Name"></el-input>
+        </el-form-item>
+        <el-form-item label="LocalizedName">
+            <el-input v-model="LocalizedName"></el-input>
+        </el-form-item>
+        <el-form-item prop="DataType" :required="true" label="DataType">
+            <el-select v-model="DataType" placeholder="请选择">
+                <el-option v-for="item in DataFieldTypes" :key="item.value" :label="item.text" :value="item.value">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <!-- <el-form-item label="AllowNull">
+            <el-checkbox v-model="AllowNull"></el-checkbox>
+        </el-form-item> -->
+    </el-form>
 </template>
 
 <script>

@@ -3,14 +3,14 @@
         <div calss="search-pane">
             <div class="treeTitle">Models</div>
             <div class="treeSearch">
-                <e-input v-model="keyword" size="small" suffix-icon="fas fa-search"> </e-input>
+                <el-input v-model="keyword" size="small" suffix-icon="fas fa-search"> </el-input>
             </div>
         </div>
         <div class="tree-pane">
-            <e-tree class="designTree" ref="designTree" dragdrop v-loading="loading" node-key="ID" :current-node-key="currentNodeKey"
+            <el-tree class="designTree" ref="designTree" dragdrop v-loading="loading" node-key="ID" :current-node-key="currentNodeKey"
                 @current-change="onCurrentChanged" @dragStart="onDragStart" @dragOver="onDragOver" @dragEnd="onDragEnd" :render-content="onRenderContent"
                 :filter-node-method="filterNode" :data="designNodes" :props="treeOption" highlight-current :default-expanded-keys="['Applications','sys']">
-            </e-tree>
+            </el-tree>
         </div>
     </div>
 </template>

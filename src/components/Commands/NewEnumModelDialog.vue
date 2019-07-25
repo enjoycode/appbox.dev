@@ -1,21 +1,21 @@
 <template>
-    <e-dialog title="新建枚举模型" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <e-form :model="viewModel" ref="enumModel" :rules="rules" label-width="120px" label-position="right">
-            <e-form-item prop="Name" :required="true" label="名称">
-                <e-input v-model="viewModel.Name" ></e-input>
-            </e-form-item>
-            <e-form-item prop="LocalizedName" label="本地化名称">
-                <e-input v-model="viewModel.LocalizedName" ></e-input>
-            </e-form-item>
-            <e-form-item prop="IsFlag" label="启用Flag标记">
-                <e-checkbox v-model="viewModel.IsFlag"></e-checkbox>
-            </e-form-item>
-        </e-form>
+    <el-dialog title="新建枚举模型" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+        <el-form :model="viewModel" ref="enumModel" :rules="rules" label-width="120px" label-position="right">
+            <el-form-item prop="Name" :required="true" label="名称">
+                <el-input v-model="viewModel.Name" ></el-input>
+            </el-form-item>
+            <el-form-item prop="LocalizedName" label="本地化名称">
+                <el-input v-model="viewModel.LocalizedName" ></el-input>
+            </el-form-item>
+            <el-form-item prop="IsFlag" label="启用Flag标记">
+                <el-checkbox v-model="viewModel.IsFlag"></el-checkbox>
+            </el-form-item>
+        </el-form>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">取 消</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="submit('enumModel')">确 定</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">取 消</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="submit('enumModel')">确 定</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <<script>

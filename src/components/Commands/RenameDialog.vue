@@ -1,35 +1,35 @@
 <template>
-    <e-dialog class="dialog" title="重命名对话框" :visible.sync="visible" @close="onClose" :before-close="onClosing">
+    <el-dialog class="dialog" title="重命名对话框" :visible.sync="visible" @close="onClose" :before-close="onClosing">
         <table cellspacing="15px" style="font-size:14px;width:100%;">
             <tr>
                 <td colspan="2">
-                    <e-alert :title="warningInfo" type="warning" show-icon :closable="false"> </e-alert>
+                    <el-alert :title="warningInfo" type="warning" show-icon :closable="false"> </el-alert>
                 </td>
             </tr>
             <tr>
                 <td>目标:</td>
                 <td>
-                    <e-input readonly v-model="dlgProps.target" size="small"></e-input>
+                    <el-input readonly v-model="dlgProps.target" size="small"></el-input>
                 </td>
             </tr>
             <tr>
                 <td>旧名称:</td>
                 <td>
-                    <e-input readonly v-model="dlgProps.oldName" size="small"></e-input>
+                    <el-input readonly v-model="dlgProps.oldName" size="small"></el-input>
                 </td>
             </tr>
             <tr>
                 <td>新名称:</td>
                 <td>
-                    <e-input v-model="newName" autofocus size="small"></e-input>
+                    <el-input v-model="newName" autofocus size="small"></el-input>
                 </td>
             </tr>
         </table>
         <div slot="footer">
-            <e-button :disabled="caDisabled" @click="visible = false">取 消</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="onOkClick">确 定</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">取 消</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="onOkClick">确 定</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

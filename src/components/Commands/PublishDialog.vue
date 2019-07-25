@@ -1,17 +1,17 @@
 <template>
-    <e-dialog title="Publish Models" :visible.sync="visible" @close="onClose" :before-close="onClosing">
-        <e-table :data="pendingModels" border style="width: 100%">
-            <e-table-column prop="ModelType" label="Type" width="180"></e-table-column>
-            <e-table-column prop="ModelID" label="ModelID"></e-table-column>
-        </e-table>
+    <el-dialog title="Publish Models" :visible.sync="visible" @close="onClose" :before-close="onClosing">
+        <el-table :data="pendingModels" border style="width: 100%">
+            <el-table-column prop="ModelType" label="Type" width="180"></el-table-column>
+            <el-table-column prop="ModelID" label="ModelID"></el-table-column>
+        </el-table>
         <div slot="footer" class="dialog-footer" style="text-align:left">
-            <e-input v-model="commitMessage" placeholder="message" style="width:55%;"></e-input>
+            <el-input v-model="commitMessage" placeholder="message" style="width:55%;"></el-input>
             <div style="text-align:right;display:inline-block;width:44%;">
-                <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
-                <e-button :disabled="okDisabled" type="primary" @click="onOkClick">OK</e-button>
+                <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+                <el-button :disabled="okDisabled" type="primary" @click="onOkClick">OK</el-button>
             </div>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

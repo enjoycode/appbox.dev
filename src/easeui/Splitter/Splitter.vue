@@ -15,7 +15,7 @@
     import ResizeSensor from './ResizeSensor'
 
     export default {
-        name: 'e-splitter',
+        name: 'ExSplitter',
         props: {
             visible: { type: String, default: 'both' },// arg: first, second
             vertical: { type: Boolean, default: false },

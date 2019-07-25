@@ -1,11 +1,11 @@
 <template>
-    <e-popover placement="bottom" visible-arrow v-model="popVisible">
+    <el-popover placement="bottom" visible-arrow v-model="popVisible">
         <component :is="PickerView" ref="view" :currentValue="value" @change="onChange"></component>
-        <e-input slot="reference" class="entityPickerInput" ref="reference" :value="text" :placeholder="placeholder" :readonly="true"
+        <el-input slot="reference" class="entityPickerInput" ref="reference" :value="text" :placeholder="placeholder" :readonly="true"
             :Popover="false" @focus="handleFocus" @blur="handleClose" @mousedown.native="handleMouseDown" @keydown.native.esc.prevent="visible = false"
             @mouseenter.native="inputHovering = true" @mouseleave.native="inputHovering = false" suffix-icon="el-icon-caret-top">
-        </e-input>
-    </e-popover>
+        </el-input>
+    </el-popover>
 </template>
 
 <script>

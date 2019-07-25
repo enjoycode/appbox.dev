@@ -1,20 +1,20 @@
 <template>
     <div class="mainMenu">
-        <e-menu mode="horizontal" @select="onSelect" background-color="#464b5b" text-color="#fff" active-text-color="#fff">
+        <el-menu mode="horizontal" @select="onSelect" background-color="#464b5b" text-color="#fff" active-text-color="#fff">
             <template v-for="sub in nodes">
-                <e-submenu :index="sub.index" :key="sub.index">
+                <el-submenu :index="sub.index" :key="sub.index">
                     <template slot="title">
                         <i v-if="sub.icon" :class="sub.icon"></i>
                         {{sub.title}}
                     </template>
                     <template v-for="item in sub.nodes">
-                        <e-menu-item :index="item.index" :key="item.index">
+                        <el-menu-item :index="item.index" :key="item.index">
                             <i v-if="item.icon" :class="item.icon"></i> {{item.title}}
-                        </e-menu-item>
+                        </el-menu-item>
                     </template>
-                </e-submenu>
+                </el-submenu>
             </template>
-        </e-menu>
+        </el-menu>
     </div>
 </template>
 

@@ -3,58 +3,58 @@
         <!-- 头部区域 -->
         <div class="header">
             <span>{{storeTitle}}</span>
-            <e-radio-group fill="#0994ff" v-model="activeView" size="small" style="margin-left: 40px;">
-                <e-radio-button v-for="item in views" :key="item.label" :label="item.label">{{item.title}}</e-radio-button>
-            </e-radio-group>
+            <el-radio-group fill="#0994ff" v-model="activeView" size="small" style="margin-left: 40px;">
+                <el-radio-button v-for="item in views" :key="item.label" :label="item.label">{{item.title}}</el-radio-button>
+            </el-radio-group>
         </div>
         <!-- 内容区域 -->
         <div class="content">
             <!-- 实体成员列表视图 -->
-            <e-splitter v-show="activeView==='members'" :minSize="300" handlerColor="#f1f1f1" :size="300">
-                <e-table slot="panel1" class="members" ref="memberTable" :data="members" height="100%" @current-change="currentRowChange"
+            <ex-splitter v-show="activeView==='members'" :minSize="300" handlerColor="#f1f1f1" :size="300">
+                <el-table slot="panel1" class="members" ref="memberTable" :data="members" height="100%" @current-change="currentRowChange"
                     stripe highlight-current-row border>
-                    <e-table-column prop="Name" label="Name" width="180" align="center">
-                    </e-table-column>
-                    <e-table-column prop="Type" :formatter="entityMemberTypeFormat" label="Type" width="180" align="center">
-                    </e-table-column>
-                    <e-table-column prop="AllowNull" label="AllowNull" width="180" align="center">
+                    <el-table-column prop="Name" label="Name" width="180" align="center">
+                    </el-table-column>
+                    <el-table-column prop="Type" :formatter="entityMemberTypeFormat" label="Type" width="180" align="center">
+                    </el-table-column>
+                    <el-table-column prop="AllowNull" label="AllowNull" width="180" align="center">
                         <template slot-scope="scope">
-                            <e-checkbox v-model="scope.row.AllowNull" disabled></e-checkbox>
+                            <el-checkbox v-model="scope.row.AllowNull" disabled></el-checkbox>
                         </template>
-                    </e-table-column>
-                    <e-table-column prop="LocalizedName" label="LocalizeName" align="center">
-                    </e-table-column>
-                </e-table>
+                    </el-table-column>
+                    <el-table-column prop="LocalizedName" label="LocalizeName" align="center">
+                    </el-table-column>
+                </el-table>
                 <div slot="panel2" class="ide-property-panel">
-                    <e-collapse class="ide-property-collapse" :value="collapseValue">
-                        <e-collapse-item title="Entity Properties" name="1">
-                            <e-form label-position="right" size="mini" label-width="120px">
-                                <e-form-item label="ID">
-                                    <e-input v-model="target.ID" :disabled="true"></e-input>
-                                </e-form-item>
-                                <e-form-item label="LocalizedName">
-                                    <e-input v-model="target.LocalizedName" :disabled="true"></e-input>
-                                </e-form-item>
-                                <e-form-item label="AppID">
-                                    <e-input v-model="target.AppID" :disabled="true"></e-input>
-                                </e-form-item>
-                                <e-form-item label="Model Name">
-                                    <e-input v-model="target.Text" :disabled="true"></e-input>
-                                </e-form-item>
-                                <e-form-item label="SortNo">
-                                    <e-input v-model="target.SortNo" :disabled="true"></e-input>
-                                </e-form-item>
-                                <e-form-item label="ToString">
-                                    <e-button @click="onOpenExpressionEditor" style="width:100%;">Edit Expression</e-button>
-                                </e-form-item>
-                            </e-form>
-                        </e-collapse-item>
-                        <e-collapse-item v-if="currentMemberTitle !== null" :title="currentMemberTitle" name="2">
+                    <el-collapse class="ide-property-collapse" :value="collapseValue">
+                        <el-collapse-item title="Entity Properties" name="1">
+                            <el-form label-position="right" size="mini" label-width="120px">
+                                <el-form-item label="ID">
+                                    <el-input v-model="target.ID" :disabled="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="LocalizedName">
+                                    <el-input v-model="target.LocalizedName" :disabled="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="AppID">
+                                    <el-input v-model="target.AppID" :disabled="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="Model Name">
+                                    <el-input v-model="target.Text" :disabled="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="SortNo">
+                                    <el-input v-model="target.SortNo" :disabled="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="ToString">
+                                    <el-button @click="onOpenExpressionEditor" style="width:100%;">Edit Expression</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-collapse-item>
+                        <el-collapse-item v-if="currentMemberTitle !== null" :title="currentMemberTitle" name="2">
                             <component :is="currentMemberDesigner" :target.sync="currentMember" :model-id="target.ID"></component>
-                        </e-collapse-item>
-                    </e-collapse>
+                        </el-collapse-item>
+                    </el-collapse>
                 </div>
-            </e-splitter>
+            </ex-splitter>
             <!-- 实体选项视图 -->
             <entity-options ref="optionsView" :target="target" :members="members" :options="options" v-if="activeView==='options'"></entity-options>
             <entity-data-view ref="dataView" :target="target" :members="members" v-if="activeView==='data'"></entity-data-view>

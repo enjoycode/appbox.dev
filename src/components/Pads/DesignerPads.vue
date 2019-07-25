@@ -1,10 +1,10 @@
 <template>
     <div class="designerPads">
-        <e-tabs ref="tabs" v-model="currentTab" @tab-click="tabClick" closable type="card" @tab-remove="removeTab">
-            <e-tab-pane :key="item.name" v-for="item in openedTabs" :label="item.title" :name="item.name">
+        <el-tabs ref="tabs" v-model="currentTab" @tab-click="tabClick" closable type="card" @tab-remove="removeTab">
+            <el-tab-pane :key="item.name" v-for="item in openedTabs" :label="item.title" :name="item.name">
                 <component class="clearfix" :is="item.designer" :target="item.target"></component>
-            </e-tab-pane>
-        </e-tabs>
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 

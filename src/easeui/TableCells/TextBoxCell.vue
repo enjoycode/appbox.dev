@@ -1,5 +1,5 @@
 <template>
-    <e-input :autofocus="true" v-if="editing" :value="value" @change="updateValue" style="width:100%;" size="small"></e-input>
+    <el-input :autofocus="true" v-if="editing" :value="value" @change="updateValue" style="width:100%;" size="small"></el-input>
     <span v-else>{{value}}</span>
 </template>
 

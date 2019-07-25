@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="ossStoreHeader">
-            <e-radio-group fill="#0994ff" v-model="storeView" size="small" style="margin-left:40px;">
-                <e-radio-button label="reportView">统计信息</e-radio-button>
-                <e-radio-button label="listView">文件管理</e-radio-button>
-            </e-radio-group>
+            <el-radio-group fill="#0994ff" v-model="storeView" size="small" style="margin-left:40px;">
+                <el-radio-button label="reportView">统计信息</el-radio-button>
+                <el-radio-button label="listView">文件管理</el-radio-button>
+            </el-radio-group>
         </div>
         <div class="ossStoreContent">
             <table v-if="storeView==='reportView'" cellspacing="15px" style="font-size:14px;">

@@ -3,13 +3,13 @@
         <div class="search-pane">
             <div class="treeTitle">Toolbox</div>
             <div class="treeSearch">
-                <e-input v-model="filterText" suffix-icon="fas fa-search" size="small"> </e-input>
+                <el-input v-model="filterText" suffix-icon="fas fa-search" size="small"> </el-input>
             </div>
         </div>
         <div class="treewarp">
-            <e-tree class="designTree" ref='toolBoxTree' @current-change="onCurrentChanged" :data="node" :render-content="onRenderContent"
+            <el-tree class="designTree" ref='toolBoxTree' @current-change="onCurrentChanged" :data="node" :render-content="onRenderContent"
                 :props="treeOption" :filter-node-method="filterNode" highlight-current>
-            </e-tree>
+            </el-tree>
         </div>
     </div>
 </template>

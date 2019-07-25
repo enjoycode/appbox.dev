@@ -1,15 +1,15 @@
 <template>
     <div class="align-center">
-        <e-card>
+        <el-card>
             <div slot="header" style="text-align: center">AppBox Studio</div>
-            <e-input v-model="user" placeholder="Account..." prefix-icon="fas fa-user"> </e-input>
+            <el-input v-model="user" placeholder="Account..." prefix-icon="fas fa-user"> </el-input>
             <br>
             <br>
-            <e-input v-model="pwd" type="password" placeholder="Password..." prefix-icon="fas fa-lock"> </e-input>
+            <el-input v-model="pwd" type="password" placeholder="Password..." prefix-icon="fas fa-lock"> </el-input>
             <br>
             <br>
-            <e-button @click="onLoginClick" type="primary" :loading="loading" style="width:100%">Login</e-button>
-        </e-card>
+            <el-button @click="onLoginClick" type="primary" :loading="loading" style="width:100%">Login</el-button>
+        </el-card>
     </div>
 </template>
 

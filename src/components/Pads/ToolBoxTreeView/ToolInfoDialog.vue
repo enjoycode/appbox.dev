@@ -1,9 +1,9 @@
 <template>
-    <e-dialog title="Api" size="large" top="10%" :visible.sync="visible" :close-on-click-modal="true" @close="onClose">
+    <el-dialog title="Api" size="large" top="10%" :visible.sync="visible" :close-on-click-modal="true" @close="onClose">
         <div class="dialogDiv">
             <DialogInfo v-for="item in apiModel" :key="item.Label" :info="item"></DialogInfo>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>

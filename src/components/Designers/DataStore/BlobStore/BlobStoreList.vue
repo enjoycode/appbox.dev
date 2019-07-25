@@ -1,53 +1,53 @@
 <template>
     <div>
         <div class="toolbar">
-            <e-breadcrumb class="sep-path">
-                <e-breadcrumb-item v-for="path in sepPaths" :key="path.Path">
+            <el-breadcrumb class="sep-path">
+                <el-breadcrumb-item v-for="path in sepPaths" :key="path.Path">
                   <a @click="onSepPathClick(path.Path)">{{ path.Name }}</a>  
-                </e-breadcrumb-item>
-            </e-breadcrumb>
+                </el-breadcrumb-item>
+            </el-breadcrumb>
             <div class="toolbar-right">
-                <e-input class="searchInput" v-model="keyWords" size="small" placeholder="输入路径前缀匹配">
-                    <e-button @click="onSearch" slot="append" icon="fas fa-search"></e-button>
-                </e-input>
-                <e-button-group>
-                    <e-button @click="uploadDlgVisible = true" type="primary" size="small" icon="fas fa-upload"> 上传</e-button>
-                    <e-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small" icon="fas fa-angle-left">上一页</e-button>
-                    <e-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页<i class="fas fa-angle-right"></i></e-button>
-                </e-button-group>
+                <el-input class="searchInput" v-model="keyWords" size="small" placeholder="输入路径前缀匹配">
+                    <el-button @click="onSearch" slot="append" icon="fas fa-search"></el-button>
+                </el-input>
+                <el-button-group>
+                    <el-button @click="uploadDlgVisible = true" type="primary" size="small" icon="fas fa-upload"> 上传</el-button>
+                    <el-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small" icon="fas fa-angle-left">上一页</el-button>
+                    <el-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页<i class="fas fa-angle-right"></i></el-button>
+                </el-button-group>
             </div>
             <div style="clear:both"></div>
         </div>
-        <e-table border :data="resultData" :stripe="true" @row-click="onRowClick">
-            <e-table-column prop="Name" label="Name">
+        <el-table border :data="resultData" :stripe="true" @row-click="onRowClick">
+            <el-table-column prop="Name" label="Name">
                 <template slot-scope="scope">
                     <i :class="objectIcon(scope.row)"></i>
                     <span style="margin-left: 10px">{{ scope.row.Name }}</span>
                 </template>
-            </e-table-column>
-            <e-table-column prop="Size" :formatter="formatSize" label="Size">
-            </e-table-column>
-            <e-table-column prop="ModifiedTime" :formatter="formatDate" label="LastModified">
-            </e-table-column>
-            <e-table-column fixed="right" label="操作" width="100">
+            </el-table-column>
+            <el-table-column prop="Size" :formatter="formatSize" label="Size">
+            </el-table-column>
+            <el-table-column prop="ModifiedTime" :formatter="formatDate" label="LastModified">
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
-                    <e-button @click="onDownload(scope.row)" type="text" size="small">下载</e-button>
-                    <e-button @click="onDelete(scope.row)" type="text" size="small">删除</e-button>
+                    <el-button @click="onDownload(scope.row)" type="text" size="small">下载</el-button>
+                    <el-button @click="onDelete(scope.row)" type="text" size="small">删除</el-button>
                 </template>
-            </e-table-column>
-        </e-table>
+            </el-table-column>
+        </el-table>
         <!-- 上传对话框 -->
-        <e-dialog title="上传文件" :visible.sync="uploadDlgVisible" width="400px">
-            <span>目标路径: <e-input v-model="uploadPath" size="small" placeholder="空上传至当前路径"></e-input></span>
-            <e-upload drag :action="uploadUrl" :multiple="false">
+        <el-dialog title="上传文件" :visible.sync="uploadDlgVisible" width="400px">
+            <span>目标路径: <el-input v-model="uploadPath" size="small" placeholder="空上传至当前路径"></el-input></span>
+            <el-upload drag :action="uploadUrl" :multiple="false">
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                 <div class="el-upload__tip" slot="tip">不超过64Mb</div>
-            </e-upload>
+            </el-upload>
             <span slot="footer">
-                <e-button type="primary" @click="uploadDlgVisible = false">关闭</e-button>
+                <el-button type="primary" @click="uploadDlgVisible = false">关闭</el-button>
             </span>
-        </e-dialog>
+        </el-dialog>
     </div>
 </template>
 <script>

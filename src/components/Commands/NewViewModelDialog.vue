@@ -1,11 +1,11 @@
 <template>
-    <e-dialog title="New ViewModel" width="450px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
-        <span>Name:</span><e-input v-model="newname"></e-input>
+    <el-dialog title="New ViewModel" width="450px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
+        <span>Name:</span><el-input v-model="newname"></el-input>
         <div slot="footer" class="dialog-footer">
-            <e-button :disabled="caDisabled" @click="visible = false">Cancel</e-button>
-            <e-button :disabled="okDisabled" type="primary" @click="onOkClick">Ok</e-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="onOkClick">Ok</el-button>
         </div>
-    </e-dialog>
+    </el-dialog>
 </template>
 
 <script>
