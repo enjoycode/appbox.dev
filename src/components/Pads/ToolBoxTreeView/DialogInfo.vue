@@ -15,7 +15,6 @@
             <el-table-column prop="OptionalValue" label="可选值"></el-table-column>
             <el-table-column prop="Defaults" label="默认值"></el-table-column>
         </el-table>
-        </el-table>
         <el-table v-if="info.Type === 'events'" :data="info.Options" fit>
             <el-table-column prop="Name" label="事件名"></el-table-column>
             <el-table-column prop="Explanation" label="说明"></el-table-column>
