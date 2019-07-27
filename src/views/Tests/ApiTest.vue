@@ -16,19 +16,6 @@
                 <el-input v-model="result" type="textarea" placeholder='调用结果'></el-input>
             </el-card>
             <div slot="panel2" style="height:100%;">
-                <el-table :data="sales" border highlight-current-row>
-                    <el-table-column prop="日期" label="日期" width="120" align="center">
-                        <template slot-scope="scope">
-                            <textbox-cell v-model="scope.row.日期"></textbox-cell>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="销售额" width="180">
-                        <template slot-scope="scope">
-                            <textbox-cell v-model="scope.row.销售额"></textbox-cell>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <ve-line :data="chartData"></ve-line>
             </div>
         </splitter>
     </div>
@@ -60,18 +47,6 @@
                     rows: []
                 }
             }
-        },
-
-        created() {
-            this.sales = [
-                { '日期': '1月1日', '销售额': 123 },
-                { '日期': '1月2日', '销售额': 1223 },
-                { '日期': '1月3日', '销售额': 2123 },
-                { '日期': '1月4日', '销售额': 4123 },
-                { '日期': '1月5日', '销售额': 3123 },
-                { '日期': '1月6日', '销售额': 7123 }
-            ]
-            this.chartData.rows = this.sales
         },
 
         methods: {

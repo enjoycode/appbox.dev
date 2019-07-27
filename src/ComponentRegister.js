@@ -255,27 +255,20 @@ export default function () {
         r(require('element-ui/lib/tree').default)
     }, 'easeui'))
 
-    // ===================图表类========================
-    Vue.component('VeLine', r => require.ensure([], () => {
-        r(require('v-charts/lib/line')) // 折线图
-    }, 'easeui-chart'))
-    Vue.component('VeHistogram', r => require.ensure([], () => {
-        r(require('v-charts/lib/histogram')) // 柱状图
-    }, 'easeui-chart'))
-    Vue.component('VeBar', r => require.ensure([], () => {
-        r(require('v-charts/lib/bar')) // 条形图
-    }, 'easeui-chart'))
-    Vue.component('VePie', r => require.ensure([], () => {
-        r(require('v-charts/lib/pie')) // 饼图
-    }, 'easeui-chart'))
-    Vue.component('VeRadar', r => require.ensure([], () => {
-        r(require('v-charts/lib/radar')) // 雷达图
-    }, 'easeui-chart'))
-    Vue.component('VeRing', r => require.ensure([], () => {
-        r(require('v-charts/lib/ring')) // 环图
-    }, 'easeui-chart'))
-    Vue.component('VeMap', r => require.ensure([], () => {
-        r(require('v-charts/lib/map')) // 地图
+    // ===================Vue-ECharts========================
+    Vue.component('v-chart', r => require.ensure([], () => {
+        // 引入 ECharts 主模块
+        // var echarts = require('echarts/lib/echarts')
+        // 引入柱状图
+        require('echarts/lib/chart/line')
+        require('echarts/lib/chart/bar')
+        require('echarts/lib/chart/pie')
+        // 引入提示框和标题组件
+        require('echarts/lib/component/tooltip')
+        require('echarts/lib/component/title')
+
+        // r(require('vue-echarts/components/ECharts.vue'))
+        r(require('./easeui/ECharts/ECharts.vue'))
     }, 'easeui-chart'))
 
     // ================== 手机端控件 mint ui ============

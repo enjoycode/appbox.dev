@@ -1,6 +1,6 @@
 // https://microsoft.github.io/monaco-editor/
 // 注意: 修改monaco-editor/esm/vs/language/typescript/lib/typescriptServices.js最后加export default ts;
-// 同时修改typescriptServices.d.ts
+// 同时修改typescriptServices.d.ts（从node_modules/typescript复制）
 // declare module "monaco-editor/esm/vs/language/typescript/lib/typescriptServices" {
 //    export = ts
 //}
