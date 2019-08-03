@@ -57,7 +57,7 @@
                 let service = this.dlgProps.Service + '.' + this.dlgProps.Method.Name
                 $runtime.channel.invoke(service, args).then(res => {
                     _this.loading = false
-                    _this.result = JSON.stringify(res)
+                    _this.result = JSON.stringify(res, null, 4) // 最简单格式化
                 }).catch(err => {
                     _this.loading = false
                     _this.$message.error('Invoke error: ' + err)
