@@ -81,7 +81,7 @@
                 </el-form-item>
                 <el-form-item label="Orders:">
                     <span v-for="item in newIndex.Fields" :key="item.MID">{{ item.Name }}:
-                        <el-switch v-model="item.OrderDesc" active-text="DESC" inactive-text="ASC"></el-switch>
+                        <el-switch v-model="item.OrderByDesc" active-text="DESC" inactive-text="ASC"></el-switch>
                         <br/>
                     </span>
                 </el-form-item>
