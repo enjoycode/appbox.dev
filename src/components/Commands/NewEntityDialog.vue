@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose" width="400px">
         <el-form :model="entityModel" ref="entityModel" :rules="rules" label-width="120px" label-position="right">
             <el-form-item prop="Name" :required="true" label="Name:">
                 <el-input v-model="entityModel.Name"></el-input>
@@ -10,17 +10,8 @@
             <el-form-item prop="DTO" label="DTO:">
                 <el-switch v-model="entityModel.DTO"></el-switch>
             </el-form-item>
-            <el-form-item v-if="entityModel.DTO===false" prop="EntityModelType" label="Inherits:">
-                <el-radio class="radio" v-model="entityModel.EntityModelType" :label="0">NonInherits</el-radio>
-                <el-radio class="radio" v-model="entityModel.EntityModelType" :label="1">Inherits</el-radio>
-            </el-form-item>
-            <el-form-item v-if="entityModel.EntityModelType === 1" prop="Inherit" label="BaseEntity:">
-                <el-select v-model="entityModel.Inherit" filterable>
-                    <el-option-group v-for="group in InheritNodes" :key="group.ID" :label="group.Text" :value="group.ID">
-                        <el-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
-                        </el-option>
-                    </el-option-group>
-                </el-select>
+            <el-form-item v-if="entityModel.DTO===false" prop="OrderByDesc" label="OrderByDesc:">
+                <el-switch v-model="entityModel.OrderByDesc"></el-switch>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -44,8 +35,7 @@
                     Name: '',
                     LocalizedName: '',
                     DTO: false,
-                    EntityModelType: 0, //继承与非继承的
-                    Inherit: null
+                    OrderByDesc: false //时间戳排序
                 },
                 rules: {
                     Name: [
@@ -74,8 +64,7 @@
                         this.entityModel.Name,
                         this.entityModel.LocalizedName,
                         this.entityModel.DTO,
-                        this.entityModel.EntityModelType,
-                        this.entityModel.Inherit
+                        this.entityModel.OrderByDesc
                     ]
                     // 获取实体属性
                     $runtime.channel.invoke('sys.DesignService.NewEntityModel', args).then(res => {
@@ -98,9 +87,6 @@
                 // TODO 验证名称的合法性
                 callback()
             }
-        },
-        mounted: function () {
-            store.tree.getAllEntityNodes(this.InheritNodes)
         }
     }
 </script>

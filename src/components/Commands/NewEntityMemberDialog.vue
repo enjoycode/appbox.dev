@@ -5,14 +5,14 @@
                 <el-input v-model="viewModel.Name"></el-input>
             </el-form-item>
             <el-form-item prop="EntityMemberType" label="MemberType:">
-                <el-select v-model="viewModel.EntityMemberType">
+                <el-select v-model="viewModel.EntityMemberType" style="width:100%">
                     <el-option v-for="item in memberTypes" :key="item.value" :label="item.text" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
             <!--DataField属性-->
             <template v-if="viewModel.EntityMemberType === 0"> 
                 <el-form-item prop="EntityFieldType" label="FieldType:">
-                    <el-select v-model="viewModel.EntityFieldType" key="s-fieldtype">
+                    <el-select v-model="viewModel.EntityFieldType" key="s-fieldtype" style="width:100%">
                         <el-option v-for="item in fieldTypes" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
