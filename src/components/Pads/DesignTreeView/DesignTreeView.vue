@@ -138,24 +138,24 @@ export default Vue.extend({
 
         /** 用于服务端删除成功后刷新模型根节点或移除删除的节点 */
         onDeleteNode(node, /* String */ rootNodeID) {
-            if (rootNodeID) { // 表示自动签出了模型根节点，则刷新根节点
-                let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID)
-                this.onNodeCheckout(rootNode, true)
-            } else { // 否则简单移除
-                var loopFind = function (nodes, type, id) {
-                    for (var index = 0; index < nodes.length; index++) {
-                        var n = nodes[index]
-                        if (n.Type === type && n.ID === id) {
-                            nodes.splice(index, 1)
-                            return
-                        }
-                        if (n.Nodes && n.Nodes.length > 0) {
-                            loopFind(n.Nodes, type, id)
-                        }
+            // if (rootNodeID) { // 表示自动签出了模型根节点，则刷新根节点
+            let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID)
+            this.onNodeCheckout(rootNode, true)
+            // } else { // 否则简单移除
+            var loopFind = function (nodes, type, id) {
+                for (var index = 0; index < nodes.length; index++) {
+                    var n = nodes[index]
+                    if (n.Type === type && n.ID === id) {
+                        nodes.splice(index, 1)
+                        return
+                    }
+                    if (n.Nodes && n.Nodes.length > 0) {
+                        loopFind(n.Nodes, type, id)
                     }
                 }
-                loopFind(this.designNodes, node.Type, node.ID)
             }
+            loopFind(this.designNodes, node.Type, node.ID)
+            // }
         },
         /** 选中node，不激活相应的设计器 */
         selectNode(data) {
