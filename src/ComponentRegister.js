@@ -15,8 +15,28 @@ require('@fortawesome/fontawesome-free/css/regular.min.css')
 require('@fortawesome/fontawesome-free/css/brands.min.css')
 
 //TODO: 入参根据客户端类型注册相关组件
-export default function () {
+export default function (/*bool desktop, bool mobile*/) {
     // 注册全局异步组件
+    Vue.component('ElContainer', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/container.css')
+        r(require('element-ui/lib/container').default)
+    }, 'easeui'))
+    Vue.component('ElAside', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/aside.css')
+        r(require('element-ui/lib/aside').default)
+    }, 'easeui'))
+    Vue.component('ElMain', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/main.css')
+        r(require('element-ui/lib/main').default)
+    }, 'easeui'))
+    Vue.component('ElHeader', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/header.css')
+        r(require('element-ui/lib/header').default)
+    }, 'easeui'))
+    Vue.component('ElFooter', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/footer.css')
+        r(require('element-ui/lib/footer').default)
+    }, 'easeui'))
     Vue.component('ElPagination', r => require.ensure([], () => {
         require('element-ui/lib/theme-chalk/pagination.css')
         r(require('element-ui/lib/pagination').default)
