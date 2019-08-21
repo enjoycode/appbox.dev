@@ -17,6 +17,10 @@ require('@fortawesome/fontawesome-free/css/brands.min.css')
 //TODO: 入参根据客户端类型注册相关组件
 export default function (/*bool desktop, bool mobile*/) {
     // 注册全局异步组件
+    Vue.component('ElPageHeader', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/page-header.css')
+        r(require('element-ui/lib/page-header').default)
+    }, 'easeui'))
     Vue.component('ElContainer', r => require.ensure([], () => {
         require('element-ui/lib/theme-chalk/container.css')
         r(require('element-ui/lib/container').default)
