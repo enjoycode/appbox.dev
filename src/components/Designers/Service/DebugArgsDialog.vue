@@ -42,7 +42,7 @@
                         args.push(JSON.parse(arg.Value))
                     }
                 } catch (error) {
-                    this.$message.error('参数值格式错误:' + error)
+                    this.$message.error('Parameter format error:' + error)
                     return
                 }
 

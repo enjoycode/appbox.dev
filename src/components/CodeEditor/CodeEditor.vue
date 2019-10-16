@@ -108,6 +108,7 @@ export default {
         onMouseDown(e) {
             // this.editor.getTargetAtClientPoint(e.clientX, e.clientY)
             // 参考：debugEditorContribution.ts -> registerListeners()
+            //TODO:判断当前编辑器是否支持调试
             if (e.target.type !== /* GUTTER_GLYPH_MARGIN */ 2 || /* after last line */ e.target.detail.isAfterLines) {
                 return
             }
