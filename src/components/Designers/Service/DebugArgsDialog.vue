@@ -1,20 +1,20 @@
 <template>
-    <el-dialog class="dialog" title="请输入调试参数" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <span>调试方法: {{dlgProps.ModelID + "." + dlgProps.Method.Name}}</span>
+    <el-dialog class="dialog" title="Debug Service" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+        <span>Method: {{dlgProps.Service + "." + dlgProps.Method.Name}}</span>
         <el-table :data="dlgProps.Method.Args" border highlight-current-row>
-            <el-table-column prop="Name" label="参数名" width="120" align="center">
+            <el-table-column prop="Name" label="Parameter" width="120" align="center">
             </el-table-column>
-            <el-table-column prop="Type" label="参数类型" width="180">
+            <el-table-column prop="Type" label="Type" width="180">
             </el-table-column>
-            <el-table-column label="参数值">
+            <el-table-column label="Value">
                 <template slot-scope="scope">
                     <ex-textbox-cell v-model="scope.row.Value"></ex-textbox-cell>
                 </template>
             </el-table-column>
         </el-table>
         <div slot="footer">
-            <el-button @click="visible = false">取 消</el-button>
-            <el-button type="primary" @click="onOkClick">开 始</el-button>
+            <el-button @click="visible = false">Cancel</el-button>
+            <el-button type="primary" @click="onOkClick">Start</el-button>
         </div>
     </el-dialog>
 </template>

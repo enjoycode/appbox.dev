@@ -199,7 +199,7 @@ export default {
                 }
                 // 显示输入参数对话框
                 var dlg = Vue.component('DebugArgsDialog', DebugArgsDialog)
-                DesignStore.ide.showDialog(dlg, { ModelID: _this.target.ID, Method: method, Breakpoints: breakpoints })
+                DesignStore.ide.showDialog(dlg, { Service: _this.target.App + '.' + _this.target.Name, Method: method, Breakpoints: breakpoints })
             }).catch(() => {
                 DebugService.designer = null
                 _this.$message.error('Cannot find target method')
