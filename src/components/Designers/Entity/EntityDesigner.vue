@@ -56,7 +56,7 @@
                 </div>
             </ex-splitter>
             <!-- 实体选项视图 -->
-            <entity-options ref="optionsView" :target="target" :members="members" :options="options" v-if="activeView==='options'"></entity-options>
+            <sys-store-options ref="optionsView" :target="target" :members="members" :options="options" v-if="activeView==='options'"></sys-store-options>
             <entity-data-view ref="dataView" :target="target" :members="members" v-if="activeView==='data'"></entity-data-view>
         </div>
         <!--表达式编辑器对话框占位-->
@@ -67,13 +67,11 @@
 
 <script>
 import Vue from 'vue'
-import EntityRefDesigner from './EntityRefDesigner'
 import DataFieldDesigner from './DataFieldDesigner'
+import EntityRefDesigner from './EntityRefDesigner'
 import EntitySetDesigner from './EntitySetDesigner'
-import AutoNumberDesigner from './AutoNumberDesigner'
-import FieldSetDesigner from './FieldSetDesigner'
 import EntityMemberTypes from './EntityMemberTypes'
-import EntityOptions from './EntityOptions'
+import SysStoreOptions from './SysStoreOptions'
 import EntityDataView from './EntityDataView'
 import ExpressionDialog from '../../CodeEditor/ExpressionEditorDialog'
 
@@ -82,7 +80,7 @@ export default {
         DataFieldDesigner: DataFieldDesigner,
         EntityRefDesigner: EntityRefDesigner,
         EntitySetDesigner: EntitySetDesigner,
-        EntityOptions: EntityOptions,
+        SysStoreOptions: SysStoreOptions,
         EntityDataView: EntityDataView
     },
     props: {
@@ -102,10 +100,7 @@ export default {
             currentMemberDesigner: null,
             currentMemberTitle: null, // 属性面板中成员的标题,
             expressionDialog: null, // ToString表达式编辑器对话框
-            options: {
-                PartitionKeys: [], // 分区键列表
-                Indexes: [] // 索引列表
-            }
+            options: {}             // 存储选项
         }
     },
     computed: {
@@ -205,8 +200,7 @@ export default {
                 _this.members = res.Members
 
                 _this.views.push({ label: 'options', title: 'Options' }, { label: 'data', title: 'Data' })
-                _this.options.Indexes = res.Indexes
-                _this.options.PartitionKeys = res.PartitionKeys
+                _this.options = res.StoreOptions
             }).catch(err => {
                 _this.$message.error(err)
             })
