@@ -1,9 +1,10 @@
 // import AliOSS from './BlobStore/AliOSSStore'
+import SqlDesigner from './SqlDesigner'
 
 /** 数据存储的提供者 */
 export default {
     providers: [
-        [{ title: 'PostgreSQL', provider: 'AppBox.Server.PostgreSQL;AppBox.Server.PgSqlStore', designer: null }],
+        [{ title: 'PostgreSQL', provider: 'AppBox.Server.PostgreSQL;AppBox.Server.PgSqlStore', designer: SqlDesigner }],
         // [{ title: 'Cassandra', provider: 'AppBox.Server.Cassandra;AppBox.Server.CassandraTableStore', designer: null }],
         // [{ title: '阿里云OSS', provider: 'AppBox.Server.AliOSS;AppBox.Server.AliOSSStore', designer: AliOSS }],
         // [{ title: 'Redis', provider: 'AppBox.Server.Redis;AppBox.Server.RedisCacheStore', designer: null }],

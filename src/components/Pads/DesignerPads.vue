@@ -12,6 +12,7 @@
     import Welcome from '../Designers/Welcome'
     import store from '@/design/DesignStore'
     import DesignNodeType from '@/design/DesignNodeType'
+import DataStoreProviders from '../Designers/DataStore/DataStoreProviders'
 
     const EntityDesigner = () => import('../Designers/Entity/EntityDesigner')
     const EnumDesigner = () => import('../Designers/Enum/EnumDesigner')
@@ -65,6 +66,7 @@
             removeTabByNode(node) {
                 this.removeTab(node.ID + '-' + node.Type)
             },
+            /** 设计树当前选择的节点改变后打开相应的设计器 */
             onCurrentNodeChanged(node) {
                 var key = node.ID + '-' + node.Type
                 // 检查是否已打开
@@ -89,6 +91,10 @@
                     case DesignNodeType.WorkflowModelNode: tab.designer = WorkflowDesigner; break
                     case DesignNodeType.ReportModelNode: tab.designer = ReportDesigner; break
                     case DesignNodeType.BlobStoreNode: tab.designer = BlobDesigner; break
+                    case DesignNodeType.DataStoreNode: 
+                        tab.designer = DataStoreProviders.getDesigner(node)
+                        tab.title = 'DataStore.' + node.ID
+                        break
                     default: return
                 }
                 this.openedTabs.push(tab)
