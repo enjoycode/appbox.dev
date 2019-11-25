@@ -4,11 +4,11 @@ import SqlDesigner from './SqlDesigner'
 /** 数据存储的提供者 */
 export default {
     providers: [
-        [{ title: 'PostgreSQL', provider: 'AppBox.Server.PostgreSQL;AppBox.Server.PgSqlStore', designer: SqlDesigner }],
-        // [{ title: 'Cassandra', provider: 'AppBox.Server.Cassandra;AppBox.Server.CassandraTableStore', designer: null }],
-        // [{ title: '阿里云OSS', provider: 'AppBox.Server.AliOSS;AppBox.Server.AliOSSStore', designer: AliOSS }],
-        // [{ title: 'Redis', provider: 'AppBox.Server.Redis;AppBox.Server.RedisCacheStore', designer: null }],
-        // [{ title: 'ElasticSearch', provider: 'AppBox.Server.ElasticSearch;AppBox.Server.ElasticSearchStore', designer: null }]
+        [{ title: 'PostgreSQL', provider: 'appbox.Server.PostgreSQL;appbox.Server.PgSqlStore', designer: SqlDesigner }],
+        // [{ title: 'Cassandra', provider: 'appbox.Server.Cassandra;appbox.Server.CassandraTableStore', designer: null }],
+        // [{ title: '阿里云OSS', provider: 'appbox.Server.AliOSS;appbox.Server.AliOSSStore', designer: AliOSS }],
+        // [{ title: 'Redis', provider: 'appbox.Server.Redis;appbox.Server.RedisCacheStore', designer: null }],
+        // [{ title: 'ElasticSearch', provider: 'appbox.Server.ElasticSearch;appbox.Server.ElasticSearchStore', designer: null }]
     ],
 
     /** 根据存储类型及Provider获取相应的设计器 */
