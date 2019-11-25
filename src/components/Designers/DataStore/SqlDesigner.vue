@@ -8,31 +8,31 @@
                <tr>
                     <td>Host:</td>
                     <td>
-                        <el-input v-model="target.Settings.Host" style="width:350px;"></el-input>
+                        <el-input v-model="settings.Host" style="width:350px;"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>Port:</td>
                     <td>
-                        <el-input v-model="target.Settings.Port"></el-input>
+                        <el-input v-model="settings.Port"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>Database:</td>
                     <td>
-                        <el-input v-model="target.Settings.Database" style="width:350px;"></el-input>
+                        <el-input v-model="settings.Database" style="width:350px;"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>User:</td>
                     <td>
-                        <el-input v-model="target.Settings.User"></el-input>
+                        <el-input v-model="settings.User"></el-input>
                     </td>
                 </tr>
                 <tr>
                     <td>Password:</td>
                     <td>
-                        <el-input v-model="target.Settings.Password" type="password"></el-input>
+                        <el-input v-model="settings.Password" type="password"></el-input>
                     </td>
                 </tr>   
             </table>
@@ -48,22 +48,35 @@
             target: { type: Object, required: true } // DataStoreModel
         },
 
+        data() {
+            return {
+                settings: {
+                    Host: '',
+                    Port: '',
+                    Database: '',
+                    User: '',
+                    Password: ''
+                }
+            }
+        },
+
         methods: {
             save() {
                 let _this = this
-                let settingsValue = JSON.stringify(this.target.Settings) //json传输
+                let settingsValue = JSON.stringify(this.settings) //json传输
                 let args = [this.target.ID, settingsValue]
                 $runtime.channel.invoke('sys.DesignService.SaveDataStore', args).then(res => {
-                    _this.$message.success('保存成功!')
+                    _this.target.Settings = settingsValue // 更新模型的值
+                    _this.$message.success('Save DataStore success!')
                 }).catch(err => {
-                    _this.$message.error('保存失败: ' + err)
+                    _this.$message.error('Save DataStore error: ' + err)
                 })
             }
         }, 
 
         mounted() {
-            if (!this.target.Settings) {
-                this.target.Settings = {Host:'', Port: '', Database:'', User:'', Password: ''}
+            if (this.target.Settings) {
+                this.settings = JSON.parse(this.target.Settings)
             }
         }
     }
