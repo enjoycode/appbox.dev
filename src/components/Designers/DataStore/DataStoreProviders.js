@@ -13,7 +13,7 @@ export default {
 
     /** 根据存储类型及Provider获取相应的设计器 */
     getDesigner(node) {
-        var ps = this.providers[node.StoreType]
+        var ps = this.providers[node.Kind]
         for (var i = 0; i < ps.length; i++) {
             var p = ps[i]
             if (p.provider === node.Provider) {

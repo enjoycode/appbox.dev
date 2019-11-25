@@ -93,7 +93,7 @@ import DataStoreProviders from '../Designers/DataStore/DataStoreProviders'
                     case DesignNodeType.BlobStoreNode: tab.designer = BlobDesigner; break
                     case DesignNodeType.DataStoreNode: 
                         tab.designer = DataStoreProviders.getDesigner(node)
-                        tab.title = 'DataStore.' + node.ID
+                        tab.title = 'DataStore.' + node.Text
                         break
                     default: return
                 }

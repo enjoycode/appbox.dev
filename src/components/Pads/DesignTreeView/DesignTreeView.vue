@@ -177,7 +177,7 @@ export default Vue.extend({
         getAllSqlNodes() {
             var result = []
             this.designNodes[0].Nodes.forEach(node => {
-                if (node.StoreType === DataStoreKind.Sql) {
+                if (node.Kind === DataStoreKind.Sql) {
                     result.push(node)
                 }
             })
