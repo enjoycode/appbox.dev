@@ -72,7 +72,7 @@
                 // 获取实体属性
                 $runtime.channel.invoke('sys.DesignService.NewDataStore', args).then(res => {
                     // 根据返回结果添加新节点
-                    DesignStore.tree.onNewNode({ ParentNodeType: 1, ParentNodeID: '', NewNode: res })
+                    store.tree.onNewNode({ ParentNodeType: 1, ParentNodeID: '', NewNode: res })
                     _this.$message.success('Add store succeed')
                     _this.visible = false
                 }).catch(err => {

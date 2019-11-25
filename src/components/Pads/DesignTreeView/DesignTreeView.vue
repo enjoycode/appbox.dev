@@ -127,12 +127,12 @@ export default Vue.extend({
             //     let rootNode = this.findNode(DesignNodeType.ModelRootNode, nodeInfo.RootNodeID)
             //     this.onNodeCheckout(rootNode, true)
             // } else { // 根节点之前已签出则简单添加
-            // if (nodeInfo.ParentNodeType === DesignNodeType.DataStoreRootNode) { // 存储根节点
-            //     this.designNodes[0].Nodes.push(nodeInfo.NewNode)
-            // } else {
-            let parent = this.findNode(nodeInfo.ParentNodeType, nodeInfo.ParentNodeID)
-            parent.Nodes.splice(nodeInfo.InsertIndex, 0, nodeInfo.NewNode)
-            // }
+            if (nodeInfo.ParentNodeType === DesignNodeType.DataStoreRootNode) { // 存储根节点
+                this.designNodes[0].Nodes.push(nodeInfo.NewNode)
+            } else {
+                let parent = this.findNode(nodeInfo.ParentNodeType, nodeInfo.ParentNodeID)
+                parent.Nodes.splice(nodeInfo.InsertIndex, 0, nodeInfo.NewNode)
+            }
             // }
         },
 
