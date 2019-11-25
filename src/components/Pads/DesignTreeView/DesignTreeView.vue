@@ -21,6 +21,7 @@
 <script lang="tsx">
 import Vue from 'vue'
 import store from '@/design/DesignStore'
+import DataStoreKind from '@/design/DataStoreKind'
 import DesignNodeType from '@/design/DesignNodeType'
 import ModelType from '@/design/ModelType'
 import { IDesignNode, IModelNode } from '@/design/IDesignNode'
@@ -172,7 +173,16 @@ export default Vue.extend({
             result = result || []
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[], DesignNodeType.EntityModelNode, ModelType.Entity, true)
         },
-
+        /** 获取所有SqlStore节点，用于新建实体时选择映射的存储 */
+        getAllSqlNodes() {
+            var result = []
+            this.designNodes[0].Nodes.forEach(node => {
+                if (node.StoreType === DataStoreKind.Sql) {
+                    result.push(node)
+                }
+            })
+            return result
+        },
         getAllModelNodes(nodeType: DesignNodeType, modelType: ModelType): IDesignNode[] {
             let result: IDesignNode[] = [];
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result, nodeType, modelType, false);

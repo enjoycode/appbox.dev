@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="New ServiceModel" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog title="New ServiceModel" width="500px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <el-form :model="viewModel" ref="serviceModel" :rules="rules" label-width="120px" label-position="right">
             <el-form-item prop="Name" :required="true" label="Name">
                 <el-input v-model="viewModel.Name" ></el-input>

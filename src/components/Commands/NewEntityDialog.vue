@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose" width="400px">
+    <el-dialog title="New Entity Model" :visible.sync="visible" :close-on-click-modal="false" @close="onClose" width="500px">
         <el-form :model="entityModel" ref="entityModel" :rules="rules" label-width="120px" label-position="right">
             <el-form-item prop="Name" :required="true" label="Name:">
                 <el-input v-model="entityModel.Name"></el-input>
@@ -7,10 +7,12 @@
             <el-form-item prop="LocalizedName" label="Comment:">
                 <el-input v-model="entityModel.LocalizedName"></el-input>
             </el-form-item>
-            <el-form-item prop="DTO" label="DTO:">
-                <el-switch v-model="entityModel.DTO"></el-switch>
+            <el-form-item prop="StoreName" label="Store:">
+                <el-select v-model="entityModel.StoreName" style="width:100%">
+                    <el-option v-for="item in storeNodes" :key="item.ID" :value="item.ID">{{item.ID}}</el-option>
+                </el-select>
             </el-form-item>
-            <el-form-item v-if="entityModel.DTO===false" prop="OrderByDesc" label="OrderByDesc:">
+            <el-form-item v-if="entityModel.StoreName==='Default'" prop="OrderByDesc" label="OrderByDesc:">
                 <el-switch v-model="entityModel.OrderByDesc"></el-switch>
             </el-form-item>
         </el-form>
@@ -30,11 +32,11 @@
                 visible: true,
                 okDisabled: false, // ok按钮是否禁用
                 caDisabled: false, // cancel按钮是否禁用
-                InheritNodes: [], // 继承实体节点列表
+                storeNodes: [],    // 所有SqlStore节点
                 entityModel: {
                     Name: '',
                     LocalizedName: '',
-                    DTO: false,
+                    StoreName: 'Default',
                     OrderByDesc: false //时间戳排序
                 },
                 rules: {
@@ -63,7 +65,7 @@
                         node.ID,
                         this.entityModel.Name,
                         this.entityModel.LocalizedName,
-                        this.entityModel.DTO,
+                        this.entityModel.StoreName,
                         this.entityModel.OrderByDesc
                     ]
                     // 获取实体属性
@@ -82,11 +84,16 @@
             },
             validateName: function (rule, value, callback) {
                 if (!value) {
-                    return callback(new Error('名称不能为空！'))
+                    return callback(new Error('Name is empty！'))
                 }
                 // TODO 验证名称的合法性
                 callback()
             }
+        },
+        mounted() {
+            this.storeNodes.push({ID: ''})
+            this.storeNodes.push({ID: 'Default'})
+            this.storeNodes = this.storeNodes.concat(store.tree.getAllSqlNodes())
         }
     }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="New ViewModel" width="450px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
+    <el-dialog title="New ViewModel" width="500px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
         <span>Name:</span><el-input v-model="newname"></el-input>
         <div slot="footer" class="dialog-footer">
             <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
