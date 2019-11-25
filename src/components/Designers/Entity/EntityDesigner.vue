@@ -56,7 +56,8 @@
                 </div>
             </ex-splitter>
             <!-- 实体选项视图 -->
-            <sys-store-options ref="optionsView" :target="target" :members="members" :options="options" v-if="activeView==='options'"></sys-store-options>
+            <sys-store-options ref="sysoptsView" :target="target" :members="members" :options="options" v-if="activeView==='sysopts'"></sys-store-options>
+            <sql-store-options ref="sqloptsView" :target="target" :members="members" :options="options" v-if="activeView==='sqlopts'"></sql-store-options>
             <entity-data-view ref="dataView" :target="target" :members="members" v-if="activeView==='data'"></entity-data-view>
         </div>
         <!--表达式编辑器对话框占位-->
@@ -72,6 +73,7 @@ import EntityRefDesigner from './EntityRefDesigner'
 import EntitySetDesigner from './EntitySetDesigner'
 import EntityMemberTypes from './EntityMemberTypes'
 import SysStoreOptions from './SysStoreOptions'
+import SqlStoreOptions from './SqlStoreOptions'
 import EntityDataView from './EntityDataView'
 import ExpressionDialog from '../../CodeEditor/ExpressionEditorDialog'
 
@@ -81,6 +83,7 @@ export default {
         EntityRefDesigner: EntityRefDesigner,
         EntitySetDesigner: EntitySetDesigner,
         SysStoreOptions: SysStoreOptions,
+        SqlStoreOptions: SqlStoreOptions,
         EntityDataView: EntityDataView
     },
     props: {
@@ -92,7 +95,6 @@ export default {
             activeView: 'members', // 当前视图 members | options | data
             views: [{ label: 'members', title: 'Members' }],
             designerType: 'EntityDesigner', // 用于外部判断当前设计视图的类型，此属性一直保持不变
-            isDTO: false,
             isNew: false,
             members: [], // 成员列表
             collapseValue: ['1'],
@@ -100,18 +102,20 @@ export default {
             currentMemberDesigner: null,
             currentMemberTitle: null, // 属性面板中成员的标题,
             expressionDialog: null, // ToString表达式编辑器对话框
-            options: {}             // 存储选项
+            options: null             // 存储选项
         }
     },
     computed: {
         storeTitle() {
-            if (this.isDTO) {
+            if (!this.options) {
                 return 'DTO'
-            } else {
-                if (this.options && this.options.PartitionKeys && this.options.PartitionKeys.length > 0) {
-                    return 'Partitioned'
+            } else if (this.options.StoreName) { //map to sqlstore
+                return 'SqlStore - ' + this.options.StoreName
+            } else { //map to system store
+                if (this.options.PartitionKeys && this.options.PartitionKeys.length > 0) {
+                    return 'Default - Partitioned'
                 }
-                return 'NonPartitioned'
+                return 'Default - NonPartitioned'
             }
         },
         memberTypes() { // 当前存储类型下可使用的成员类型列表
@@ -195,11 +199,17 @@ export default {
         refresh() {
             var _this = this
             $runtime.channel.invoke('sys.DesignService.GetEntityModel', [this.target.ID]).then(res => {
-                _this.isDTO = res.isDTO
                 _this.isNew = res.IsNew
                 _this.members = res.Members
-
-                _this.views.push({ label: 'options', title: 'Options' }, { label: 'data', title: 'Data' })
+                //根据不同存储选项加入不同视图
+                if (res.StoreOptions) {
+                    if (res.StoreOptions.StoreName) {
+                        _this.views.push({ label: 'sqlopts', title: 'Options' })
+                    } else {
+                        _this.views.push({ label: 'sysopts', title: 'Options' })
+                    }
+                    _this.views.push({ label: 'data', title: 'Data' })
+                }
                 _this.options = res.StoreOptions
             }).catch(err => {
                 _this.$message.error(err)
