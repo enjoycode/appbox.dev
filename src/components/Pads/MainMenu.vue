@@ -27,6 +27,15 @@
             return {
                 defaultActive: 'model',
                 nodes: [{
+                    title: 'DataStore',
+                    icon: null,
+                    index: 'store',
+                    nodes: [
+                        { title: 'New DataStore', icon: 'fas fa-plus fa-fw', index: 'NewDataStore' },
+                        { title: 'Delete DataStore', icon: 'fas fa-times fa-fw', index: 'DeleteDataStore' }
+                    ]
+                },
+                {
                     title: 'New',
                     icon: null,
                     index: 'new',

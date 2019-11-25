@@ -1,3 +1,4 @@
+import NewDataStoreCommand from './NewDataStore'
 import CheckoutCommand from './Checkout'
 import SaveCommand from './Save'
 import PublishCommand from './Publish'
@@ -20,6 +21,7 @@ import RenameEntityMemberCommand from './RenameEntityMember'
 import InvokeServiceCommand from './InvokeService'
 
 export default {
+    NewDataStore: NewDataStoreCommand,
     Checkout: CheckoutCommand,
     Save: SaveCommand,
     Publish: PublishCommand,
