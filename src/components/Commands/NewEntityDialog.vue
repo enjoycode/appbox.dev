@@ -9,7 +9,7 @@
             </el-form-item>
             <el-form-item prop="StoreName" label="Store:">
                 <el-select v-model="entityModel.StoreName" style="width:100%">
-                    <el-option v-for="item in storeNodes" :key="item.ID" :value="item.ID">{{item.ID}}</el-option>
+                    <el-option v-for="item in storeNodes" :key="item.ID" :value="item.Text">{{item.Text}}</el-option>
                 </el-select>
             </el-form-item>
             <el-form-item v-if="entityModel.StoreName==='Default'" prop="OrderByDesc" label="OrderByDesc:">
@@ -91,8 +91,8 @@
             }
         },
         mounted() {
-            this.storeNodes.push({ID: ''})
-            this.storeNodes.push({ID: 'Default'})
+            this.storeNodes.push({ID: '', Text:''})
+            this.storeNodes.push({ID: 'Default', Text:'Default'})
             this.storeNodes = this.storeNodes.concat(store.tree.getAllSqlNodes())
         }
     }
