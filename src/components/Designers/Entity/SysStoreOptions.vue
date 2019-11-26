@@ -39,7 +39,7 @@
                 <el-form-item label="Member:">
                     <el-select v-model="newPartitionKey.MemberId">
                         <el-option v-for="item in allPartitionKeys" :key="item.MemberId" :value="item.MemberId" :label="item.Name"
-                            :disabled="disabledMember(options, item.MemberId)"></el-option>
+                            :disabled="disabledMember(item.MemberId)"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="Rule:">
@@ -189,8 +189,8 @@ export default {
             this.currentIndex = newRow
         },
         /** 用于判断该成员是否可选作为分区键 */
-        disabledMember(target, memberId) {
-            if (target.PartitionKeys.find(t => t.MemberId === memberId)) {
+        disabledMember(memberId) {
+            if (this.options.PartitionKeys.find(t => t.MemberId === memberId)) {
                 return true
             }
             return false
@@ -227,7 +227,7 @@ export default {
                 _this.oldPartitionKeys = _this.options.PartitionKeys.slice()
                 // 主键改变后同步刷新前端所有成员的AllowNull属性，后端已处理
                 _this.members.forEach(m => {
-                    if (_this.options.PartitionKeys.find(t => t.MemberId === m.MemberId)) {
+                    if (_this.options.PartitionKeys.find(t => t.MemberId === m.ID)) {
                         m.AllowNull = false
                     }
                 })
@@ -277,7 +277,7 @@ export default {
                 }).catch(err => {
                     _this.$message.error('Drop index error:' + err)
                 })
-            }).catch(() => {/*此处点击了取消按钮*/})
+            }).catch(() => {/*此处点击了取消按钮*/ })
         }
     },
     mounted() {
