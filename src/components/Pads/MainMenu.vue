@@ -57,19 +57,9 @@
                         { title: 'Save', icon: 'fas fa-save fa-fw', index: 'Save' },
                         { title: 'Checkout', icon: 'fas fa-edit fa-fw', index: 'Checkout' },
                         { title: 'Delete', icon: 'fas fa-trash fa-fw', index: 'DeleteModel' },
+                        { title: 'Rename', icon: 'fas fa-edit fa-fw', index: 'Rename' },
                         { title: 'Publish', icon: 'fas fa-archive fa-fw', index: 'Publish' },
-                        { title: 'DiscardChanges', icon: 'fas fa-archive fa-fw', index: 'DiscardChanges' }
-                    ]
-                },
-                {
-                    title: 'Entity',
-                    icon: null,
-                    index: 'entity',
-                    nodes: [
-                        { title: 'New Member', icon: 'fas fa-columns fa-fw', index: 'NewEntityMember' },
-                        { title: 'Delete Member', icon: 'fas fa-trash fa-fw', index: 'DeleteEntityMember' },
-                        { title: 'Find Member Usages', icon: 'fas fa-link fa-fw', index: 'FindEntityMemberUsages' },
-                        { title: 'Rename Member', icon: 'fas fa-edit fa-fw', index: 'RenameEntityMember' }
+                        { title: 'Discard Changes', icon: 'fas fa-archive fa-fw', index: 'DiscardChanges' }
                     ]
                 },
                 {
@@ -82,18 +72,6 @@
                     ]
                 },
                 {
-                    title: 'Service',
-                    icon: null,
-                    index: 'service',
-                    nodes: [
-                        { title: 'Invoke', icon: 'fas fa-bug fa-fw', index: 'InvokeService' },
-                        { title: 'Start Debug', icon: 'fas fa-bug fa-fw', index: 'StartDebug' },
-                        { title: 'Continue', icon: 'fas fa-play fa-fw', index: 'ContinueBreakpoint' },
-                        { title: 'Step', icon: 'fas fa-forward fa-fw', index: 'StepOver' },
-                        { title: 'Stop Debug', icon: 'fas fa-stop fa-fw', index: 'StopDebug' }
-                    ]
-                },
-                {
                     title: 'Report',
                     icon: null,
                     index: 'report',
@@ -102,6 +80,14 @@
                         { title: 'Add Column', icon: '', index: 'InsertColumn' },
                         { title: 'Merge Cells', icon: '', index: 'MergeCells' },
                         { title: 'Split Cell', icon: '', index: 'SplitCells' }
+                    ]
+                },
+                {
+                    title: 'Tools',
+                    icon: null,
+                    index: 'Tools',
+                    nodes: [
+                        { title: 'DB to Model', icon: 'fas fa-database fa-fw', index: 'DB2Model' }
                     ]
                 },
                 {
@@ -139,60 +125,12 @@
                     return false
                 }
                 switch (menuName) {
-                    case 'Save':
-                        break
-                    case 'NewMember':// type=4
-                        // if (currentTreeNode.Type !== 4) {
-                        //     this.$message.warning('请选择Entities节点')
-                        //     return false
-                        // }
-                        break
-                    case 'NewEntityMember':
-                        if (activeDesigner.designerType !== 'EntityDesigner') {
-                            this.$message.warning('请切换至对应的实体设计面板')
-                            return false
-                        }
-                        break
-                    case 'DeleteEntityMember':
-                        if (activeDesigner.designerType !== 'EntityDesigner') {
-                            this.$message.warning('请切换至对应的实体设计面板')
-                            return false
-                        }
-                        break
                     case 'NewEnumItem':
                     case 'DeleteEnumItem':
                         if (activeDesigner.designerType !== 'EnumDesigner') {
                             this.$message.warning('请切换至对应的枚举设计面板')
                             return false
                         }
-                        break
-                    case 'SplitCells':
-                        if (activeDesigner.designerType !== 'ReportDesigner') {
-                            this.$message.warning('请切换至对应的报表设计面板')
-                            return false
-                        }
-                        activeDesigner.SplitCells()
-                        break
-                    case 'MergeCells':
-                        if (activeDesigner.designerType !== 'ReportDesigner') {
-                            this.$message.warning('请切换至对应的报表设计面板')
-                            return false
-                        }
-                        activeDesigner.MergeCells()
-                        break
-                    case 'InsertRow':
-                        if (activeDesigner.designerType !== 'ReportDesigner') {
-                            this.$message.warning('请切换至对应的报表设计面板')
-                            return false
-                        }
-                        activeDesigner.InsertRow()
-                        break
-                    case 'InsertColumn':
-                        if (activeDesigner.designerType !== 'ReportDesigner') {
-                            this.$message.warning('请切换至对应的报表设计面板')
-                            return false
-                        }
-                        activeDesigner.InsertColumn()
                         break
                     default:
                         break

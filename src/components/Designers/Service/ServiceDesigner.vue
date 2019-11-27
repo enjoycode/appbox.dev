@@ -1,32 +1,20 @@
 <template>
-    <ex-splitter handlerColor="#f1f1f1" :size="300">
-        <div slot="panel1" style="height:100%" ref="serviceEditor">
-            <code-editor height="100%" ref="editor" language="csharp" :fileName="fileName" @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
+    <div style="height:100%" ref="serviceEditor">
+        <div class="editorTool">
+            <el-button @click="showRefsDlg" size="mini" icon="fas fa-project-diagram"> References</el-button>
+            &nbsp;
+            <el-button-group>
+                <el-button @click="startInvoke" size="mini" icon="fas fa-play-circle"> Invoke</el-button>
+                <el-button @click="startDebug" size="mini" icon="fas fa-bug"> Start</el-button>
+                <el-button @click="continueBreakpoint" :disabled="debugState != 1" size="mini" icon="fas fa-play"> Continue</el-button>
+                <el-button :disabled="debugState != 1" size="mini" icon="fas fa-forward"> Step</el-button>
+                <el-button :disabled="debugState <= 1" size="mini" icon="fas fa-stop"> Stop</el-button>
+            </el-button-group>
         </div>
-        <div slot="panel2" class="ide-property-panel" ref="serviceProperty">
-            <el-collapse class="ide-property-collapse" value="1">
-                <el-collapse-item title="Service Properties" name="1">
-                    <el-form label-position="right" size="mini" label-width="120px">
-                        <el-form-item label="ID">
-                            <el-input v-model="target.ID" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="AppID">
-                            <el-input v-model="target.AppID" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="Model Name">
-                            <el-input v-model="target.Text" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="SortNo">
-                            <el-input v-model="target.SortNo" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="References">
-                            <el-button @click="showRefsDlg" style="width:100%" :disabled="readOnly">...</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-collapse-item>
-            </el-collapse>
-        </div>
-    </ex-splitter>
+        <code-editor height="100%" ref="editor" language="csharp" :fileName="fileName" 
+            @mounted="onEditorMounted" :options="{readOnly: true}">
+        </code-editor>
+    </div> 
 </template>
 
 <script>
@@ -50,6 +38,7 @@ export default {
             readOnly: true, // 是否只读模式，对应模型的签出状态
             designerType: 'ServiceDesigner', // 用于外部判断当前设计视图的类型，此属性一直保持不变
             debouncedCheckCode: null, // 延迟代码诊断
+            debugState: 0, //0=未运行；1=运行中；2=暂停
             hitBreakpoint: null // 当前停止的断点
         }
     },
@@ -229,3 +218,17 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.editorPanel {
+    height: calc(100% - 40px);
+}
+
+.editorTool {
+    box-sizing: border-box;
+    padding: 6px 10px;
+    height: 40px;
+    overflow: hidden;
+    background-color: #3c3c3c;
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="New Entity Member" width="400px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog title="New Entity Member" width="500px" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <el-form :model="viewModel" ref="viewModel" :rules="rules" label-width="120px" label-position="right">
             <el-form-item prop="Name" :required="true" label="Name:">
                 <el-input v-model="viewModel.Name"></el-input>
@@ -56,7 +56,7 @@
 
 <script>
     import store from '@/design/DesignStore'
-    import DataFieldTypes from '../Designers/Entity/DataFieldTypes'
+    import DataFieldTypes from './DataFieldTypes'
 
     export default {
         data() {

@@ -6,6 +6,13 @@
             <el-radio-group fill="#0994ff" v-model="activeView" size="small" style="margin-left: 40px;">
                 <el-radio-button v-for="item in views" :key="item.label" :label="item.label">{{item.title}}</el-radio-button>
             </el-radio-group>
+            &nbsp;
+            <el-button-group v-show="activeView==='members'">
+                <el-button @click="onAddMember" size="small" icon="el-icon-circle-plus">Add</el-button>
+                <el-button @click="onRemoveMember" :disabled="currentMember==null" size="small" icon="el-icon-remove">Remove</el-button>
+                <el-button @click="onRenameMember" :disabled="currentMember==null" size="small" icon="fas fa-edit"> Rename</el-button>
+                <el-button @click="onFindUsages" :disabled="currentMember==null" size="small" icon="fas fa-link"> Usages</el-button>
+            </el-button-group>
         </div>
         <!-- 内容区域 -->
         <div class="content">
@@ -68,6 +75,7 @@
 
 <script>
 import Vue from 'vue'
+import DesignStore from '@/design/DesignStore'
 import DataFieldDesigner from './DataFieldDesigner'
 import EntityRefDesigner from './EntityRefDesigner'
 import EntitySetDesigner from './EntitySetDesigner'
@@ -75,6 +83,10 @@ import EntityMemberTypes from './EntityMemberTypes'
 import SysStoreOptions from './SysStoreOptions'
 import SqlStoreOptions from './SqlStoreOptions'
 import EntityDataView from './EntityDataView'
+import ModelReferenceType from '@/design/ModelReferenceType'
+
+import RenameDialog from '@/components/Commands/RenameDialog'
+import NewMemberDialog from './NewEntityMemberDialog'
 import ExpressionDialog from '../../CodeEditor/ExpressionEditorDialog'
 
 export default {
@@ -125,6 +137,39 @@ export default {
 
     methods: {
         /** ----成员操作---- */
+        onAddMember() {
+            var dlg = Vue.component('NewEntityMemberDialog', NewMemberDialog)
+            DesignStore.ide.showDialog(dlg)
+        },
+        onRemoveMember() {
+            var modelId = this.target.ID
+            var memberName = this.currentMember.Name
+            // if (memberName === 'ID' && designer.storeType === 'Sql') {
+            //     Message.warning('此成员不允许删除')
+            //     return false
+            // }
+            let _this = this
+            this.$msgbox.confirm('Are you sure to delete member: ' + memberName, 'Confirm', {
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                type: 'warning'
+            }).then(() => {
+                // 获取实体属性
+                $runtime.channel.invoke('sys.DesignService.DeleteEntityMember', [modelId, memberName]).then(res => {
+                    // 判断结果是否是引用列表
+                    if (res && res.length) {
+                        DesignStore.usages.update(res)
+                        _this.$message.error('Member has references, can not delete')
+                    } else {
+                        // 移除选中成员
+                        _this.removeCurrentMember()
+                        _this.$message.success('Delete member succeed')
+                    }
+                }).catch(err => {
+                    _this.$message.error(err)
+                })
+            }).catch(() => { }) // 此处为点击了取消按钮
+        },
         entityMemberTypeFormat(row, column) {
             var found = this.memberTypes.find(t => t.value === row.Type)
             return found ? found.text : 'Unknown'
@@ -179,6 +224,32 @@ export default {
             }
             var index = this.members.indexOf(this.currentMember)
             this.members.splice(index, 1)
+        },
+        /** 重命名实体成员 */
+        onRenameMember() {
+            var modelId = this.target.ID
+            var memberName = this.currentMember.Name
+
+            var dlg = Vue.component('RenameDialog', RenameDialog)
+            DesignStore.ide.showDialog(dlg, {
+                target: this.target.Text + '.' + memberName,
+                targetModel: modelId,
+                targetType: ModelReferenceType.EntityMemberName,
+                oldName: memberName
+            })
+        },
+        /** 查找实体成员的引用 */
+        onFindUsages() {
+            var modelId = this.target.ID
+            var memberName = this.currentMember.Name
+
+            let _this = this
+            let args = [ModelReferenceType.EntityMemberName, modelId, memberName]
+            $runtime.channel.invoke('sys.DesignService.FindUsages', args).then(res => {
+                DesignStore.usages.update(res)
+            }).catch(err => {
+                _this.$message.error(err)
+            })
         },
 
         /** ----EntityModel.ToStringExpression表达式编辑器---- */

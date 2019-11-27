@@ -42,7 +42,7 @@ export default {
     },
     methods: {
         onClose(e) {
-          this.$emit('close')
+            this.$emit('close')
         },
         submit(formName) {
             this.$refs[formName].validate((valid) => {
@@ -59,7 +59,7 @@ export default {
                     _this.viewModel.Name,
                     _this.viewModel.Value,
                     _this.viewModel.LocalizedName
-                    ]
+                ]
                 // 获取实体属性
                 $runtime.channel.invoke('sys.DesignService.NewEnumItem', args).then(res => {
                     // 根据返回结果添加新节点
@@ -82,7 +82,7 @@ export default {
             callback()
         }
     },
-    mounted () {
+    mounted() {
         // 获取所有引用指定模型标识的EntityRef Member集合
         // var modelId = store.designers.getActiveDesigner().target.ID
     }
@@ -90,5 +90,8 @@ export default {
 </script>
 
 <style scoped>
-.el-input-number{width: 100%;overflow:initial;}
+.el-input-number {
+    width: 100%;
+    overflow: initial;
+}
 </style>
