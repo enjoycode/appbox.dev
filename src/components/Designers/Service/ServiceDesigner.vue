@@ -6,9 +6,9 @@
             <el-button-group>
                 <el-button @click="startInvoke" size="mini" icon="fas fa-play-circle"> Invoke</el-button>
                 <el-button @click="startDebug" size="mini" icon="fas fa-bug"> Start</el-button>
-                <el-button @click="continueBreakpoint" :disabled="debugState != 1" size="mini" icon="fas fa-play"> Continue</el-button>
-                <el-button :disabled="debugState != 1" size="mini" icon="fas fa-forward"> Step</el-button>
-                <el-button :disabled="debugState <= 1" size="mini" icon="fas fa-stop"> Stop</el-button>
+                <el-button @click="continueBreakpoint" :disabled="debugState != 2" size="mini" icon="fas fa-play"> Continue</el-button>
+                <el-button :disabled="debugState != 2" size="mini" icon="fas fa-forward"> Step</el-button>
+                <el-button :disabled="debugState == 0" size="mini" icon="fas fa-stop"> Stop</el-button>
             </el-button-group>
         </div>
         <code-editor height="100%" ref="editor" language="csharp" :fileName="fileName" 
@@ -188,13 +188,31 @@ export default {
                 }
                 // 显示输入参数对话框
                 var dlg = Vue.component('DebugArgsDialog', DebugArgsDialog)
-                DesignStore.ide.showDialog(dlg, { ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Name, Method: method, Breakpoints: breakpoints })
+                DesignStore.ide.showDialog(dlg, {
+                    ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Name,
+                    Method: method,
+                    Breakpoints: breakpoints,
+                    Designer: _this})
             }).catch(() => {
                 DebugService.designer = null
                 _this.$message.error('Cannot find target method')
             })
         },
+        onDebugStarted(ok) {
+            if (!ok) {
+                DebugService.designer = null
+            } else {
+                this.debugState = 1
+            }
+        },
+        /** 收到调试结果或异常中断调试进程 */
+        onDebugStopped(res) {
+            this.debugState = 0
+            DebugService.designer = null
+            //TODO: 显示调试结果?
+        },
         onHitBreakpoint(bp) {
+            this.debugState = 2
             this.hitBreakpoint = bp
             this.$refs.editor.highlightBreakline(bp.Line) // 高亮击中的行
             this.$refs.editor.focus()

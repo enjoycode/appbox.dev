@@ -20,48 +20,50 @@
 </template>
 
 <script>
-    export default {
-        props: [
-            'dlgProps'
-        ],
-        data() {
-            return {
-                visible: true
-            }
+export default {
+    props: [
+        'dlgProps'
+    ],
+    data() {
+        return {
+            visible: true
+        }
+    },
+    methods: {
+        onClose: function (e) {
+            this.$emit('close')
         },
-        methods: {
-            onClose: function (e) {
-                this.$emit('close')
-            },
-            onOkClick() {
-                // 先组装参数列表
-                var args = []
-                try {
-                    for (var i = 0; i < this.dlgProps.Method.Args.length; i++) {
-                        var arg = this.dlgProps.Method.Args[i]
-                        args.push(JSON.parse(arg.Value))
-                    }
-                } catch (error) {
-                    this.$message.error('Parameter format error:' + error)
-                    return
+        onOkClick() {
+            // 先组装参数列表
+            var args = []
+            try {
+                for (var i = 0; i < this.dlgProps.Method.Args.length; i++) {
+                    var arg = this.dlgProps.Method.Args[i]
+                    args.push(JSON.parse(arg.Value))
                 }
-
-                let _this = this
-                let invokeArgs = [this.dlgProps.ModelID, this.dlgProps.Method.Name, JSON.stringify(args), JSON.stringify(this.dlgProps.Breakpoints)]
-                $runtime.channel.invoke('sys.DesignService.StartDebugging', invokeArgs).then(res => {
-                    _this.$message.success('开始调试成功')
-                    _this.visible = false
-                }).catch(err => {
-                    _this.$message.error('开始调试失败: ' + err)
-                    _this.visible = false
-                })
+            } catch (error) {
+                this.$message.error('Parameter format error:' + error)
+                return
             }
+
+            let _this = this
+            let invokeArgs = [this.dlgProps.ModelID, this.dlgProps.Method.Name, JSON.stringify(args), JSON.stringify(this.dlgProps.Breakpoints)]
+            $runtime.channel.invoke('sys.DesignService.StartDebugging', invokeArgs).then(res => {
+                _this.dlgProps.Designer.onDebugStarted(true)
+                _this.$message.success('开始调试成功')
+                _this.visible = false
+            }).catch(err => {
+                _this.dlgProps.Designer.onDebugStarted(false)
+                _this.$message.error('开始调试失败: ' + err)
+                _this.visible = false
+            })
         }
     }
+}
 </script>
 
 <style scoped>
-    .dialog>>>.el-dialog--small {
-        width: 500px;
-    }
+.dialog >>> .el-dialog--small {
+    width: 500px;
+}
 </style>

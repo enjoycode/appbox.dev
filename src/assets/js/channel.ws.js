@@ -63,7 +63,7 @@ function onmessage(event) {
 function onResult(res) {
 	if (res.ES) { // Event
 		if (res.ES === 2) { // 调试事件
-			DebugService.handleDebugEvent(res.BD)
+			DebugService.handleDebugEvent(res.BD) //TODO: 交由DesignStore处理
 		}
 	} else { // InvokeResponse
 		for (var i = 0; i < waitHandles.length; i++) {

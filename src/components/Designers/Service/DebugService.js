@@ -4,7 +4,7 @@ export default {
 
     /** 处理收到的调试事件 */
     handleDebugEvent(body) {
-        console.log('收到调试事件: ', body)
+        // console.log('收到调试事件: ', body)
         if (!this.designer) {
             return
         }
@@ -13,7 +13,7 @@ export default {
                 this.designer.onHitBreakpoint(body)
                 break
             case 'Result':
-                this.designer = null
+                this.designer.onDebugStopped(body)
                 break
             default:
                 break
