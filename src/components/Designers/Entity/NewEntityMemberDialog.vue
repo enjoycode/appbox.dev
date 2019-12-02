@@ -181,7 +181,7 @@
             this.designer = store.designers.getActiveDesigner()
 
             if (!this.designer.isDTO) {
-                store.tree.getAllEntityNodes(this.RefTreeData)
+                store.tree.getAllEntityNodes(this.RefTreeData, this.designer.target.StoreId)
                 // 获取所有引用指定模型标识的EntityRef Member集合
                 var modelId = this.designer.target.ID
                 $runtime.channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {

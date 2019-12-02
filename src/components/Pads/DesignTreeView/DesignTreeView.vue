@@ -24,7 +24,7 @@ import store from '@/design/DesignStore'
 import DataStoreKind from '@/design/DataStoreKind'
 import DesignNodeType from '@/design/DesignNodeType'
 import ModelType from '@/design/ModelType'
-import { IDesignNode, IModelNode } from '@/design/IDesignNode'
+import { IDesignNode, IModelNode, IEntityModelNode } from '@/design/IDesignNode'
 
 const iconClasses = {
     n0: 'fas fa-folder fa-fw',
@@ -169,9 +169,10 @@ export default Vue.extend({
          * result为数组 然后传入
          * 绑定示例参见NewEntityMemberDialog.vue
          */
-        getAllEntityNodes(result) {
+        getAllEntityNodes(result, storeId /*实体模型存储标识*/) {
             result = result || []
-            this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[], DesignNodeType.EntityModelNode, ModelType.Entity, true)
+            this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[],
+                DesignNodeType.EntityModelNode, ModelType.Entity, true, storeId)
         },
         /** 获取所有SqlStore节点，用于新建实体时选择映射的存储 */
         getAllSqlNodes() {
@@ -185,34 +186,38 @@ export default Vue.extend({
         },
         getAllModelNodes(nodeType: DesignNodeType, modelType: ModelType): IDesignNode[] {
             let result: IDesignNode[] = [];
-            this.loopGetModelNodes(this.designNodes as IDesignNode[], result, nodeType, modelType, false);
+            this.loopGetModelNodes(this.designNodes as IDesignNode[], result, nodeType, modelType, false, null);
             return result;
         },
 
         /** 从树中获取指定类型的模型节点 */
-        loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[], nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean) {
+        loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[], 
+            nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean, storeId/*实体模型存储标识*/) {
             nodes.forEach(node => {
                 if (node.Type == DesignNodeType.ApplicationNode) {
                     if (groupByApp) {
                         result.push(this.shallowCloneNode(node));
                     }
-                    this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp);
+                    this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp, storeId);
                 } else if (node.Type == nodeType) {
-                    if (groupByApp) {
-                        let group = result.find(t => t.ID == (node as IModelNode).App);
-                        group.Nodes.push(this.shallowCloneNode(node));
-                    } else {
-                        result.push(node); //直接引用
+                    //暂仅添加相同存储的实体模型节点
+                    if (node.Type != DesignNodeType.EntityModelNode || (node as IEntityModelNode).StoreId == storeId) {
+                        if (groupByApp) {
+                            let group = result.find(t => t.ID == (node as IModelNode).App);
+                            group.Nodes.push(this.shallowCloneNode(node));
+                        } else {
+                            result.push(node); //直接引用
+                        }
                     }
                 } else if (node.Type == DesignNodeType.ModelRootNode) {
                     if (node.Nodes && node.Nodes.length > 0) {
                         let rootNodeTargetType = parseInt(node.ID.split('-')[1]) as ModelType;
                         if (rootNodeTargetType == modelType) {
-                            this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp);
+                            this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp, storeId);
                         }
                     }
                 } else if (node.Nodes && node.Nodes.length > 0) { //其他包含下级的节点
-                    this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp);
+                    this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp, storeId);
                 }
             });
         },

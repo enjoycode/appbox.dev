@@ -14,3 +14,7 @@ export interface IModelNode extends IDesignNode {
     readonly App: string;
     readonly ModelType: ModelType;
 }
+
+export interface IEntityModelNode extends IModelNode {
+    readonly StoreId: number | undefined;
+}
