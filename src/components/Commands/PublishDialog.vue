@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="Publish Models" :visible.sync="visible" @close="onClose" :before-close="onClosing">
+    <el-dialog title="Publish Models" width="500px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
         <el-table :data="pendingModels" border style="width: 100%">
             <el-table-column prop="ModelType" label="Type" width="180"></el-table-column>
             <el-table-column prop="ModelID" label="ModelID"></el-table-column>

@@ -29,7 +29,7 @@
             </el-table-column>
             <el-table-column prop="Unique" label="Unique" width="180" align="center">
                 <template slot-scope="scope">
-                    <e-checkbox v-model="scope.row.Unique" disabled></e-checkbox>
+                    <el-checkbox v-model="scope.row.Unique" disabled></el-checkbox>
                 </template>
             </el-table-column>
         </el-table>
@@ -52,6 +52,33 @@
                 <el-button type="primary" @click="addPrimaryKey">OK</el-button>
             </span>
         </el-dialog>
+        <!-- 添加索引对话框 -->
+        <el-dialog title="Add Index" :visible.sync="addIndexDlgVisible" width="500px">
+            <el-form :model="newIndex" label-width="100px" size="small">
+                <el-form-item prop="Name" label="Name:">
+                    <el-input v-model="newIndex.Name"></el-input>
+                </el-form-item>
+                <el-form-item label="Fields:">
+                    <el-select v-model="newIndex.Fields" value-key="MID" multiple style="width:100%">
+                        <el-option v-for="item in members" :key="item.ID" :label="item.Name" :value="{Name: item.Name, MID: item.ID, OrderByDesc: false}">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Orders:">
+                    <span v-for="item in newIndex.Fields" :key="item.MID">{{ item.Name }}:
+                        <el-switch v-model="item.OrderByDesc" active-text="DESC" inactive-text="ASC"></el-switch>
+                        <br/>
+                    </span>
+                </el-form-item>
+                <el-form-item label="">
+                    <el-checkbox v-model="newIndex.Unique">Unique</el-checkbox>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addIndexDlgVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="addIndex">OK</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -69,6 +96,7 @@ export default {
             currentPrimaryKey: null,    //当前选择的主键
             currentIndex: null,         //当前选择的索引
             newPrimaryKey: { ID: 0, OrderByDesc: false }, //暂存新的主键字段
+            newIndex: { Name: '', Unique: false, Fields: [] }, //暂存新的索引
             oldPrimaryKeys: [],         //暂存旧的主键，用于更改失败后恢复
         }
     },
@@ -135,43 +163,43 @@ export default {
             this.addIndexDlgVisible = false
 
             //TODO: check name exists
-            // if (!this.newIndex.Name) {
-            //     this.$message.error('Index has no name')
-            //     return
-            // }
-            // if (this.newIndex.Fields.length === 0) {
-            //     this.$message.error('Index has no fields')
-            //     return
-            // }
+            if (!this.newIndex.Name) {
+                this.$message.error('Index has no name')
+                return
+            }
+            if (this.newIndex.Fields.length === 0) {
+                this.$message.error('Index has no fields')
+                return
+            }
 
-            // let args = [this.target.ID, 'AddIndex', JSON.stringify(this.newIndex)]
-            // let _this = this
-            // $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
-            //     _this.options.Indexes.push(res)
-            // }).catch(err => {
-            //     _this.$message.error('Add index error: ' + err)
-            // })
+            let args = [this.target.ID, 'AddIndex', JSON.stringify(this.newIndex)]
+            let _this = this
+            $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
+                _this.options.Indexes.push(res)
+            }).catch(err => {
+                _this.$message.error('Add index error: ' + err)
+            })
         },
         removeIndex() {
-            // if (!this.currentIndex) {
-            //     this.$message('Please select index first!')
-            //     return;
-            // }
-            // let that = this
-            // this.$msgbox.confirm('Are you sure to drop selected index？', 'Confirm', {
-            //     confirmButtonText: 'OK',
-            //     cancelButtonText: 'Cancel',
-            //     type: 'warning'
-            // }).then(() => {
-            //     let args = [that.target.ID, 'RemoveIndex', that.currentIndex.ID]
-            //     let _this = that
-            //     $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
-            //         let index = _this.options.Indexes.findIndex(t => t.ID === _this.currentIndex.ID)
-            //         _this.options.Indexes.splice(index, 1)
-            //     }).catch(err => {
-            //         _this.$message.error('Drop index error:' + err)
-            //     })
-            // }).catch(() => {/*此处点击了取消按钮*/ })
+            if (!this.currentIndex) {
+                this.$message('Please select index first!')
+                return;
+            }
+            let that = this
+            this.$msgbox.confirm('Are you sure to drop selected index？', 'Confirm', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                type: 'warning'
+            }).then(() => {
+                let args = [that.target.ID, 'RemoveIndex', that.currentIndex.ID]
+                let _this = that
+                $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
+                    let index = _this.options.Indexes.findIndex(t => t.ID === _this.currentIndex.ID)
+                    _this.options.Indexes.splice(index, 1)
+                }).catch(err => {
+                    _this.$message.error('Drop index error:' + err)
+                })
+            }).catch(() => {/*此处点击了取消按钮*/ })
         }
     },
     mounted() {

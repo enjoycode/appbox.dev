@@ -20,7 +20,7 @@
             <!--EntityRef属性-->
             <template v-if="viewModel.EntityMemberType === 2"> 
                 <el-form-item prop="RefIds" label="Ref Target:">
-                    <el-select v-model="viewModel.RefIds" multiple filterable key="s-refids">
+                    <el-select v-model="viewModel.RefIds" multiple filterable key="s-refids" style="width:100%">
                         <el-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
                             <el-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
                             </el-option>
