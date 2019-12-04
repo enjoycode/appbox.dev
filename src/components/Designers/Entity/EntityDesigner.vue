@@ -79,11 +79,14 @@ import DesignStore from '@/design/DesignStore'
 import DataFieldDesigner from './DataFieldDesigner'
 import EntityRefDesigner from './EntityRefDesigner'
 import EntitySetDesigner from './EntitySetDesigner'
+
 import EntityMemberTypes from './EntityMemberTypes'
+import DataFieldTypes from './DataFieldTypes'
+import ModelReferenceType from '@/design/ModelReferenceType'
+
 import SysStoreOptions from './SysStoreOptions'
 import SqlStoreOptions from './SqlStoreOptions'
 import EntityDataView from './EntityDataView'
-import ModelReferenceType from '@/design/ModelReferenceType'
 
 import RenameDialog from '@/components/Commands/RenameDialog'
 import NewMemberDialog from './NewEntityMemberDialog'
@@ -172,7 +175,11 @@ export default {
         },
         entityMemberTypeFormat(row, column) {
             var found = this.memberTypes.find(t => t.value === row.Type)
-            return found ? found.text : 'Unknown'
+            var res = found ? found.text : 'Unknown'
+            if (row.DataType) {
+                res += ' - ' + DataFieldTypes.find(t => t.value === row.DataType).text
+            }
+            return res
         },
         currentRowChange(currentRow, oldCurrentRow) {
             this.currentMember = currentRow
