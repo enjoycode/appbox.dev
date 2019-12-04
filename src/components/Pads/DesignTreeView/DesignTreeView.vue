@@ -184,12 +184,12 @@ export default Vue.extend({
             })
             return result
         },
+        /** 获取指定类型的模型节点 */
         getAllModelNodes(nodeType: DesignNodeType, modelType: ModelType): IDesignNode[] {
             let result: IDesignNode[] = [];
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result, nodeType, modelType, false, null);
             return result;
         },
-
         /** 从树中获取指定类型的模型节点 */
         loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[], 
             nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean, storeId/*实体模型存储标识*/) {

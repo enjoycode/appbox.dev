@@ -29,7 +29,7 @@
                             <el-checkbox v-model="scope.row.AllowNull" disabled></el-checkbox>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="LocalizedName" label="LocalizeName" align="center">
+                    <el-table-column prop="Comment" label="Comment" align="center">
                     </el-table-column>
                 </el-table>
                 <div slot="panel2" class="ide-property-panel">
@@ -39,8 +39,8 @@
                                 <el-form-item label="ID">
                                     <el-input v-model="target.ID" :disabled="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="LocalizedName">
-                                    <el-input v-model="target.LocalizedName" :disabled="true"></el-input>
+                                <el-form-item label="Comment">
+                                    <el-input v-model="target.Comment" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="AppID">
                                     <el-input v-model="target.AppID" :disabled="true"></el-input>
@@ -57,7 +57,7 @@
                             </el-form>
                         </el-collapse-item>
                         <el-collapse-item v-if="currentMemberTitle !== null" :title="currentMemberTitle" name="2">
-                            <component :is="currentMemberDesigner" :target.sync="currentMember" :model-id="target.ID"></component>
+                            <component :is="currentMemberDesigner" :member.sync="currentMember" :owner="target"></component>
                         </el-collapse-item>
                     </el-collapse>
                 </div>
