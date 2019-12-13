@@ -62,11 +62,16 @@ class ModelLibManager {
         //同步生成实体、枚举、视图模型声明
         let viewNodes = store.tree.getAllModelNodes(DesignNodeType.ViewModelNode, ModelType.View) as IDesignNode[];
         viewNodes.forEach(n => {
-            let node = n as IModelNode;
-            let name = node.App +'.Views.' + n.Name;
-            let t = ls.addExtraLib(this.genViewDeclare(node), name + '.d.ts');
-            this.libs.push(new ModelLib(name, t));
+            this.addView(n as IModelNode);
         });
+    }
+
+    /** 用于初次加载或新建完视图模型生成相应的声明 */
+    addView(viewNode: IModelNode) {
+        let ls = monaco.languages.typescript.javascriptDefaults;
+        let name = viewNode.App + '.Views.' + viewNode.Name;
+        let t = ls.addExtraLib(this.genViewDeclare(viewNode), name + '.d.ts');
+        this.libs.push(new ModelLib(name, t));
     }
 
     /**

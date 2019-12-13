@@ -10,6 +10,7 @@
 
 <script>
 import store from '@/design/DesignStore'
+import { modelLibs } from '../CodeEditor/EditorService'
 
 export default {
     data() {
@@ -39,6 +40,8 @@ export default {
             var _this = this
             $runtime.channel.invoke('sys.DesignService.NewViewModel', [node.Type, node.ID, this.newname]).then(res => {
                 store.tree.onNewNode(res)
+                // 新建的添加ts声明代码
+                modelLibs.addView(res.NewNode)
                 _this.$message.success('New view succeed.')
                 _this.running = false
                 _this.visible = false
