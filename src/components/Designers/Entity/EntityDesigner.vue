@@ -65,6 +65,7 @@
             <!-- 实体选项视图 -->
             <sys-store-options ref="sysoptsView" :target="target" :members="members" :options="options" v-if="activeView==='sysopts'"></sys-store-options>
             <sql-store-options ref="sqloptsView" :target="target" :members="members" :options="options" v-if="activeView==='sqlopts'"></sql-store-options>
+            <cql-store-options ref="cqloptsView" :target="target" :members="members" :options="options" v-if="activeView==='cqlopts'"></cql-store-options>
             <entity-data-view ref="dataView" :target="target" :members="members" v-if="activeView==='data'"></entity-data-view>
         </div>
         <!--表达式编辑器对话框占位-->
@@ -84,8 +85,10 @@ import EntityMemberTypes from './EntityMemberTypes'
 import DataFieldTypes from './DataFieldTypes'
 import ModelReferenceType from '@/design/ModelReferenceType'
 
+import DataStoreKind from '@/design/DataStoreKind'
 import SysStoreOptions from './SysStoreOptions'
 import SqlStoreOptions from './SqlStoreOptions'
+import CqlStoreOptions from './CqlStoreOptions'
 import EntityDataView from './EntityDataView'
 
 import RenameDialog from '@/components/Commands/RenameDialog'
@@ -99,6 +102,7 @@ export default {
         EntitySetDesigner: EntitySetDesigner,
         SysStoreOptions: SysStoreOptions,
         SqlStoreOptions: SqlStoreOptions,
+        CqlStoreOptions: CqlStoreOptions,
         EntityDataView: EntityDataView
     },
     props: {
@@ -124,8 +128,12 @@ export default {
         storeTitle() {
             if (!this.options) {
                 return 'DTO'
-            } else if (this.options.StoreName) { //map to sqlstore
-                return 'SqlStore - ' + this.options.StoreName
+            } else if (this.options.StoreName) {
+                if (this.options.StoreKind === DataStoreKind.Sql) {
+                    return 'SqlStore - ' + this.options.StoreName
+                } else {
+                    return 'CqlStore - ' + this.options.StoreName
+                }
             } else { //map to system store
                 if (this.options.PartitionKeys && this.options.PartitionKeys.length > 0) {
                     return 'Default - Partitioned'
@@ -281,8 +289,10 @@ export default {
                 _this.members = res.Members
                 //根据不同存储选项加入不同视图
                 if (res.StoreOptions) {
-                    if (res.StoreOptions.StoreName) {
+                    if (res.StoreOptions.StoreKind === DataStoreKind.Sql) {
                         _this.views.push({ label: 'sqlopts', title: 'Options' })
+                    } else if (res.StoreOptions.StoreKind === DataStoreKind.Cql) {
+                        _this.views.push({ label: 'cqlopts', title: 'Options' })
                     } else {
                         _this.views.push({ label: 'sysopts', title: 'Options' })
                     }
