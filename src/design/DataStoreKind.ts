@@ -1,5 +1,6 @@
 enum DataStoreKind {
     Sql,
+    Cql,
     Blob
 }
 

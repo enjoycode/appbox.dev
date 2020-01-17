@@ -92,8 +92,7 @@
         },
         mounted() {
             this.storeNodes.push({ID: '', Text:''})
-            this.storeNodes.push({ID: 'Default', Text:'Default'})
-            this.storeNodes = this.storeNodes.concat(store.tree.getAllSqlNodes())
+            this.storeNodes = this.storeNodes.concat(store.tree.getAllStoreNodes())
         }
     }
 </script>

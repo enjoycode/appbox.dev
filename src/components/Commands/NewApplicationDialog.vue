@@ -1,7 +1,7 @@
 <template>
-    <el-dialog title="新建应用程序" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog title="New Application" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <el-form :model="viewModel" ref="appModel" :rules="rules" label-width="120px" label-position="right">
-            <el-form-item prop="Name" :required="true" label="名称">
+            <el-form-item prop="Name" :required="true" label="Name">
                 <el-input v-model="viewModel.Name"></el-input>
             </el-form-item>
             <!--<el-form-item prop="LocalizedName" label="本地化名称">
@@ -9,8 +9,8 @@
             </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button :disabled="caDisabled" @click="visible = false">取 消</el-button>
-            <el-button :disabled="okDisabled" type="primary" @click="submit('appModel')">确 定</el-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="submit('appModel')">Ok</el-button>
         </div>
     </el-dialog>
 </template>
@@ -59,7 +59,7 @@
                     $runtime.channel.invoke('sys.DesignService.NewApplication', args).then(res => {
                         // 根据返回结果添加新节点
                         store.tree.onNewNode(res)
-                        _this.$message.success('添加成功')
+                        _this.$message.success('Create application succeed')
                         _this.visible = false
                         _this.caDisabled = false
                     }).catch(err => {
@@ -71,7 +71,7 @@
             },
             validateName: function (rule, value, callback) {
                 if (!value) {
-                    return callback(new Error('名称不能为空！'))
+                    return callback(new Error('Name can not be null!'))
                 }
                 // TODO 验证名称的合法性
                 callback()

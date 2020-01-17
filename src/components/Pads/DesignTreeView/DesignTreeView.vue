@@ -174,11 +174,11 @@ export default Vue.extend({
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[],
                 DesignNodeType.EntityModelNode, ModelType.Entity, true, storeId)
         },
-        /** 获取所有SqlStore节点，用于新建实体时选择映射的存储 */
-        getAllSqlNodes() {
+        /** 获取所有实体存储节点，用于新建实体时选择映射的存储 */
+        getAllStoreNodes() {
             var result = []
             this.designNodes[0].Nodes.forEach(node => {
-                if (node.Kind === DataStoreKind.Sql) {
+                if (node.Kind === DataStoreKind.Sql || node.Kind === DataStoreKind.Cql) {
                     result.push(node)
                 }
             })
