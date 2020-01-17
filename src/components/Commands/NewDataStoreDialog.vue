@@ -1,12 +1,12 @@
 <template>
     <el-dialog title="New DataStore" class="dialog" width="590px" :visible.sync="visible" @close="onClose" :before-close="onClosing">
-        <table cellspacing="15px" style="font-size:14px;">
+        <table cellspacing="15px" style="font-size:14px;width:100%">
             <tr>
                 <td>Type:</td>
                 <td>
                     <el-radio v-model="storeType" :label="0">SQL</el-radio>
-                    <!-- <el-radio v-model="storeType" :label="1">Table</el-radio>
-                    <el-radio v-model="storeType" :label="2">Blob</el-radio>
+                    <el-radio v-model="storeType" :label="1">CQL</el-radio>
+                    <!--<el-radio v-model="storeType" :label="2">Blob</el-radio>
                     <el-radio v-model="storeType" :label="3">Cache</el-radio>
                     <el-radio v-model="storeType" :label="4">Search</el-radio> -->
                 </td>
