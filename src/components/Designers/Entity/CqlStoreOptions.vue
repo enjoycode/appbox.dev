@@ -4,19 +4,19 @@
         <el-form label-width="200px" size="small">
             <el-form-item label="Partition Keys:">
                 <el-select v-model="options.PartitionKeys" multiple @change="onPartitionKeysChanged">
-                    <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="item.Name" :disabled="disabledMember(options, item.Name)">
+                    <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="item.ID" :disabled="disabledMember(options, item.ID)">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="Clustering Columns:">
-                <el-select value-key="Name" v-model="options.ClusteringColumns" multiple @change="onClusteringColumnsChanged">
-                    <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="{Name: item.Name, OrderDESC: false}" :disabled="disabledMember(options, item.Name)">
+                <el-select value-key="MemberId" v-model="options.ClusteringColumns" multiple @change="onClusteringColumnsChanged">
+                    <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="{MemberId: item.ID, OrderByDesc: false}" :disabled="disabledMember(options, item.ID)">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="Clustering Orders:">
-                <span v-for="item in options.ClusteringColumns">{{ item.Name }}:
-                    <e-switch v-model="item.OrderDESC" @change="onClusteringColumnsChanged" active-text="DESC" inactive-text="ASC"></e-switch>
+                <span v-for="item in options.ClusteringColumns" :key="item.MemberId">{{ getMemberName(item.MemberId) }}:
+                    <el-switch v-model="item.OrderByDesc" @change="onClusteringColumnsChanged" active-text="DESC" inactive-text="ASC"></el-switch>
                     &nbsp;
                 </span>
             </el-form-item>
@@ -48,18 +48,18 @@
                 <el-form label-width="200px" size="small">
                     <el-form-item label="Partition Keys:">
                         <el-select v-model="mv.PartitionKeys" multiple @change="onMVPartitionKeysChanged(mv)">
-                            <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="item.Name" :disabled="disabledMember(mv, item.Name)">
+                            <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="item.ID" :disabled="disabledMember(mv, item.ID)">
                             </el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Clustering Columns:">
                         <el-select value-key="Name" v-model="mv.ClusteringColumns" multiple @change="onMVClusteringColumnsChanged(mv)">
-                            <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="{Name: item.Name, OrderDESC: false}" :disabled="disabledMember(mv, item.Name)">
+                            <el-option v-for="item in members" :key="item.Name" :label="item.Name" :value="{MemberId: item.ID, OrderByDesc: false}" :disabled="disabledMember(mv, item.ID)">
                             </el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Clustering Orders:">
-                        <span v-for="item in mv.ClusteringColumns">{{ item.Name }}:
+                        <span v-for="item in mv.ClusteringColumns" :key="item.MemberId">{{ item.Name }}:
                             <el-switch v-model="item.OrderDESC" @change="onMVClusteringColumnsChanged(mv)" active-text="DESC" inactive-text="ASC"></el-switch>
                             &nbsp;
                         </span>
@@ -90,12 +90,16 @@
             }
         },
         methods: {
+            /** 根据成员标识获取名称 */
+            getMemberName(memberId) {
+                return this.members.find(t => t.ID === memberId).Name
+            },
             /** 用于判断该成员是否可选 */
-            disabledMember(target, memberName) {
-                if (target.PartitionKeys.find(t => t === memberName)) {
+            disabledMember(target, memberId) {
+                if (target.PartitionKeys.find(t => t === memberId)) {
                     return true
                 }
-                if (target.ClusteringColumns.find(t => t.Name === memberName)) {
+                if (target.ClusteringColumns.find(t => t.MemberId === memberId)) {
                     return true
                 }
                 return false
@@ -105,11 +109,11 @@
                 let _this = this
                 if (action === 'add') {
                     var mvName = ''
-                    this.$prompt('请输入物化视图名称:', '新建物化视图', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    this.$prompt('MV Name:', 'Create Materialized View', {
+                        confirmButtonText: 'Ok',
+                        cancelButtonText: 'Cancel',
                         inputPattern: /[a-zA-Z_0-9]+/,
-                        inputErrorMessage: '名称不正确'
+                        inputErrorMessage: 'Name error'
                     }).then(res => {
                         mvName = res.value
                         let args = [_this.target.ID, 'AddMV', mvName]
@@ -121,11 +125,11 @@
                             ClusteringColumns: []
                         })
                         _this.curMV = mvName
-                    }).catch(err => { _this.$message.error('新建物化视图失败: ' + err) })
+                    }).catch(err => { _this.$message.error('Create MV error: ' + err) })
                 } else if (action === 'remove') {
-                    this.$confirm('请确认删除此物化视图', '删除物化视图', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
+                    this.$confirm('Confirm to drop MV', 'Delete MV', {
+                        confirmButtonText: 'Ok',
+                        cancelButtonText: 'Cancel',
                         type: 'warning'
                     }).then(res => {
                         let args = [this.target.ID, 'RemoveMV', targetName]
@@ -133,32 +137,32 @@
                     }).then(res => { // 同步前端
                         _this.options.MaterializedViews = _this.options.MaterializedViews.filter(v => v.Name !== targetName)
                         _this.curMV = _this.options.MaterializedViews.length > 0 ? _this.options.MaterializedViews[0].Name : ''
-                    }).catch(err => { _this.$message.error('删除物化视图失败: ' + err) })
+                    }).catch(err => { _this.$message.error('Drop MV error: ' + err) })
                 }
             },
             onPartitionKeysChanged(e) {
                 let args = [this.target.ID, 'PartitionKeys', this.options.PartitionKeys]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
+                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
                     this.onPrimaryKeyChanged()
                 }).catch(err => {
-                    _this.$message.error('改变表存储PartitionKeys失败: ' + err)
+                    _this.$message.error('Change PK PartitionKeys error: ' + err)
                 })
             },
             onClusteringColumnsChanged(e) {
                 let args = [this.target.ID, 'ClusteringColumns', JSON.stringify(this.options.ClusteringColumns)]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
+                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
                     this.onPrimaryKeyChanged()
                 }).catch(err => {
-                    _this.$message.error('改变表存储ClusteringColumns失败: ' + err)
+                    _this.$message.error('Change PK ClusteringColumns error: ' + err)
                 })
             },
             /** 主键改变后同步刷新前端所有成员的AllowNull属性，后端已处理 */
             onPrimaryKeyChanged() {
                 this.members.forEach(m => {
-                    if (this.options.PartitionKeys.find(t => t === m.Name) ||
-                        this.options.ClusteringColumns.find(t => t.Name === m.Name)) {
+                    if (this.options.PartitionKeys.find(t => t === m.ID) ||
+                        this.options.ClusteringColumns.find(t => t.MemberId === m.ID)) {
                         m.AllowNull = false
                     } else {
                         m.AllowNull = true
@@ -168,15 +172,15 @@
             onMVPartitionKeysChanged(mv) {
                 let args = [this.target.ID, 'MVPartitionKeys', mv.PartitionKeys, mv.Name]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
-                    _this.$message.error('改变物化视图PartitionKeys失败: ' + err)
+                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
+                    _this.$message.error('Change MV PartitionKeys error: ' + err)
                 })
             },
             onMVClusteringColumnsChanged(mv) {
                 let args = [this.target.ID, 'MVClusteringColumns', JSON.stringify(mv.ClusteringColumns), mv.Name]
                 let _this = this
-                this.$channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
-                    _this.$message.error('改变物化视图ClusteringColumns失败: ' + err)
+                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
+                    _this.$message.error('Change MV ClusteringColumns error: ' + err)
                 })
             }
         },
