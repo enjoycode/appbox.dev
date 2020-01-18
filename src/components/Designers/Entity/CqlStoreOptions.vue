@@ -141,9 +141,9 @@
                 }
             },
             onPartitionKeysChanged(e) {
-                let args = [this.target.ID, 'PartitionKeys', this.options.PartitionKeys]
+                let args = [this.target.ID, 'PartitionKeys', JSON.stringify(this.options.PartitionKeys)]
                 let _this = this
-                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
+                $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
                     this.onPrimaryKeyChanged()
                 }).catch(err => {
                     _this.$message.error('Change PK PartitionKeys error: ' + err)
@@ -152,7 +152,7 @@
             onClusteringColumnsChanged(e) {
                 let args = [this.target.ID, 'ClusteringColumns', JSON.stringify(this.options.ClusteringColumns)]
                 let _this = this
-                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).then(res => {
+                $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).then(res => {
                     this.onPrimaryKeyChanged()
                 }).catch(err => {
                     _this.$message.error('Change PK ClusteringColumns error: ' + err)
@@ -172,14 +172,14 @@
             onMVPartitionKeysChanged(mv) {
                 let args = [this.target.ID, 'MVPartitionKeys', mv.PartitionKeys, mv.Name]
                 let _this = this
-                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
+                $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).catch(err => {
                     _this.$message.error('Change MV PartitionKeys error: ' + err)
                 })
             },
             onMVClusteringColumnsChanged(mv) {
                 let args = [this.target.ID, 'MVClusteringColumns', JSON.stringify(mv.ClusteringColumns), mv.Name]
                 let _this = this
-                $runtime.channel.invoke('sys.DesignHub.ChangeTableOptions', args).catch(err => {
+                $runtime.channel.invoke('sys.DesignService.ChangeEntity', args).catch(err => {
                     _this.$message.error('Change MV ClusteringColumns error: ' + err)
                 })
             }
