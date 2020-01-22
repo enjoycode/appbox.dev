@@ -278,6 +278,10 @@ export default function (/*bool desktop, bool mobile*/) {
         require('element-ui/lib/theme-chalk/tree.css')
         r(require('element-ui/lib/tree').default)
     }, 'easeui'))
+    Vue.component('ElDivider', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/divider.css')
+        r(require('element-ui/lib/divider').default)
+    }, 'easeui'))
 
     // ===================Vue-ECharts========================
     Vue.component('v-chart', r => require.ensure([], () => {
