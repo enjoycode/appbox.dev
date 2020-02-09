@@ -25,7 +25,7 @@ init()
 async function init() {
     // 初始化Textmate
     try {
-        await loadWASM('dev/onigasm.wasm')
+        await loadWASM('/dev/onigasm.wasm')
     } catch { //防止开发时热加载
         return
     }
@@ -33,7 +33,7 @@ async function init() {
         getGrammarDefinition: async (scopeName) => {
             return {
                 format: 'json',
-                content: await (await fetch('dev/csharp.tmLanguage.json')).text()
+                content: await (await fetch('/dev/csharp.tmLanguage.json')).text()
             }
         }
     })
