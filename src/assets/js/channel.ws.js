@@ -70,7 +70,7 @@ function onResult(res) {
 			if (waitHandles[i].Id === res.I) {
 				var cb = waitHandles[i].Cb
 				waitHandles.splice(i, 1)
-				console.log('移除请求等待者, 还余: ' + waitHandles.length)
+				// console.log('移除请求等待者, 还余: ' + waitHandles.length)
 				if (res.E) {
 					cb(res.E, null)
 				} else {
@@ -96,7 +96,7 @@ function sendRequire(service, args, callback) {
 	// 先加入等待者列表
 	msgIdIndex++
 	waitHandles.push({ Id: msgIdIndex, Cb: callback })
-	console.log('加入请求等待者, 还余: ' + waitHandles.length)
+	// console.log('加入请求等待者, 还余: ' + waitHandles.length)
 	// 通过socket发送请求
 	var require = { I: msgIdIndex, S: service, A: args }
 	try {

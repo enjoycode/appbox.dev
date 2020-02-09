@@ -1,4 +1,5 @@
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     publicPath: '/dev/',
@@ -7,7 +8,7 @@ module.exports = {
     configureWebpack: {
         plugins: [
             new MonacoWebpackPlugin({
-                output: 'js', languages: ['csharp', 'css', 'html', 'javascript', 'json', 'less', 'markdown', 'scss', 'typescript', 'xml'],
+                output: 'js', languages: ['css', 'html', 'javascript', 'json', 'less', 'markdown', 'scss', 'typescript', 'xml'],
                 features: ['accessibilityHelp', 'bracketMatching', 'caretOperations', 'clipboard',
                     'codeAction', 'codelens', 'colorDetector', 'comment', 'contextmenu', 'coreCommands',
                     'cursorUndo', 'dnd', 'find', 'folding', 'fontZoom', 'format', 'goToDefinitionCommands',
@@ -16,7 +17,11 @@ module.exports = {
                     'quickCommand', 'quickOutline', 'referenceSearch', 'rename', 'smartSelect', 'snippets',
                     'suggest', 'toggleHighContrast', 'toggleTabFocusMode', 'transpose', 'wordHighlighter',
                     'wordOperations', 'wordPartOperations']
-            })
+            }),
+            new CopyWebpackPlugin([
+                { from: './node_modules/onigasm/lib/onigasm.wasm' },
+                { from: './src/components/CodeEditor/CSharpFeatures/csharp.tmLanguage.json'}
+            ])
         ]
     },
     devServer: {

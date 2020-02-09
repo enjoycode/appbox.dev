@@ -1,21 +1,108 @@
 // https://microsoft.github.io/monaco-editor/
-// 注意: 修改monaco-editor/esm/vs/language/typescript/lib/typescriptServices.js最后加export default ts;
-// 同时修改typescriptServices.d.ts（从node_modules/typescript复制）
+
+// 注意: 
+//1. 修改monaco-editor/esm/vs/language/typescript/lib/typescriptServices.js最后加export default ts;
+//2. 同时修改typescriptServices.d.ts（从node_modules/typescript复制）
 // declare module "monaco-editor/esm/vs/language/typescript/lib/typescriptServices" {
 //    export = ts
 //}
 
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languages不能import * as monaco from 'monaco-editor'
+// import * as monaco from 'monaco-editor'
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
 import CSharpFeatures from './CSharpFeatures'
 import TypeScriptFeatures from './TypeScriptFeatures'
 import { IModelNode, IDesignNode } from '@/design/IDesignNode'
 import store from '@/design/DesignStore'
-import DesignNodeType from '@/design/DesignNodeType';
-import ModelType from '@/design/ModelType';
+import DesignNodeType from '@/design/DesignNodeType'
+import ModelType from '@/design/ModelType'
+import { loadWASM } from 'onigasm'
+import { Registry, StackElement, INITIAL } from 'monaco-textmate'
 
-CSharpFeatures(monaco)
-TypeScriptFeatures(monaco)
+init()
+
+/** 初始化代码编辑服务 */
+async function init() {
+    // 初始化Textmate
+    try {
+        await loadWASM('dev/onigasm.wasm')
+    } catch { //防止开发时热加载
+        return
+    }
+    const registry = new Registry({
+        getGrammarDefinition: async (scopeName) => {
+            return {
+                format: 'json',
+                content: await (await fetch('dev/csharp.tmLanguage.json')).text()
+            }
+        }
+    })
+
+    monaco.languages.register({ id: 'csharp' })
+
+    // map of monaco "language id's" to TextMate scopeNames
+    const grammars = new Map()
+    grammars.set('csharp', 'source.cs')
+    await wireTmGrammars(registry, grammars)
+
+    // 初始化CS功能
+    CSharpFeatures(monaco)
+    // 初始化TS功能
+    TypeScriptFeatures(monaco)
+}
+
+class TokenizerState implements monaco.languages.IState {
+
+    constructor(
+        private _ruleStack: StackElement
+    ) { }
+
+    public get ruleStack(): StackElement {
+        return this._ruleStack
+    }
+
+    public clone(): TokenizerState {
+        return new TokenizerState(this._ruleStack);
+    }
+
+    public equals(other: monaco.languages.IState): boolean {
+        if (!other ||
+            !(other instanceof TokenizerState) ||
+            other !== this ||
+            other._ruleStack !== this._ruleStack
+        ) {
+            return false;
+        }
+        return true;
+    }
+}
+
+function wireTmGrammars(registry: Registry, languages: Map<string, string>) {
+    return Promise.all(
+        Array.from(languages.keys())
+            .map(async (languageId) => {
+                const grammar = await registry.loadGrammar(languages.get(languageId))
+                monaco.languages.setTokensProvider(languageId, {
+                    getInitialState: () => new TokenizerState(INITIAL),
+                    tokenize: (line: string, state: TokenizerState) => {
+                        // console.log('csharp tokenize: ' + line)
+                        const res = grammar.tokenizeLine(line, state.ruleStack)
+                        // console.log('tokenize res: ', res)
+                        return {
+                            endState: new TokenizerState(res.ruleStack),
+                            tokens: res.tokens.map(token => ({
+                                ...token,
+                                // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
+                                scopes: token.scopes[token.scopes.length - 1]
+                            })),
+                        }
+                    }
+                })
+            })
+    )
+}
+
+//TODO: 以下ModelLib相关移至单独文件
 
 interface ServiceDeclare {
     Name: string;

@@ -11,7 +11,7 @@
                 <el-button :disabled="debugState == 0" size="mini" icon="fas fa-stop"> Stop</el-button>
             </el-button-group>
         </div>
-        <code-editor height="100%" ref="editor" language="csharp" :fileName="fileName" 
+        <code-editor height="100%" ref="editor" language="csharp" theme="tm" :fileName="fileName" 
             @mounted="onEditorMounted" :options="{readOnly: true}">
         </code-editor>
     </div> 
