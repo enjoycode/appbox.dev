@@ -54,7 +54,7 @@
                 </el-dialog>
             </div>
             <div class="editorPanel" ref="editorPanel">
-                <code-editor ref="editor" height="100%" language="html" :fileName="fileName" @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
+                <code-editor ref="editor" height="100%" language="html" theme="tm" :fileName="fileName" @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
             </div>
         </div>
         <!-- 右边预览区域 -->

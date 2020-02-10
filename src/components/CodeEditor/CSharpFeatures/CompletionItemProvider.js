@@ -11,11 +11,11 @@ export default {
         var promise = new Promise((resolve, reject) => {
             var args = [1, model.fileName, position.lineNumber, position.column, wordToComplete]
             $runtime.channel.invoke('sys.DesignService.GetCompletion', args).then(res => {
-                resolve({suggestions: res})
+                resolve({ suggestions: res })
             }).catch(err => {
                 reject(err)
             });
-		})
-		return promise
+        })
+        return promise
     }
 }

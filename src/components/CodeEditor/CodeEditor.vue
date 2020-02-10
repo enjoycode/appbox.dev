@@ -11,7 +11,7 @@ export default {
         height: { type: [String, Number], default: '500' },
         code: { type: String, default: '// code \n' }, // todo:待移除
         language: { type: String, default: 'javascript' },
-        theme: { type: String, default: 'vs-dark' }, // vs, hc-black
+        theme: { type: String, default: 'vs-dark' }, // vs, vs-dark, hc-black
         options: { type: Object, default: () => { } },
         fileName: '' // 对应的虚拟文件名称
     },

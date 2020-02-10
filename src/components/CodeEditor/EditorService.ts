@@ -10,6 +10,7 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languages不能import * as monaco from 'monaco-editor'
 // import * as monaco from 'monaco-editor'
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
+import TextMateTheme from './TextMateTheme'
 import CSharpFeatures from './CSharpFeatures'
 import TypeScriptFeatures from './TypeScriptFeatures'
 import { IModelNode, IDesignNode } from '@/design/IDesignNode'
@@ -37,14 +38,14 @@ async function init() {
             }
         }
     })
-
     monaco.languages.register({ id: 'csharp' })
-
     // map of monaco "language id's" to TextMate scopeNames
     const grammars = new Map()
     grammars.set('csharp', 'source.cs')
     await wireTmGrammars(registry, grammars)
 
+    // 注册Theme
+    TextMateTheme(monaco)
     // 初始化CS功能
     CSharpFeatures(monaco)
     // 初始化TS功能
