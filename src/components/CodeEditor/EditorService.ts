@@ -10,6 +10,7 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languages不能import * as monaco from 'monaco-editor'
 // import * as monaco from 'monaco-editor'
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
+import { Docomment } from './CSharpFeatures/Docomment/Docomment'
 import TextMateTheme from './TextMateTheme'
 import CSharpFeatures from './CSharpFeatures'
 import TypeScriptFeatures from './TypeScriptFeatures'
@@ -20,15 +21,15 @@ import ModelType from '@/design/ModelType'
 import { loadWASM } from 'onigasm'
 import { Registry, StackElement, INITIAL } from 'monaco-textmate'
 
-init()
+init();
 
 /** 初始化代码编辑服务 */
 async function init() {
     // 初始化Textmate
     try {
-        await loadWASM('/dev/onigasm.wasm')
+        await loadWASM('/dev/onigasm.wasm');
     } catch { //防止开发时热加载
-        return
+        // return
     }
     const registry = new Registry({
         getGrammarDefinition: async (scopeName) => {
@@ -37,19 +38,24 @@ async function init() {
                 content: await (await fetch('/dev/csharp.tmLanguage.json')).text()
             }
         }
-    })
-    monaco.languages.register({ id: 'csharp' })
+    });
+    // 先注册csharp language，因为自定义monaco webpack plugin没有加载默认csharp
+    monaco.languages.register({ id: 'csharp' });
     // map of monaco "language id's" to TextMate scopeNames
-    const grammars = new Map()
-    grammars.set('csharp', 'source.cs')
-    await wireTmGrammars(registry, grammars)
+    const grammars = new Map();
+    grammars.set('csharp', 'source.cs');
+    await wireTmGrammars(registry, grammars);
 
+    // Docomment hook
+    monaco.editor.onDidCreateEditor(editor => {
+        Docomment.Hook(editor);
+    });
     // 注册Theme
-    TextMateTheme(monaco)
+    TextMateTheme(monaco);
     // 初始化CS功能
-    CSharpFeatures(monaco)
+    CSharpFeatures(monaco);
     // 初始化TS功能
-    TypeScriptFeatures(monaco)
+    TypeScriptFeatures(monaco);
 }
 
 class TokenizerState implements monaco.languages.IState {
