@@ -1,5 +1,4 @@
 import { monaco } from "../../EditorService";
-import { EditorApi } from "./EditorApi";
 import { CodeType } from "./CodeType";
 import { Configuration } from "./Configuration";
 import { StringUtil } from "./StringUtil";
@@ -10,7 +9,6 @@ export class Docomment {
     private static _config: Configuration = new Configuration();
     private static _event: monaco.editor.IModelContentChangedEvent;
     private static _activeEditor: monaco.editor.ICodeEditor;
-    private static _vsCodeApi: EditorApi;
     private static _isEnterKey: boolean = false;
 
     /** Hook ICodeEditor */
@@ -21,7 +19,6 @@ export class Docomment {
                 codeChanged.dispose(); // 不是移除hook
             } else { // Detect Language for csharp
                 this._activeEditor = editor;
-                this._vsCodeApi = new EditorApi(editor);
                 this._event = e;
 
                 // Can Fire Document Comment
@@ -53,7 +50,7 @@ export class Docomment {
         }
 
         // NG: ActiveChar is NULL
-        const activeChar: string = this._vsCodeApi.ReadCharAtCurrent();
+        const activeChar: string = this.ReadCharAtCurrent();
         // console.log('activeChar = ', activeChar);
         if (activeChar == null) {
             return false;
@@ -75,7 +72,7 @@ export class Docomment {
         }
 
         // NG: '////'
-        const activeLine: string = this._vsCodeApi.ReadLineAtCurrent();
+        const activeLine: string = this.ReadLineAtCurrent();
         if (isActivationKey) {
             // NG: '////'
             if (!SyntacticAnalysisCSharp.IsDocCommentStrict(activeLine, this._config.syntax)) {
@@ -107,7 +104,7 @@ export class Docomment {
     }
 
     private static GetCode(): string {
-        const code: string = this._vsCodeApi.ReadNextCodeFromCurrent(this._config.eol);
+        const code: string = this.ReadNextCodeFromCurrent(this._config.eol);
         const removedAttr: string = code.split(this._config.eol).filter(line => !SyntacticAnalysisCSharp.IsAttribute(line.trim())).join('');
         return removedAttr;
     }
@@ -117,7 +114,7 @@ export class Docomment {
         // If the previous line was a doc comment and we hit enter.
         // Extend the doc comment without generating anything else,
         // even if there's a method or something next line.
-        if (!this._config.activateOnEnter && this._isEnterKey && SyntacticAnalysisCSharp.IsDocComment(this._vsCodeApi.ReadLineAtCurrent(), this._config.syntax)) {
+        if (!this._config.activateOnEnter && this._isEnterKey && SyntacticAnalysisCSharp.IsDocComment(this.ReadLineAtCurrent(), this._config.syntax)) {
             return CodeType.Comment;
         }
 
@@ -247,37 +244,37 @@ export class Docomment {
         // }
 
         // Format
-        const indentBaseLine: string = this._vsCodeApi.ReadLineAtCurrent();
+        const indentBaseLine: string = this.ReadLineAtCurrent();
         const indent: string = StringUtil.GetIndent(code, indentBaseLine, this._config.insertSpaces, this._config.detectIdentation);
         const docomment: string = FormatterCSharp.Format(docommentList, indent, this._config.syntax, this._config.activateOnEnter);
         return docomment;
     }
 
     private static WriteDocomment(code: string, codeType: CodeType, docomment: string): void {
-        const position: monaco.Position = this._vsCodeApi.GetActivePosition();
+        const position: monaco.Position = this.GetActivePosition();
 
         if (codeType === CodeType.Comment) {
-            const indentBaseLine: string = this._vsCodeApi.ReadPreviousLineFromCurrent();
+            const indentBaseLine: string = this.ReadPreviousLineFromCurrent();
             const indent: string = StringUtil.GetIndent(code, indentBaseLine, this._config.insertSpaces, this._config.detectIdentation);
             const indentLen: number = StringUtil.GetIndentLen(indent, this._config.insertSpaces, this._config.detectIdentation);
-            const insertPosition: monaco.Position = this._vsCodeApi.GetPosition(position.lineNumber + 1, indentLen - 1);
-            this._vsCodeApi.InsertText(insertPosition, docomment);
+            const insertPosition: monaco.Position = this.GetPosition(position.lineNumber + 1, indentLen - 1);
+            this.InsertText(insertPosition, docomment);
         } else {
             if (this._isEnterKey) {
-                const active: monaco.Position = this._vsCodeApi.GetActivePosition();
-                const anchor: monaco.Position = this._vsCodeApi.GetPosition(active.lineNumber + 1, active.column);
-                const replaceSelection = this._vsCodeApi.GetSelectionByPosition(anchor, active);
-                this._vsCodeApi.ReplaceText(replaceSelection, docomment);
+                const active: monaco.Position = this.GetActivePosition();
+                const anchor: monaco.Position = this.GetPosition(active.lineNumber + 1, active.column);
+                const replaceSelection = this.GetSelectionByPosition(anchor, active);
+                this.ReplaceText(replaceSelection, docomment);
             } else {
-                const insertPosition: monaco.Position = this._vsCodeApi.ShiftPositionChar(position, 1);
-                this._vsCodeApi.InsertText(insertPosition, docomment);
+                const insertPosition: monaco.Position = this.ShiftPositionChar(position, 1);
+                this.InsertText(insertPosition, docomment);
             }
         }
     }
 
     private static MoveCursorTo(code: string, codeType: CodeType, docomment: string): void {
-        const curPosition = this._vsCodeApi.GetActivePosition();
-        const indentBaseLine: string = this._vsCodeApi.ReadLineAtCurrent();
+        const curPosition = this.GetActivePosition();
+        const indentBaseLine: string = this.ReadLineAtCurrent();
         const indent: string = StringUtil.GetIndent(code, indentBaseLine, this._config.insertSpaces, this._config.detectIdentation);
         const indentLen: number = StringUtil.GetIndentLen(indent, this._config.insertSpaces, this._config.detectIdentation);
         const line = curPosition.lineNumber + SyntacticAnalysisCSharp.GetLineOffset(this._config.syntax, codeType);
@@ -285,7 +282,181 @@ export class Docomment {
             this._activeEditor.setPosition({ lineNumber: line, column: indentLen + 4 });
         }, 1);
         // const character = indentLen - 1 + docomment.length;
-        // this._vsCodeApi.MoveSelection(line, character);
+        // this.MoveSelection(line, character);
     }
+
+    //#region ====Editor Api====
+    private static GetActivePosition(): monaco.Position {
+        // return this._activeEditor.selection.active;
+        // console.log("GetActivePosition: ", this._activeEditor.getPosition());
+        return this._activeEditor.getPosition();
+    }
+
+    private static GetActiveLine(): number {
+        return this.GetActivePosition().lineNumber;
+    }
+
+    private static GetLineCount(): number {
+        //return this._activeEditor.document.lineCount;
+        return this._activeEditor.getModel().getLineCount();
+    }
+
+    private static GetActiveCharPosition(): number {
+        //return this._activeEditor.selection.active.character;
+        //return this._activeEditor.getSelection().getPosition().column;
+        return this._activeEditor.getPosition().column - 1;
+    }
+
+    private static GetPosition(line: number, charcter: number): monaco.Position {
+        return new monaco.Position(line, charcter);
+    }
+
+    private static ShiftPositionLine(position: monaco.Position, offset: number): monaco.Position {
+        return this.GetPosition(position.lineNumber + offset, position.column);
+    }
+
+    private static ShiftPositionChar(position: monaco.Position, offset: number): monaco.Position {
+        return this.GetPosition(position.lineNumber, position.column + offset);
+    }
+
+    private static GetSelection(line: number, charcter: number): monaco.Selection {
+        return new monaco.Selection(line, charcter, line, charcter);
+    }
+
+    private static GetSelectionByPosition(anchor: monaco.Position, active: monaco.Position): monaco.Selection {
+        return new monaco.Selection(anchor.lineNumber, anchor.column, active.lineNumber, active.column);
+    }
+
+    private static MoveSelection(line: number, charcter: number): void {
+        // const move: monaco.Selection = this.GetSelection(line, charcter);
+        // this._activeEditor.selection = move;
+        // this._activeEditor.setSelection(move);
+        console.log("SetPosition to: ", line, charcter);
+        setTimeout(() => {
+            this._activeEditor.setPosition(new monaco.Position(line, 12));
+            console.log("NewPosition:", this._activeEditor.getPosition());
+        }, 1);
+
+        //this._activeEditor.setSelection(new monaco.Selection(line, 1, line, 12));
+        // var range = new monaco.Range(line, 12, line, 12);
+        // var selection = new monaco.Selection(line, 12, line, 12);
+        //this._activeEditor.executeEdits("", [{ range: range, text: "", forceMoveMarkers: true }], [selection]);
+
+    }
+
+    private static InsertText(position: monaco.Position, text: string) {
+        // console.log("InsertText: ", position, text);
+        // this._activeEditor.edit((editBuilder) => {
+        //     editBuilder.insert(position, text);
+        // });
+        var range = new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column);
+        var op = { range: range, text: text, forceMoveMarkers: true };
+        this._activeEditor.executeEdits("Docomment", [op]);
+    }
+
+    private static ReplaceText(selection: monaco.Selection, text: string) {
+        console.log("ReplaceText: ", selection, text);
+        // this._activeEditor.edit((editBuilder) => {
+        //     editBuilder.replace(selection, text);
+        // });
+        var op = { range: selection, text: text, forceMoveMarkers: true };
+        this._activeEditor.executeEdits("Docomment", [op]);
+    }
+
+    private static ReadLine(line: number): string {
+        //return this._activeEditor.document.lineAt(line).text;
+        return this._activeEditor.getModel().getLineContent(line);
+    }
+
+    private static ReadLineAtCurrent(): string {
+        // console.log('GetActiveLine:', this.GetActiveLine());
+        return this.ReadLine(this.GetActiveLine());
+    }
+
+    private static ReadCharAtCurrent(): string {
+        // console.log("ReadLine = " + this.ReadLineAtCurrent());
+        return this.ReadLineAtCurrent().charAt(this.GetActiveCharPosition());
+    }
+
+    private static ReadNextCodeFromCurrent(eol: string = '\n'): string {
+        const lineCount: number = this.GetLineCount();
+        const curLine: number = this.GetActiveLine();
+
+        let code = '';
+        for (let i: number = curLine; i < lineCount - 1; i++) {
+
+            const line: string = this.ReadLine(i + 1);
+
+            // Skip empty line
+            if (StringUtil.IsNullOrWhiteSpace(line)) continue;
+
+            code += line + eol;
+
+            // Detect start of code
+            if (!StringUtil.IsCodeBlockStart(line)) {
+                continue;
+            }
+
+            return StringUtil.RemoveComment(code);
+        }
+
+        return null;
+    }
+
+    private static ReadPreviousCodeFromCurrent(): string {
+        const curLine: number = this.GetActiveLine();
+
+        let code = '';
+        for (let i: number = curLine; 0 < i; i--) {
+
+            const line: string = this.ReadLine(i - 1);
+
+            // Skip empty line
+            if (StringUtil.IsNullOrWhiteSpace(line)) continue;
+
+            code += line;
+
+            // Detect start of code
+            if (!StringUtil.IsCodeBlockStart(line)) {
+                continue;
+            }
+
+            return code;
+        }
+
+        return null;
+    }
+
+    private static ReadPreviousLineFromCurrent(): string {
+        const curLine: number = this.GetActiveLine();
+
+        for (let i: number = curLine; 0 < i; i--) {
+
+            // Skip empty line
+            const line: string = this.ReadLine(i - 1);
+            if (StringUtil.IsNullOrWhiteSpace(line)) continue;
+
+            return line;
+        }
+
+        return null;
+    }
+
+    private static ReadNextLineFromCurrent(): string {
+        const lineCount: number = this.GetLineCount();
+        const curLine: number = this.GetActiveLine();
+
+        for (let i: number = curLine; i < lineCount - 1; i++) {
+
+            // Skip empty line
+            const line: string = this.ReadLine(i + 1);
+            if (StringUtil.IsNullOrWhiteSpace(line)) continue;
+
+            return line;
+        }
+
+        return null;
+    }
+    //#endregion
 
 }
