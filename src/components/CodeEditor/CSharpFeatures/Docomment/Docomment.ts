@@ -257,7 +257,7 @@ export class Docomment {
             const indentBaseLine: string = this.ReadPreviousLineFromCurrent();
             const indent: string = StringUtil.GetIndent(code, indentBaseLine, this._config.insertSpaces, this._config.detectIdentation);
             const indentLen: number = StringUtil.GetIndentLen(indent, this._config.insertSpaces, this._config.detectIdentation);
-            const insertPosition: monaco.Position = this.GetPosition(position.lineNumber + 1, indentLen - 1);
+            const insertPosition: monaco.Position = this.GetPosition(position.lineNumber + 1, indentLen);
             this.InsertText(insertPosition, docomment);
         } else {
             if (this._isEnterKey) {
