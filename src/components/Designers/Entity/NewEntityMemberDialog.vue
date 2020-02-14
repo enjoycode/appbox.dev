@@ -134,6 +134,7 @@
                             args.push(this.viewModel.DefaultValue)
                         }
                     } else if (this.viewModel.EntityMemberType === 2) { // EntityRef
+                        args.push(this.viewModel.AllowNull)
                         var refIdStr = this.viewModel.RefIds.join(',')
                         args.push(refIdStr)
                         args.push(this.viewModel.IsReverse)
