@@ -187,8 +187,8 @@ class ModelLibManager {
     }
 
     /**
-     * 用于保存服务模型后更新声明
-     * @param serviceModelId 服务模型标识
+     * 用于保存实体或服务服务模型后更新声明
+     * @param modelId 实体或服务模型标识
      */
     update(type: ModelType, modelId: string) {
         var service = this.getDeclareService(type);
