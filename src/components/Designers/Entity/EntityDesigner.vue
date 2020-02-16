@@ -84,6 +84,8 @@ import EntitySetDesigner from './EntitySetDesigner'
 import EntityMemberTypes from './EntityMemberTypes'
 import DataFieldTypes from './DataFieldTypes'
 import ModelReferenceType from '@/design/ModelReferenceType'
+import ModelType from '@/design/ModelType'
+import { modelLibs } from '../../CodeEditor/EditorService'
 
 import DataStoreKind from '@/design/DataStoreKind'
 import SysStoreOptions from './SysStoreOptions'
@@ -278,6 +280,7 @@ export default {
             var _that = this
             $runtime.channel.invoke('sys.DesignService.SaveModel', [this.target.Type, this.target.ID]).then(res => {
                 _that.$message.success('保存成功')
+                modelLibs.update(ModelType.Entity, this.target.ID)
             }).catch(err => {
                 _that.$message.error('保存失败: ' + err)
             })

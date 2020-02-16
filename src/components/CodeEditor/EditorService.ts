@@ -111,7 +111,7 @@ function wireTmGrammars(registry: Registry, languages: Map<string, string>) {
 
 //TODO: 以下ModelLib相关移至单独文件
 
-interface ServiceDeclare {
+interface ModelDeclare {
     Name: string;
     Declare: string;
 }
@@ -140,31 +140,49 @@ class ModelLibManager {
         this.hasLoad = true;
 
         // monaco.languages.typescript.javascriptDefaults.addExtraLib('declare namespace sys {const a: string;}', 'a.d.ts');
-
+        //异步加载所有实体模型的声明
+        this.loadAll(ModelType.Entity);
         //异步加载所有服务模型的声明
-        let ls = monaco.languages.typescript.javascriptDefaults;
-        $runtime.channel.invoke("sys.DesignService.GenServiceDeclare", [null]).then(res => {
-            let declares = res as ServiceDeclare[];
-            declares.forEach(d => {
-                let t = ls.addExtraLib(d.Declare, d.Name + '.d.ts');
-                this.libs.push(new ModelLib(d.Name, t));
-            });
-        }).catch(err => {
-            console.log("加载服务声明错误: " + err); // TODO: show to IDE output pad.
-        });
-
-        //同步生成实体、枚举、视图模型声明
+        this.loadAll(ModelType.Service);
+        //同步生成视图模型声明
         let viewNodes = store.tree.getAllModelNodes(DesignNodeType.ViewModelNode, ModelType.View) as IDesignNode[];
         viewNodes.forEach(n => {
             this.addView(n as IModelNode);
         });
     }
 
+    private getDeclareService(type: ModelType): string {
+        if (type == ModelType.Service) {
+            return "sys.DesignService.GenServiceDeclare";
+        } else if (type == ModelType.Entity) {
+            return "sys.DesignService.GenEntityDeclare";
+        } else {
+            throw "NotImpl";
+        }
+    }
+
+    /** 仅用于初始加载 */
+    private loadAll(type: ModelType) {
+        let service = this.getDeclareService(type);
+        $runtime.channel.invoke(service, [null]).then(res => {
+            let declares = res as ModelDeclare[];
+            let ls = monaco.languages.typescript.javascriptDefaults;
+            declares.forEach(d => {
+                let t = ls.addExtraLib(d.Declare, d.Name + '.d.ts');
+                this.libs.push(new ModelLib(d.Name, t));
+            });
+        }).catch(err => {
+            console.log("加载模型声明错误: " + err); // TODO: show to IDE output pad.
+        });
+    }
+
     /** 用于初次加载或新建完视图模型生成相应的声明 */
     addView(viewNode: IModelNode) {
+        // TODO:考虑ViewDesigner编译生成,然后保存至ViewModel
         let ls = monaco.languages.typescript.javascriptDefaults;
-        let name = viewNode.App + '.Views.' + viewNode.Name;
-        let t = ls.addExtraLib(this.genViewDeclare(viewNode), name + '.d.ts');
+        let name = `${viewNode.App}.Views.${viewNode.Name}`;
+        let declare = `declare namespace ${viewNode.App}.Views{const ${viewNode.Name}:Promise<Component>;}`;
+        let t = ls.addExtraLib(declare, `${name}.d.ts`);
         this.libs.push(new ModelLib(name, t));
     }
 
@@ -172,9 +190,10 @@ class ModelLibManager {
      * 用于保存服务模型后更新声明
      * @param serviceModelId 服务模型标识
      */
-    updateService(serviceModelId: string) {
-        $runtime.channel.invoke("sys.DesignService.GenServiceDeclare", [serviceModelId]).then(res => {
-            let declare = res[0] as ServiceDeclare;
+    update(type: ModelType, modelId: string) {
+        var service = this.getDeclareService(type);
+        $runtime.channel.invoke(service, [modelId]).then(res => {
+            let declare = res[0] as ModelDeclare;
             let ls = monaco.languages.typescript.javascriptDefaults;
             // 先移除旧的
             let index = this.libs.findIndex(t => t.name == declare.Name);
@@ -186,18 +205,8 @@ class ModelLibManager {
             let t = ls.addExtraLib(declare.Declare, declare.Name + '.d.ts');
             this.libs.push(new ModelLib(declare.Name, t));
         }).catch(err => {
-            console.log("更新服务声明错误: " + err); // TODO: show to IDE output pad.
+            console.log("更新模型声明错误: " + err); // TODO: show to IDE output pad.
         });
-    }
-
-    /** 生成ViewModel的声明 */
-    private genViewDeclare(viewNode: IModelNode): string { //TODO:考虑ViewDesigner编译生成,然后保存至ViewModel
-        let d = "declare namespace ";
-        d += viewNode.App;
-        d += ".Views{const ";
-        d += viewNode.Name;
-        d += ":Promise<Component>;}";
-        return d;
     }
 
 }

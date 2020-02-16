@@ -22,6 +22,7 @@ import Vue from 'vue'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import debounce from 'lodash.debounce'
 import DesignStore from '@/design/DesignStore'
+import ModelType from '@/design/ModelType'
 import DebugService from './DebugService'
 import ReferencesDialog from './ReferencesDialog'
 import InvokeDialog from './InvokeDialog'
@@ -135,7 +136,7 @@ export default {
             let _this = this
             $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
                 _this.$message.success('保存成功')
-                modelLibs.updateService(this.target.ID)
+                modelLibs.update(ModelType.Service, this.target.ID)
             }).catch(err => {
                 _this.$message.error('保存失败: ' + err)
             })
@@ -192,7 +193,7 @@ export default {
                     ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Name,
                     Method: method,
                     Breakpoints: breakpoints,
-                    Designer: _this})
+                    Designer: _this                })
             }).catch(() => {
                 DebugService.designer = null
                 _this.$message.error('Cannot find target method')

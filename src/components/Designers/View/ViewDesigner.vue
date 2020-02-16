@@ -327,7 +327,8 @@ export default {
             }
 
             var _this = this
-            $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID, template, script, styles, JSON.stringify(runtimeCode)]).then(res => {
+            let args = [node.Type, node.ID, template, script, styles, JSON.stringify(runtimeCode)]
+            $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
                 _this.$message.success('Save view succeed.')
             }).catch(err => {
                 _this.$message.error(err)
