@@ -1,4 +1,5 @@
-export class EntityBase {
+/** 映射至服务端的实体 */
+export class Entity {
     private $T: string;
 
     constructor(modelId: string) {

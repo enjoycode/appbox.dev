@@ -22,5 +22,14 @@ export default {
     },
     offEvent(eventId, callback) {
         eventBus.$off(eventId, callback)
+    },
+
+    /** 根据名称(eg: sys.Order)找到相应的ID(eg:"12321324242")，找不到报错 */ //TODO:暂放在这里
+    getEntityIdByName(appName, entityModelName) {
+        let apps = this.tree.designNodes[1].Nodes
+        let app = apps.find(t => t.Text === appName)
+        let entities = app.Nodes[0];
+        return entities.Nodes.find(t => t.Name === entityModelName).ID
     }
+
 }

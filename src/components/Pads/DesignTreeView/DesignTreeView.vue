@@ -120,7 +120,7 @@ export default Vue.extend({
             }
             return loopFind(this.designNodes, type, id)
         },
-
+        
         /** 用于新建成功返回后刷新模型根节点或添加新建的节点 */
         onNewNode(nodeInfo) {
             // TODO:待重构

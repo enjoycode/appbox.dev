@@ -1,4 +1,4 @@
-import { EntityBase } from './EntityBase'
+import { Entity } from './Entity'
 
 // 参考: https://github.com/airyland/vux/blob/v2/src/plugins/device/index.js
 const _isAndroid = /(Android);?[\s/]+([\d.]+)?/.test(navigator.userAgent)
@@ -40,7 +40,7 @@ export default {
             } else {
                 //判断是否实体
                 if (it.hasOwnProperty(typeProp) && typeof it[typeProp] === 'string' && !isNaN(it[typeProp].charAt(0))) {
-                    Object.assign(it, new EntityBase(""))
+                    Object.assign(it, new Entity(""))
                 }
 
                 for (const key in it) {
@@ -59,7 +59,7 @@ export default {
 
     /** 根据模型标识新建实体实例 */
     newEntity(modelId) {
-        return new EntityBase(modelId)
+        return new Entity(modelId)
     },
 
     //TODO: 提供require([js1, js2])加载外部js
