@@ -23,38 +23,32 @@ export default {
      */
     isDevelopment() { return this._isDevelopment },
 
-    /** 将普通实体数据对象转为实体(代理) */
-    resolveEntity(root) {
+    /** 将数据对象转为实体(代理) */
+    parseEntity(root) {
         const typeProp = '$T'
 
         //TODO:考虑js Proxy方案，另考虑channel的Protocol
         function walk(it) {
             if (typeof it !== 'object' || !it || it instanceof Date) {
-                return
+                return it
             }
-    
             if (Array.isArray(it)) {
                 for (let i = 0; i < it.length; i++) {
-                    walk(it[i])
+                    it[i] = walk(it[i])
                 }
             } else {
                 //判断是否实体
                 if (it.hasOwnProperty(typeProp) && typeof it[typeProp] === 'string' && !isNaN(it[typeProp].charAt(0))) {
-                    Object.assign(it, new Entity(""))
+                    it = Object.assign(new Entity(""), it)
                 }
-
                 for (const key in it) {
-                    if (it[key] && typeof it[key] === 'object' && it[key][refProp]) { // 是引用对象
-                        it[key] = objrefs[it[key][refProp]]
-                    } else {
-                        walk(it[key])
-                    }
+                    it[key] = walk(it[key])
                 }
             }
+            return it
         }
-    
-        walk(root)
-        return root
+
+        return walk(root)
     },
 
     /** 根据模型标识新建实体实例 */

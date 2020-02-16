@@ -28,6 +28,8 @@ export default function (monaco) {
         '   isWechat(): boolean;',
         '   isAlipay(): boolean;',
         '   isDevelopment(): boolean;',
+        '   /** 将数据对象转换为实体 */',
+        '   parseEntity(root:any):void;',
         '   getWxSdk(): Promise<any>;',
         '}',
         'declare const $runtime: Runtime;',
