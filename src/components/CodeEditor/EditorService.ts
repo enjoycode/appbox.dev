@@ -1,6 +1,6 @@
 // https://microsoft.github.io/monaco-editor/
 
-// 注意: 
+// 注意: How to hack monaco & typescript service，目前ts版本3.7.5
 //1. 修改monaco-editor/esm/vs/language/typescript/lib/typescriptServices.js最后加export default ts;
 //2. 同时修改typescriptServices.d.ts（从node_modules/typescript复制）
 // declare module "monaco-editor/esm/vs/language/typescript/lib/typescriptServices" {
