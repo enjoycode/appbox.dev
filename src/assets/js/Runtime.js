@@ -52,8 +52,8 @@ export default {
     },
 
     /** 根据模型标识新建实体实例 */
-    newEntity(modelId) {
-        return new Entity(modelId)
+    newEntity(modelId, obj) {
+        return Object.assign(new Entity(modelId), obj)
     },
 
     //TODO: 提供require([js1, js2])加载外部js
