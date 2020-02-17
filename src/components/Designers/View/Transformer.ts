@@ -2,6 +2,8 @@
 // https://blog.scottlogic.com/2017/05/02/typescript-compiler-api-revisited.html
 // https://blog.scottlogic.com/2015/01/20/typescript-compiler-api.html
 // https://github.com/Microsoft/TypeScript/pull/13940
+// https://typescript-api-playground.glitch.me/#example=ts-type-checking-source
+// https://github.com/madou/typescript-transformer-handbook/blob/master/translations/en/transformer-handbook.md
 
 //TODO:暂简单实现，待使用TypeChecker检查模型类型
 
@@ -76,7 +78,7 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
                     }
                 }
             }
-
+            
             return ts.visitEachChild(node, visit, context);
         }
 
