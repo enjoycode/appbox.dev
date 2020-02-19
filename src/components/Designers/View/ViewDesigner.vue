@@ -34,18 +34,15 @@
                             <el-checkbox v-model="routeEnable" :disabled="readOnly">List in route</el-checkbox>
                         </el-form-item>
                         <el-form-item label="Route Parent:">
-                            <el-input v-model="routeParent" :disabled="readOnly"></el-input>
+                            <!--TODO:考虑用选择器直接选择，目前输入-->
+                            <el-input v-model="routeParent" :disabled="readOnly" placeholder="eg: sys.Home"></el-input>
                         </el-form-item>
                         <el-form-item label="Custom Path:">
-                            <el-input v-model="routePath" :disabled="readOnly"></el-input>
+                            <el-input v-model="routePath" :disabled="readOnly" placeholder="eg: customers"></el-input>
                         </el-form-item>
                         <!-- <el-form-item label="Bind Permission:">
                             <el-select :disabled="readOnly" v-model="permissionValue" clearable placeholder="权限">
                                 <el-option label="管理员1" value="1">
-                                </el-option>
-                                <el-option label="管理员2" value="2">
-                                </el-option>
-                                <el-option label="管理员3" value="3">
                                 </el-option>
                             </el-select>
                         </el-form-item> -->
