@@ -33,6 +33,9 @@
                         <el-form-item>
                             <el-checkbox v-model="routeEnable" :disabled="readOnly">List in route</el-checkbox>
                         </el-form-item>
+                        <el-form-item label="Route Parent:">
+                            <el-input v-model="routeParent" :disabled="readOnly"></el-input>
+                        </el-form-item>
                         <el-form-item label="Custom Path:">
                             <el-input v-model="routePath" :disabled="readOnly"></el-input>
                         </el-form-item>
@@ -112,6 +115,7 @@ export default {
             panelVisible: 'first',
             deviceZoom: '100%',
             routeEnable: false, // 是否启用路由
+            routeParent: '', // 自定义路由的上级
             routePath: '', // 自定义路由的路径
             routeDialogVisible: false,
             previewer: null // 指向预览窗口内的实例，由预览窗口加载时设置
@@ -205,6 +209,7 @@ export default {
         // 视图模型加载成功
         onModelLoaded(model, byCheckout) {
             this.routeEnable = model.Route
+            this.routeParent = model.RouteParent
             this.routePath = model.RoutePath
 
             this.$refs.editor.$off('codeChanged') // 解绑代码变更事件
@@ -238,11 +243,10 @@ export default {
         /** 改变路由设置 */
         changeRouteSetting() {
             let _this = this
-            $runtime.channel.invoke('sys.DesignService.ChangeRouteSetting', [this.target.ID, this.routeEnable, this.routePath])
-                .then(res => {
+            let args = [this.target.ID, this.routeEnable, this.routeParent, this.routePath]
+            $runtime.channel.invoke('sys.DesignService.ChangeRouteSetting', args).then(res => {
                     _this.routeDialogVisible = false
-                })
-                .catch(err => {
+                }).catch(err => {
                     alert(err)
                 })
         },
