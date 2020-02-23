@@ -2,6 +2,7 @@
 
 import { Message, MessageBox } from 'element-ui'
 import store from '@/design/DesignStore'
+import DesignNodeType from '@/design/DesignNodeType'
 
 export default function () {
     var selectNode = store.tree.currentNode
@@ -10,8 +11,8 @@ export default function () {
         return false
     }
     var nodeType = selectNode.Type
-    // FolderNode = 6
-    if ((nodeType < 6 && nodeType !== 3) || (nodeType === 6 && selectNode.Nodes.length > 0)) {
+    if ((nodeType < DesignNodeType.FolderNode && nodeType !== DesignNodeType.ApplicationNode)
+        || (nodeType === DesignNodeType.FolderNode && selectNode.Nodes.length > 0)) {
         Message.warning('Can not delete this node.')
         return false
     }
@@ -22,10 +23,10 @@ export default function () {
     }).then(() => {
         // 获取实体属性
         $runtime.channel.invoke('sys.DesignService.DeleteNode', [selectNode.Type, selectNode.ID]).then(res => {
+            // 移除选中节点对应的tab
+            store.designers.removeTabByNode(selectNode)  
             // 移除选中节点
             store.tree.onDeleteNode(selectNode, res)
-            // 移除选中节点对应的tab
-            store.designers.removeTabByNode(selectNode)
             Message.success('Delete succeed')
         }).catch(err => {
             Message.error(err)

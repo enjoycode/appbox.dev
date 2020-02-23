@@ -200,6 +200,16 @@ class ModelLibManager {
         });
     }
 
+    /**
+     * 用于删除模型时同步移除声明
+     * @param path eg: "sys.Services.HelloService"
+     */
+    remove(path: string) {
+        if (this.libs[path]) {
+            this.libs[path].dispose();
+            delete this.libs[path];
+        }
+    }
 }
 
 let modelLibs = new ModelLibManager();

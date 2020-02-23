@@ -25,6 +25,7 @@ import DataStoreKind from '@/design/DataStoreKind'
 import DesignNodeType from '@/design/DesignNodeType'
 import ModelType from '@/design/ModelType'
 import { IDesignNode, IModelNode, IEntityModelNode } from '@/design/IDesignNode'
+import { modelLibs } from '@/components/CodeEditor/EditorService'
 
 const iconClasses = {
     n0: 'fas fa-folder fa-fw',
@@ -139,10 +140,20 @@ export default Vue.extend({
 
         /** 用于服务端删除成功后刷新模型根节点或移除删除的节点 */
         onDeleteNode(node, /* String */ rootNodeID) {
-            // if (rootNodeID) { // 表示自动签出了模型根节点，则刷新根节点
-            let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID)
-            this.onNodeCheckout(rootNode, true)
-            // } else { // 否则简单移除
+            // 移除前端声明 TODO:向上查找获取路径
+            if (node.Type === DesignNodeType.ServiceModelNode) {
+                modelLibs.remove(node.App + '.Services.' + node.Name)
+            } else if (node.Type === DesignNodeType.ViewModelNode) {
+                modelLibs.remove(node.App + '.Views.' + node.Name)
+            } else if (node.Type === DesignNodeType.EntityModelNode) {
+                modelLibs.remove(node.App + '.Entities.' + node.Name)
+            }
+            // 如果自动签出了模型根节点，则刷新根节点
+            if (rootNodeID) { 
+                let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID)
+                this.onNodeCheckout(rootNode, true)
+            }
+            // 找到待删除的节点并移除
             var loopFind = function (nodes, type, id) {
                 for (var index = 0; index < nodes.length; index++) {
                     var n = nodes[index]
@@ -155,8 +166,8 @@ export default Vue.extend({
                     }
                 }
             }
+            // TODO:优化查找
             loopFind(this.designNodes, node.Type, node.ID)
-            // }
         },
         /** 选中node，不激活相应的设计器 */
         selectNode(data) {
