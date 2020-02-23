@@ -118,19 +118,13 @@ interface ModelDeclare {
     Declare: string;
 }
 
-class ModelLib {
-    readonly name: string;
-    readonly target: monaco.IDisposable;
-
-    constructor(name: string, target: monaco.IDisposable) {
-        this.name = name;
-        this.target = target;
-    }
+interface IModelLibs {
+    [path: string] : monaco.IDisposable; //path: eg: sys.Services.HelloService
 }
 
 class ModelLibManager {
     private hasLoad: boolean; // 是否已经加载过
-    private libs: ModelLib[] = [];
+    private libs: IModelLibs = {};
 
     /**
      * 如果没有则生成虚拟代码（从服务端设计时加载服务模型的虚拟代码）
@@ -170,8 +164,7 @@ class ModelLibManager {
             let declares = res as ModelDeclare[];
             let ls = monaco.languages.typescript.javascriptDefaults;
             declares.forEach(d => {
-                let t = ls.addExtraLib(d.Declare, d.Name + '.d.ts');
-                this.libs.push(new ModelLib(d.Name, t));
+                this.libs[d.Name] = ls.addExtraLib(d.Declare, d.Name + '.d.ts');
             });
         }).catch(err => {
             console.log("加载模型声明错误: " + err); // TODO: show to IDE output pad.
@@ -184,8 +177,7 @@ class ModelLibManager {
         let ls = monaco.languages.typescript.javascriptDefaults;
         let name = `${viewNode.App}.Views.${viewNode.Name}`;
         let declare = `declare namespace ${viewNode.App}.Views{const ${viewNode.Name}:Promise<Component>;}`;
-        let t = ls.addExtraLib(declare, `${name}.d.ts`);
-        this.libs.push(new ModelLib(name, t));
+        this.libs[name] = ls.addExtraLib(declare, `${name}.d.ts`);
     }
 
     /**
@@ -197,15 +189,12 @@ class ModelLibManager {
         $runtime.channel.invoke(service, [modelId]).then(res => {
             let declare = res[0] as ModelDeclare;
             let ls = monaco.languages.typescript.javascriptDefaults;
-            // 先移除旧的
-            let index = this.libs.findIndex(t => t.name == declare.Name);
-            if (index >= 0) {
-                this.libs[index].target.dispose();
-                this.libs.splice(0, 1);
-            }
-            // 再重新加入
+            // 重新加入，version会自己累加
             let t = ls.addExtraLib(declare.Declare, declare.Name + '.d.ts');
-            this.libs.push(new ModelLib(declare.Name, t));
+            if (this.libs[declare.Name]) {
+                this.libs[declare.Name].dispose(); //TODO:检查是否还需要
+            }
+            this.libs[declare.Name] = t; //指向新的
         }).catch(err => {
             console.log("更新模型声明错误: " + err); // TODO: show to IDE output pad.
         });
