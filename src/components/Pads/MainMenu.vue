@@ -118,6 +118,10 @@
                 }
             },
             canExecute: function (menuName) {
+                if (menuName === 'ExportApp') {
+                    return true // 暂简单排除不需要选择节点的命令
+                }
+
                 var currentTreeNode = store.tree.currentNode
                 var activeDesigner = store.designers.getActiveDesigner()
                 if (!currentTreeNode) {

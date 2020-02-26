@@ -12,6 +12,7 @@ import NewApplicationCommand from './NewApplication'
 import NewPermissionCommand from './NewPermission'
 import NewFolderCommand from './NewFolder'
 import NewServiceCommand from './NewService'
+import ExportAppCommand from './ExportApp'
 
 export default {
     NewDataStore: NewDataStoreCommand,
@@ -27,5 +28,6 @@ export default {
     DeleteEnumItem: DeleteEnumItemCommand,
     NewApplication: NewApplicationCommand,
     NewFolder: NewFolderCommand,
-    NewService: NewServiceCommand
+    NewService: NewServiceCommand,
+    ExportApp: ExportAppCommand,
 }

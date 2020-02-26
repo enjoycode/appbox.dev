@@ -34,11 +34,6 @@
                 }
             }
         },
-        computed: {
-            treeOption() {
-                return { label: 'Text', children: 'Nodes' }
-            }
-        },
         methods: {
             onClose: function (e) {
                 this.$emit('close')
