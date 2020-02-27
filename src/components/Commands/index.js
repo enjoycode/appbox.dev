@@ -13,6 +13,7 @@ import NewPermissionCommand from './NewPermission'
 import NewFolderCommand from './NewFolder'
 import NewServiceCommand from './NewService'
 import ExportAppCommand from './ExportApp'
+import ImportAppCommand from './ImportApp'
 
 export default {
     NewDataStore: NewDataStoreCommand,
@@ -30,4 +31,5 @@ export default {
     NewFolder: NewFolderCommand,
     NewService: NewServiceCommand,
     ExportApp: ExportAppCommand,
+    ImportApp: ImportAppCommand,
 }

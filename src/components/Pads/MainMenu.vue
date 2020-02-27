@@ -118,7 +118,7 @@
                 }
             },
             canExecute: function (menuName) {
-                if (menuName === 'ExportApp') {
+                if (menuName === 'ExportApp' || menuName === 'ImportApp') {
                     return true // 暂简单排除不需要选择节点的命令
                 }
 
