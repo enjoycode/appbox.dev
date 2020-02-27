@@ -26,7 +26,7 @@ export default {
     },
     computed: {
         downloadUrl: function() {
-            return 'api/design/export/' + this.appName
+            return '/api/design/export/' + this.appName
         },
         okDisabled: function() {
             return !this.appName

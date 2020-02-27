@@ -1,6 +1,6 @@
 <template>
     <el-dialog title="Import Application" :visible.sync="visible" :close-on-click-modal="false" @close="onClose" width="400px">
-        <el-upload class="upload-demo" drag action="api/design/import">
+        <el-upload class="upload-demo" drag action="/api/design/import">
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">Drag package file here ，or <em>click to upload</em></div>
         </el-upload>
