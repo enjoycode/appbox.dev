@@ -91,6 +91,18 @@ export default Vue.extend({
     },
 
     methods: {
+        loadTree() {
+            if (this.loading) { return }
+            var _this = this
+            this.loading = true
+            $runtime.channel.invoke('sys.DesignService.LoadDesignTree', []).then(res => {
+                _this.designNodes = res
+                _this.loading = false
+            }).catch(err => {
+                _this.loading = false
+                _this.$message.error(err)
+            })
+        },
         filterNode(value, data) {
             if (!value) return true
             return data.Text.indexOf(value) !== -1
@@ -357,15 +369,7 @@ export default Vue.extend({
 
     mounted() {
         store.tree = this
-        var _this = this
-        this.loading = true
-        $runtime.channel.invoke('sys.DesignService.LoadDesignTree', []).then(res => {
-            _this.designNodes = res
-            _this.loading = false
-        }).catch(err => {
-            _this.loading = false
-            _this.$message.error(err)
-        })
+        this.loadTree()
         // 订阅事件
         store.onEvent('NodeCheckout', this.onNodeCheckout)
         store.onEvent('Publish', this.onPublish)

@@ -15,6 +15,8 @@ import NewServiceCommand from './NewService'
 import ExportAppCommand from './ExportApp'
 import ImportAppCommand from './ImportApp'
 
+import store from '@/design/DesignStore'
+
 export default {
     NewDataStore: NewDataStoreCommand,
     Checkout: CheckoutCommand,
@@ -23,7 +25,7 @@ export default {
     NewViewModel: NewViewModelCommand,
     NewEntity: NewEntityCommand,
     DeleteModel: DeleteModelCommand,
-    NewPermission : NewPermissionCommand,
+    NewPermission: NewPermissionCommand,
     NewEnumModel: NewEnumModelCommand,
     NewEnumItem: NewEnumItemCommand,
     DeleteEnumItem: DeleteEnumItemCommand,
@@ -32,4 +34,5 @@ export default {
     NewService: NewServiceCommand,
     ExportApp: ExportAppCommand,
     ImportApp: ImportAppCommand,
+    ReloadTree: function () { store.tree.loadTree() }
 }

@@ -59,7 +59,8 @@
                         { title: 'Delete', icon: 'fas fa-trash fa-fw', index: 'DeleteModel' },
                         { title: 'Rename', icon: 'fas fa-edit fa-fw', index: 'Rename' },
                         { title: 'Publish', icon: 'fas fa-archive fa-fw', index: 'Publish' },
-                        { title: 'Discard Changes', icon: 'fas fa-archive fa-fw', index: 'DiscardChanges' }
+                        { title: 'Discard Changes', icon: 'fas fa-archive fa-fw', index: 'DiscardChanges' },
+                        { title: 'Reload', icon: 'fas fa-sync fa-fw', index: 'ReloadTree' },
                     ]
                 },
                 {
@@ -118,7 +119,7 @@
                 }
             },
             canExecute: function (menuName) {
-                if (menuName === 'ExportApp' || menuName === 'ImportApp') {
+                if (menuName === 'ExportApp' || menuName === 'ImportApp' || menuName === 'ReloadTree') {
                     return true // 暂简单排除不需要选择节点的命令
                 }
 
