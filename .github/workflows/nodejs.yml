@@ -1,0 +1,41 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - run: npm ci
+    - run: npm run build --if-present
+    - name: Push to deploy repo
+      run: |
+        git config --global core.autocrlf input
+        git clone https://enjoycode:${{ secrets.CI_TOKEN }}@github.com/enjoycode/appbox.deploy.win bin/deploy
+        rm -rf bin/deploy/wwwroot/dev
+        cp -R dist bin/deploy/wwwroot/dev
+        echo "====git add===="
+        cd bin/deploy
+        git add -A
+        git status
+        echo "====git commit===="
+        git config --local user.email "enjoycode@icloud.com"
+        git config --local user.name "enjoycode"
+        git commit -m "CI by appbox.dev"
+        echo "====git push==="
+        git push origin master
+        echo "DONE"
