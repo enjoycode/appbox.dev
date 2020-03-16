@@ -69,7 +69,7 @@ export default {
             formdata.append('file', files[0])
             let _this = this
             axios({
-                url: '/api/blob/sys.DesignService.ValidateServiceDeps/sys.DesignService.UploadServiceDeps/' + this.targetNode.AppID,
+                url: '/api/blob/sys.DesignService.Validate3rdLib/sys.DesignService.Upload3rdLib/' + this.targetNode.App,
                 method: 'post',
                 data: formdata,
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
