@@ -64,7 +64,7 @@ export default {
         onFileChange(ev) {
             const files = ev.target.files
             if (!files) return
-
+            let fileName = files[0].name.split('.').slice(0, -1).join('.') // 不需要扩展名
             var formdata = new FormData()
             formdata.append('file', files[0])
             let _this = this
@@ -75,7 +75,10 @@ export default {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }).then(res => {
                 if (res.data) { // 返回true表示CLR组件
-                    // todo:判断当前列表是否已存在，不存在则添加入列表内
+                    // 判断当前列表是否已存在，不存在则添加入列表内
+                    if (_this.source.findIndex(t => t.key == fileName) < 0) {
+                        _this.source.push({ key: fileName, label: fileName, ext: true }) // 加入ext表示外部组件
+                    }
                 }
             }).catch(err => {
                 _this.$message.error(err.response.data)
