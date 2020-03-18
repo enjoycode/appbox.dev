@@ -321,11 +321,9 @@ export default Vue.extend({
         allowDrag(node) { // 用于判断节点是否可拖动
             let nodeType = node.data.Type
             if (nodeType === DesignNodeType.FolderNode) { // FolderNode判断模型根节点是否签出
-                let rootNode = this.getParentNodeByType(node, DesignNodeType.ModelRootNode)
-                if (!rootNode || rootNode.data.CheckoutBy !== 'Me') {
-                    return false
-                }
-            } else if (nodeType >= DesignNodeType.EntityModelNode && nodeType <= DesignNodeType.ReportModelNode) { // 模型节点判断当前节点及模型根节点是否签出
+                if(node.data.CheckoutBy !== 'Me') { return false }
+            } else if (nodeType >= DesignNodeType.EntityModelNode 
+                && nodeType <= DesignNodeType.ReportModelNode) { // 模型节点判断当前节点及模型根节点是否签出
                 if (node.data.CheckoutBy !== 'Me') {
                     return false
                 } else {
@@ -334,7 +332,7 @@ export default Vue.extend({
                         return false
                     }
                 }
-            } else {
+            } else { // 暂不支持其他类型节点拖动
                 return false
             }
             return true
@@ -350,8 +348,9 @@ export default Vue.extend({
                 }
             } else { // 源为ModelNode
                 if (tnode.Type === DesignNodeType.FolderNode || tnode.Type === DesignNodeType.ModelRootNode) { // 目标为Folder或ModelRoot
+                    if (type !== 'inner') { return false }
                     let targetAppNode = this.getParentNodeByType(dropNode, DesignNodeType.ApplicationNode)
-                    if (targetAppNode.data.ID !== snode.AppID || type !== 'inner') {
+                    if (targetAppNode.data.ID !== snode.App) {
                         return false
                     }
                 } else {
@@ -365,7 +364,8 @@ export default Vue.extend({
             let target = dropNode.data
             let args = [source.Type, source.ID, target.Type, target.ID, type]
             let _this = this
-            $runtime.channel.invoke('sys.DesignService.DragNode', args).catch(err => {
+            $runtime.channel.invoke('sys.DesignService.DragDropNode', args).catch(err => {
+                // TODO:失败回滚
                 _this.$message.error(err)
             })
         }
