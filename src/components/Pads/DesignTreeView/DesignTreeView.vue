@@ -133,7 +133,7 @@ export default Vue.extend({
             }
             return loopFind(this.designNodes, type, id)
         },
-        
+
         /** 用于新建成功返回后刷新模型根节点或添加新建的节点 */
         onNewNode(nodeInfo) {
             // TODO:待重构
@@ -161,7 +161,7 @@ export default Vue.extend({
                 modelLibs.remove(node.App + '.Entities.' + node.Name)
             }
             // 如果自动签出了模型根节点，则刷新根节点
-            if (rootNodeID) { 
+            if (rootNodeID) {
                 let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID)
                 this.onNodeCheckout(rootNode, true)
             }
@@ -214,7 +214,7 @@ export default Vue.extend({
             return result;
         },
         /** 从树中获取指定类型的模型节点 */
-        loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[], 
+        loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[],
             nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean, storeId/*实体模型存储标识*/) {
             nodes.forEach(node => {
                 if (node.Type == DesignNodeType.ApplicationNode) {
@@ -266,21 +266,24 @@ export default Vue.extend({
         },
 
         /** 签出节点成功后更新状态显示 */
-        onNodeCheckout(node, needUpdate) {
+        onNodeCheckout(node, needUpdate /* TODO:移除此参数 */) {
             node.CheckoutBy = 'Me'
             this.refreshNode(node)
-            // 判断是否签出模型根节点，是则开始刷新(待修改为不用刷新)
-            // if (node.Type === DesignNodeType.ModelRootNode) {
-            //     this.loading = true
-            //     let _this = this
-            //     $runtime.channel.invoke('sys.DesignService.RefreshModelRoot', [node.ID]).then(res => {
-            //         node.Nodes = res // todo:如何处理已展开的节点?
-            //         _this.loading = false
-            //     }).catch(err => {
-            //         _this.loading = false
-            //         _this.$message.error('刷新模型根节点失败: ' + err)
-            //     })
-            // }
+            // 判断是否签出模型根节点，是则开始刷新(目前更新所有子目录签出状态)
+            if (node.Type === DesignNodeType.ModelRootNode) {
+                let loopCheckout = function (tree, nodes) {
+                    if (!nodes) { return }
+                    for (let i = 0; i < nodes.length; i++) {
+                        const element = nodes[i]
+                        if (element.Type === DesignNodeType.FolderNode) {
+                            element.CheckoutBy = 'Me'
+                            tree.refreshNode(element)
+                        }
+                        loopCheckout(tree, element.Nodes)
+                    }
+                }
+                loopCheckout(this, node.Nodes)
+            }
         },
 
         /** 发布成功后更新所有签出节点的状态显示 */
@@ -302,6 +305,7 @@ export default Vue.extend({
                 loopCheckin(this.designNodes[i])
             }
         },
+
         // ====以下drag drop处理====
         getParentNodeByType(node, nodeType) { // 用于往上查找指定类型的节点
             if (node.parent) {
