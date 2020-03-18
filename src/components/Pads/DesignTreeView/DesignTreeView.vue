@@ -8,7 +8,7 @@
         </div>
         <div class="tree-pane">
             <el-tree class="designTree" ref="designTree" draggable highlight-current v-loading="loading" 
-                node-key="ID" :current-node-key="currentNodeKey"
+                node-key="ID" :current-node-key="currentNodeKey" :expand-on-click-node="false"
                 @current-change="onCurrentChanged" :render-content="onRenderContent"
                 @node-drop="onDrop" :allow-drag="allowDrag" :allow-drop="allowDrop"
                 :filter-node-method="filterNode" :data="designNodes" :props="treeOption" 
