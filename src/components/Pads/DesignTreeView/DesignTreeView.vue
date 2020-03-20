@@ -133,6 +133,46 @@ export default Vue.extend({
             }
             return loopFind(this.designNodes, type, id)
         },
+        /** 根据模型类型及名称查找节点 */
+        findModelNodeByName(type, appName, modelName) {
+            let loopFind = function (nodes) {
+                for (var i = 0; i < nodes.length; i++) {
+                    var element = nodes[i]
+                    if (element.ModelType && element.ModelType === type && element.Name === modelName) {
+                        return element
+                    }
+                    if (element.Nodes && element.Nodes.length > 0) {
+                        var found = loopFind(element.Nodes)
+                        if (found) {
+                            return found
+                        }
+                    }
+                }
+                return null
+            }
+
+            let apps = this.designNodes[1].Nodes
+            let app = apps.find(t => t.Text === appName)
+            let modelRootNode
+            switch (type) {
+                case ModelType.Entity: modelRootNode = app.Nodes[0]; break;
+                case ModelType.Service: modelRootNode = app.Nodes[1]; break;
+                case ModelType.View: modelRootNode = app.Nodes[2]; break;
+                case ModelType.Workflow: modelRootNode = app.Nodes[3]; break;
+                case ModelType.Report: modelRootNode = app.Nodes[4]; break;
+                case ModelType.Enum: modelRootNode = app.Nodes[5]; break;
+                case ModelType.Event: modelRootNode = app.Nodes[6]; break;
+                case ModelType.Permission: modelRootNode = app.Nodes[7]; break;
+                default: return null;
+            }
+            return loopFind(modelRootNode.Nodes)
+        },
+        /** 根据模型引用查找节点 */
+        findNodeByReference(reference) {
+            let modelType = ModelType[reference.Type]
+            let names = reference.Model.split('.')
+            return this.findModelNodeByName(modelType, names[0], names[1])
+        },
 
         /** 用于新建成功返回后刷新模型根节点或添加新建的节点 */
         onNewNode(nodeInfo) {
@@ -265,6 +305,7 @@ export default Vue.extend({
             node.Text = temp
         },
 
+        // ====订阅的事件处理====
         /** 签出节点成功后更新状态显示 */
         onNodeCheckout(node, needUpdate /* TODO:移除此参数 */) {
             node.CheckoutBy = 'Me'

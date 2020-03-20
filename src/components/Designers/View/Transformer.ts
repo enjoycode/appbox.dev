@@ -8,6 +8,7 @@
 //TODO:暂简单实现，待使用TypeChecker检查模型类型
 
 import DesignStore from '@/design/DesignStore'
+import ModelType from '@/design/ModelType'
 import { monaco, ts } from '../../CodeEditor/EditorService'
 
 /** 转换服务调用/视图组件/new Entity() */
@@ -89,7 +90,7 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
                         && appEntities.expression.kind === ts.SyntaxKind.Identifier) {
                         const app = appEntities.expression as ts.Identifier;
                         //查找实体模型标识
-                        let modelId = DesignStore.getEntityIdByName(app.text, entity.name.text);
+                        let modelId = DesignStore.tree.findModelNodeByName(ModelType.Entity, app.text, entity.name.text).ID;
                         let identifier = ts.createIdentifier("$runtime");
                         let exp = ts.createPropertyAccess(identifier, "newEntity");
                         let arg1 = ts.createStringLiteral(modelId);

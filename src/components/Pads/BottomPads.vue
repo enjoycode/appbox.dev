@@ -1,10 +1,10 @@
 <template>
     <div class="bottomPads">
         <el-tabs v-model="activeName">
-            <el-tab-pane label="Problems" name="errors">
+            <el-tab-pane label="Errors" name="errors">
                 <errors-view></errors-view>
             </el-tab-pane>
-            <el-tab-pane label="References" name="usages">
+            <el-tab-pane label="Usages" name="usages">
                 <usages-view></usages-view>
             </el-tab-pane>
             <el-tab-pane label="Output" name="output">

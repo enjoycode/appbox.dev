@@ -3,6 +3,7 @@
 
 import Vue from 'vue'
 import DesignNodeType from './DesignNodeType'
+// import { IModelReference } from './IModelReference'
 
 let eventBus = new Vue()
 
@@ -25,28 +26,17 @@ export default {
         eventBus.$off(eventId, callback)
     },
 
-    /** 根据名称(eg: sys.Order)找到相应的ID(eg:"12321324242")，找不到报错 */ //TODO:暂放在这里
-    getEntityIdByName(appName, entityModelName) {
-        var loopFind = function (nodes) {
-            for (var i = 0; i < nodes.length; i++) {
-                var element = nodes[i]
-                if (element.Type === DesignNodeType.EntityModelNode && element.Name === entityModelName) {
-                    return element
-                }
-                if (element.Nodes && element.Nodes.length > 0) {
-                    var found = loopFind(element.Nodes)
-                    if (found) {
-                        return found
-                    }
-                }
-            }
-            return null
-        }
-
-        let apps = this.tree.designNodes[1].Nodes
-        let app = apps.find(t => t.Text === appName)
-        let entities = app.Nodes[0];
-        return loopFind(entities.Nodes).ID
+    // TODO:以下暂放在这里，待整理为相关服务
+    /** 跳转到指定引用 */
+    gotoReference(reference) {
+        let node = this.tree.findNodeByReference(reference)
+        //打开对应的设计器
+        this.designers.onCurrentNodeChanged(node)
+        // let _this = this
+        // this.designers.$nextTick(function () {
+        //     let designer = _this.designers.getActiveDesigner()
+        //     console.log(designer)
+        // })
     }
 
 }

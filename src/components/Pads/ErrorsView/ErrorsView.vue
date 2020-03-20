@@ -1,5 +1,5 @@
 <template>
-    <el-table height="100%" :data="errors" size="small" class="errorpad" border empty-text=" ">
+    <el-table height="100%" :data="errors" size="mini" class="errorpad" border empty-text=" ">
         <el-table-column prop="Model" label="Model" :width="200">
         </el-table-column>
         <el-table-column prop="Location" label="Position" :width="200">

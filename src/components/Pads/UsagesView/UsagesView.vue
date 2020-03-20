@@ -1,5 +1,5 @@
 <template>
-    <el-table height="100%" :data="usages" size="small" class="viewpad" border empty-text=" ">
+    <el-table height="100%" :data="usages" size="mini" class="viewpad" border empty-text=" ">
         <el-table-column prop="Type" label="Type" :width="100">
         </el-table-column>
         <el-table-column prop="Model" label="Model" :width="200">
@@ -12,7 +12,7 @@
                     Checkout
                 </el-button>
                 <el-button @click.native.prevent="jumpto(scope.$index, scope.row)" type="text" size="small">
-                    Jumpto
+                    Goto
                 </el-button>
             </template>
         </el-table-column>
@@ -38,7 +38,7 @@
                 // todo:
             },
             jumpto(index, row) {
-                // todo:
+                DesignStore.gotoReference(row)
             }
         },
 
