@@ -2,7 +2,7 @@
     <div class="designerPads">
         <el-tabs ref="tabs" v-model="currentTab" @tab-click="tabClick" closable type="card" @tab-remove="removeTab">
             <el-tab-pane :key="item.name" v-for="item in openedTabs" :label="item.title" :name="item.name">
-                <component class="clearfix" :is="item.designer" :target="item.target"></component>
+                <component class="clearfix" :is="item.designer" :target="item.target" :goto="item.goto"></component>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -31,7 +31,8 @@ export default {
                     title: 'Welcome',
                     name: 'Welcome',
                     target: null, // 目标设计节点， 可能为null
-                    designer: Welcome
+                    designer: Welcome,
+                    goto: null // 需要跳转至的引用目标 IModelReference
                 }
             ]
         }
@@ -67,12 +68,13 @@ export default {
             this.removeTab(node.ID + '-' + node.Type)
         },
         /** 设计树当前选择的节点改变后打开相应的设计器 */
-        onCurrentNodeChanged(node) {
+        onCurrentNodeChanged(node, goto /* IModelReference */) {
             var key = node.ID + '-' + node.Type
             // 检查是否已打开
             for (var index = 0; index < this.openedTabs.length; index++) {
                 if (this.openedTabs[index].name === key) {
                     this.currentTab = key
+                    this.openedTabs[index].goto = goto
                     return
                 }
             }
@@ -81,7 +83,8 @@ export default {
                 title: node.App + '.' + node.Name,
                 name: key,
                 target: node,
-                designer: null
+                designer: null,
+                goto: goto
             }
             switch (node.Type) {
                 case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break

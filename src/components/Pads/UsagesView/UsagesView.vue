@@ -38,7 +38,8 @@
                 // todo:
             },
             jumpto(index, row) {
-                DesignStore.gotoReference(row)
+                let node = DesignStore.tree.findNodeByReference(row)
+                DesignStore.designers.onCurrentNodeChanged(node, row) // 打开对应的设计器
             }
         },
 

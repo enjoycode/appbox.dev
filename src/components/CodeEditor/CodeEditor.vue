@@ -88,6 +88,12 @@ export default {
         getPosition() {
             return this.editor.getPosition()
         },
+        setPosition(pos /* IPosition */) {
+            this.editor.setPosition(pos)
+        },
+        getPositionAt(offset /* number */) {
+            return this.editor.getModel().getPositionAt(offset)
+        },
         addCommand(keys, handler) {
             this.editor.addCommand(keys, handler)
         },

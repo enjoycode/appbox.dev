@@ -24,19 +24,5 @@ export default {
     },
     offEvent(eventId, callback) {
         eventBus.$off(eventId, callback)
-    },
-
-    // TODO:以下暂放在这里，待整理为相关服务
-    /** 跳转到指定引用 */
-    gotoReference(reference) {
-        let node = this.tree.findNodeByReference(reference)
-        //打开对应的设计器
-        this.designers.onCurrentNodeChanged(node)
-        // let _this = this
-        // this.designers.$nextTick(function () {
-        //     let designer = _this.designers.getActiveDesigner()
-        //     console.log(designer)
-        // })
     }
-
 }

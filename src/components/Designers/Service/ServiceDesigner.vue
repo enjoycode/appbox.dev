@@ -32,7 +32,8 @@ import { modelLibs } from '../../CodeEditor/EditorService'
 export default {
     components: { CodeEditor: CodeEditor },
     props: {
-        target: { type: Object, required: true } // 服务模型节点
+        target: { type: Object, required: true }, // 服务模型节点
+        goto: { type: Object } // 需要跳转的模型引用 IModelReference
     },
     data() {
         return {
@@ -51,6 +52,9 @@ export default {
     watch: {
         readOnly(value) {
             this.$refs.editor.setReadonly(value)
+        },
+        goto(value) {
+            this.gotoReference()
         }
     },
 
@@ -94,6 +98,14 @@ export default {
             if (byCheckout || (this.target.CheckoutBy && this.target.CheckoutBy === 'Me')) {
                 this.readOnly = false
             }
+            this.gotoReference() //跳转至指定位置，仅适用于初次打开当前编辑器
+        },
+        /** 跳转到引用位置 */
+        gotoReference() {
+            if (!this.goto) { return }
+            let pos = this.$refs.editor.getPositionAt(this.goto.Offset)
+            this.$refs.editor.setPosition(pos) //暂简单设定位置
+            this.$refs.editor.focus()
         },
 
         /** 代码变更通知服务端同步 */
