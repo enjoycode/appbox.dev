@@ -1,19 +1,19 @@
 <template>
-    <el-dialog title="新建枚举模型" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog title="New Enum" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
         <el-form :model="viewModel" ref="enumModel" :rules="rules" label-width="120px" label-position="right">
-            <el-form-item prop="Name" :required="true" label="名称">
+            <el-form-item prop="Name" :required="true" label="Name">
                 <el-input v-model="viewModel.Name" ></el-input>
             </el-form-item>
-            <el-form-item prop="LocalizedName" label="本地化名称">
-                <el-input v-model="viewModel.LocalizedName" ></el-input>
+            <el-form-item prop="Comment" label="Comment">
+                <el-input v-model="viewModel.Comment" ></el-input>
             </el-form-item>
-            <el-form-item prop="IsFlag" label="启用Flag标记">
+            <el-form-item prop="IsFlag" label="IsFlag">
                 <el-checkbox v-model="viewModel.IsFlag"></el-checkbox>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button :disabled="caDisabled" @click="visible = false">取 消</el-button>
-            <el-button :disabled="okDisabled" type="primary" @click="submit('enumModel')">确 定</el-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="submit('enumModel')">Ok</el-button>
         </div>
     </el-dialog>
 </template>
@@ -29,7 +29,7 @@ export default {
         caDisabled: false, // cancel按钮是否禁用
         viewModel: {
             Name: '',
-            LocalizedName: '',
+            Comment: '',
             IsFlag: false
         },
         rules: {
@@ -62,14 +62,14 @@ export default {
                   node.Type,
                   node.ID,
                   this.viewModel.Name,
-                  this.viewModel.LocalizedName,
+                  this.viewModel.Comment,
                   this.viewModel.IsFlag
                   ]
               // 获取实体属性
               $runtime.channel.invoke('sys.DesignService.NewEnumModel', args).then(res => {
                   // 根据返回结果添加新节点
                   store.tree.onNewNode(res)
-                  _this.$message.success('添加成功')
+                  _this.$message.success('New enum succeed')
                   _this.visible = false
                   _this.caDisabled = false
               }).catch(err => {
@@ -81,13 +81,11 @@ export default {
       },
       validateName: function (rule, value, callback) {
           if (!value) {
-            return callback(new Error('名称不能为空！'))
+            return callback(new Error('Name can not be null！'))
           }
           // TODO 验证名称的合法性
           callback()
       }
-  },
-  mounted: function () {
   }
 }
 </script>
