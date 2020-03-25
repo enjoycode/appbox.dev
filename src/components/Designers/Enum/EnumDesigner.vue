@@ -26,31 +26,31 @@
                 <div slot="panel2" class="ide-property-panel">
                     <el-collapse class="ide-property-collapse" :value="collapseValue">
                         <el-collapse-item title="Enum Properties" name="1">
-                            <el-form label-position="right" label-width="120px">
+                            <el-form label-position="right" size="mini" label-width="120px">
                                 <el-form-item label="ID">
-                                    <el-input size="small" v-model="target.ID" :disabled="true"></el-input>
+                                    <el-input v-model="target.ID" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="AppID">
-                                    <el-input size="small" v-model="target.AppID" :disabled="true"></el-input>
+                                    <el-input v-model="target.AppID" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="Model Name">
-                                    <el-input size="small" v-model="target.Text" :disabled="true"></el-input>
+                                    <el-input v-model="target.Text" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="SortNo">
-                                    <el-input size="small" v-model="target.SortNo" :disabled="true"></el-input>
+                                    <el-input v-model="target.SortNo" :disabled="true"></el-input>
                                 </el-form-item>
                             </el-form>
                         </el-collapse-item>
-                        <el-collapse-item title="Enum Items 属性" v-if="currentMember" name="2">
-                            <el-form label-position="right" label-width="120px">
+                        <el-collapse-item title="Item Properties" v-if="currentMember" name="2">
+                            <el-form label-position="right" size="mini" label-width="120px">
                                 <el-form-item label="Name">
-                                    <el-input size="small" v-model="currentMember.Name" :disabled="true"></el-input>
+                                    <el-input v-model="currentMember.Name" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="Value">
-                                    <el-input-number size="small" :min="0" @change="onItemValueChange" v-model="currentMember.Value"></el-input-number>
+                                    <el-input-number :min="0" @change="onItemValueChange" v-model="currentMember.Value"></el-input-number>
                                 </el-form-item>
-                                <el-form-item label="LocalizedName">
-                                    <el-input size="small" @change="onItemLocalizedNameChange" v-model="currentMember.LocalizedName"></el-input>
+                                <el-form-item label="Comment">
+                                    <el-input @change="onItemCommentChange" v-model="currentMember.Comment"></el-input>
                                 </el-form-item>
                             </el-form>
                         </el-collapse-item>
@@ -139,8 +139,8 @@ export default {
         onItemValueChange(val) {
             this.propertyChanged('Value', val)
         },
-        // 枚举项的LocalizedName发生改变时
-        onItemLocalizedNameChange(val) {
+        // 枚举项的Comment发生改变时
+        onItemCommentChange(val) {
             this.propertyChanged('LocalizedName', val)
         },
         propertyChanged(name, value) {
