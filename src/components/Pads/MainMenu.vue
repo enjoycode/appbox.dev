@@ -64,15 +64,6 @@
                     ]
                 },
                 {
-                    title: 'Enum',
-                    icon: null,
-                    index: 'enum',
-                    nodes: [
-                        { title: 'New Item', icon: 'fas fa-plus fa-fw', index: 'NewEnumItem' },
-                        { title: 'Delete Item', icon: 'fas fa-times fa-fw', index: 'DeleteEnumItem' }
-                    ]
-                },
-                {
                     title: 'Report',
                     icon: null,
                     index: 'report',

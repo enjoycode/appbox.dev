@@ -6,8 +6,6 @@ import NewViewModelCommand from './NewViewModel'
 import NewEntityCommand from './NewEntity'
 import DeleteModelCommand from './DeleteModel'
 import NewEnumModelCommand from './NewEnumModel'
-import NewEnumItemCommand from './NewEnumItem'
-import DeleteEnumItemCommand from './DeleteEnumItem'
 import NewApplicationCommand from './NewApplication'
 import NewPermissionCommand from './NewPermission'
 import NewFolderCommand from './NewFolder'
@@ -27,8 +25,6 @@ export default {
     DeleteModel: DeleteModelCommand,
     NewPermission: NewPermissionCommand,
     NewEnumModel: NewEnumModelCommand,
-    NewEnumItem: NewEnumItemCommand,
-    DeleteEnumItem: DeleteEnumItemCommand,
     NewApplication: NewApplicationCommand,
     NewFolder: NewFolderCommand,
     NewService: NewServiceCommand,
