@@ -146,7 +146,7 @@ export default {
         propertyChanged(name, value) {
             var _that = this
             // 传入服务更改
-            $runtime.channel.invoke('sys.DesignService.ChangeEnumMember', [this.target.ID, this.currentMember.Name, name, value]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.ChangeEnumItem', [this.target.ID, this.currentMember.Name, name, value]).then(res => {
                 this.$emit('PropertyChanged', name, value)
             }).catch(err => {
                 _that.$message.error(err)
