@@ -291,7 +291,7 @@ export default {
                 _this.isNew = res.IsNew
                 _this.members = res.Members
                 //根据不同存储选项加入不同视图
-                if (res.StoreOptions) {
+                if (res.StoreOptions && _this.views.length === 1 /* 防止刷新时重复加载 */) {
                     if (res.StoreOptions.StoreKind === DataStoreKind.Sql) {
                         _this.views.push({ label: 'sqlopts', title: 'Options' })
                     } else if (res.StoreOptions.StoreKind === DataStoreKind.Cql) {
