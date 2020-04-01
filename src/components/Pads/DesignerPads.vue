@@ -160,11 +160,11 @@ export default {
         /** 刷新所有打开的设计器的内容，主要用于后端改变模型后（如重命名）后通知前端刷新 */
         refreshDesigners(updates) {
             let children = this.$refs.tabs.$children
-            for (var i = 0; i < children.length; i++) {
+            for (let i = 0; i < children.length; i++) {
                 let designer = children[i].$children[0] // 注意返回子级，因为当前是TabPane实例
                 if (designer && designer.target) {
                     for (let j = 0; j < updates.length; j++) {
-                        if (designer.target.ID + '-' + designer.target.ModelType === updates[j]) {
+                        if (designer.target.ID === updates[j]) {
                             designer.refresh()
                             break
                         }

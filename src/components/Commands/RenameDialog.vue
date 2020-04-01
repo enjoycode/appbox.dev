@@ -1,33 +1,24 @@
 <template>
-    <el-dialog class="dialog" title="重命名对话框" :visible.sync="visible" @close="onClose" :before-close="onClosing">
-        <table cellspacing="15px" style="font-size:14px;width:100%;">
-            <tr>
-                <td colspan="2">
-                    <el-alert :title="warningInfo" type="warning" show-icon :closable="false"> </el-alert>
-                </td>
-            </tr>
-            <tr>
-                <td>目标:</td>
-                <td>
+    <el-dialog class="dialog" title="Rename" :visible.sync="visible" @close="onClose" :before-close="onClosing" width="450px">
+        <div>
+            <!-- TODO:待实现全局Workspace后移除此警告项 -->
+            <el-alert :title="warningInfo" type="warning" show-icon :closable="false"> </el-alert>
+            <br/>
+            <el-form label-width="100px">
+                <el-form-item label="Target">
                     <el-input readonly v-model="dlgProps.target" size="small"></el-input>
-                </td>
-            </tr>
-            <tr>
-                <td>旧名称:</td>
-                <td>
+                </el-form-item>
+                <el-form-item label="Old Name">
                     <el-input readonly v-model="dlgProps.oldName" size="small"></el-input>
-                </td>
-            </tr>
-            <tr>
-                <td>新名称:</td>
-                <td>
+                </el-form-item>
+                <el-form-item label="New Name">
                     <el-input v-model="newName" autofocus size="small"></el-input>
-                </td>
-            </tr>
-        </table>
+                </el-form-item>
+            </el-form>
+        </div>
         <div slot="footer">
-            <el-button :disabled="caDisabled" @click="visible = false">取 消</el-button>
-            <el-button :disabled="okDisabled" type="primary" @click="onOkClick">确 定</el-button>
+            <el-button :disabled="caDisabled" @click="visible = false">Cancel</el-button>
+            <el-button :disabled="okDisabled" type="primary" @click="onOkClick">Ok</el-button>
         </div>
     </el-dialog>
 </template>
@@ -69,7 +60,7 @@
                 $runtime.channel.invoke('sys.DesignService.Rename', args).then(res => {
                     _this.running = false
                     _this.caDisabled = false
-                    _this.$message.success('重命名成功!')
+                    _this.$message.success('Rename succeed')
                     _this.visible = false
                     // 根据返回结果刷新所有已打开的相应的设计器
                     res.push(_this.dlgProps.targetModel) // 后端可能没有加入
@@ -77,15 +68,9 @@
                 }).catch(err => {
                     _this.running = false
                     _this.caDisabled = false
-                    _this.$message.error('重命名错误: ' + err)
+                    _this.$message.error('Rename error: ' + err)
                 })
             }
         }
     }
 </script>
-
-<style scoped>
-    .dialog>>>.el-dialog--small {
-        width: 500px;
-    }
-</style>
