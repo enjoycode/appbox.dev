@@ -25,10 +25,10 @@ export default new Router({
             name: 'Preview',
             component: () => import(/* webpackChunkName: "preview" */ '@/components/Designers/View/Previewer.vue'),
         },
-        // {
-        //     path: '/apitest',
-        //     name: 'ApiTest',
-        //     component: () => import(/* webpackChunkName: "apitest" */ './views/Tests/ApiTest.vue'),
-        // }
+        {
+            path: '/test',
+            name: 'ApiTest',
+            component: () => import(/* webpackChunkName: "test" */ '@/views/Tests/Test.vue'),
+        }
     ]
 });

@@ -3,7 +3,9 @@
         <!--画布面板-->
         <div slot="panel1" class="stage" ref="stage" :style="{ background: background }">
             <canvas ref="surface" style="z-index:1" class="layer"></canvas>
-            <canvas ref="adorner" style="z-index:2" class="layer" @mousemove.self="onmousemove" @mousedown.self="onmousedown" @mouseup.self="onmouseup"></canvas>
+            <canvas ref="adorner" style="z-index:2" class="layer" 
+                @mousemove.self="onmousemove" @mousedown.self="onmousedown" @mouseup.self="onmouseup">
+            </canvas>
         </div>
         <!--属性面板-->
         <property-panel slot="panel2" ref="propertyPanel"></property-panel>
@@ -56,17 +58,19 @@ export default {
                 this.$refs.surface.width = this.$refs.adorner.width = this.$refs.stage.clientWidth
                 this.$refs.surface.height = this.$refs.adorner.height = this.$refs.stage.clientHeight
                 this.designSurface.OnResize(newSize, this.$refs.stage.clientHeight)
+            } else {
+                this.$nextTick(() => {
+                    console.log(this.$refs.stage.clientWidth, this.$refs.stage.clientHeight)
+                    this.$refs.surface.width = this.$refs.adorner.width = this.$refs.stage.clientWidth
+                    this.$refs.surface.height = this.$refs.adorner.height = this.$refs.stage.clientHeight
+                    this.designSurface = new DesignSurface(this.$refs.surface, this.$refs.adorner, this.pixelRatio, this.$refs.propertyPanel)
+                })
             }
         }
     },
 
     mounted() {
         this.pixelRatio = window.devicePixelRatio || 1
-        this.$nextTick(() => {
-            this.$refs.surface.width = this.$refs.adorner.width = this.$refs.stage.clientWidth
-            this.$refs.surface.height = this.$refs.adorner.height = this.$refs.stage.clientHeight
-            this.designSurface = new DesignSurface(this.$refs.surface, this.$refs.adorner, this.pixelRatio, this.$refs.propertyPanel)
-        })
     }
 }
 

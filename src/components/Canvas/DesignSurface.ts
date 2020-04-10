@@ -114,15 +114,17 @@ export default class DesignSurface {
         ctx.clearRect(area.X, area.Y, area.Width, area.Height);
 
         //画各个子元素
-        for (var i = 0; i < this._items.length; i++) {
-            var element = this._items[i];
-            if (element.Visible && area.IntersectsWith(element.Bounds)) { //Rectangle.Ceiling(element.Bounds)
-                let offsetX = element.Bounds.X;
-                let offsetY = element.Bounds.Y;
-
-                ctx.translate(offsetX, offsetY);
-                element.Paint(ctx);
-                ctx.translate(-offsetX, -offsetY);
+        if (this._items) {
+            for (var i = 0; i < this._items.length; i++) {
+                var element = this._items[i];
+                if (element.Visible && area.IntersectsWith(element.Bounds)) { //Rectangle.Ceiling(element.Bounds)
+                    let offsetX = element.Bounds.X;
+                    let offsetY = element.Bounds.Y;
+    
+                    ctx.translate(offsetX, offsetY);
+                    element.Paint(ctx);
+                    ctx.translate(-offsetX, -offsetY);
+                }
             }
         }
 
