@@ -41,5 +41,67 @@ export default class TestView extends Vue {
         this.designView.designSurface.Invalidate()
     }
 
+    loadXMLDoc(dname) {
+        try //Internet Explorer
+        {
+            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+        }
+        catch (e) {
+            try //Firefox, Mozilla, Opera, etc.
+            {
+                xmlDoc = document.implementation.createDocument("", "", null);
+            }
+            catch (e) { alert(e.message) }
+        }
+        try {
+            xmlDoc.async = false;
+            xmlDoc.load(dname);
+            return (xmlDoc);
+        }
+        catch (e) { alert(e.message) }
+        return (null);
+    }
+
+    loadXMLString(txt): XMLDocument {
+        try //Internet Explorer
+        {
+            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = "false";
+            xmlDoc.loadXML(txt);
+            return (xmlDoc);
+        }
+        catch (e) {
+            try //Firefox, Mozilla, Opera, etc.
+            {
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(txt, "text/xml");
+                return (xmlDoc);
+            }
+            catch (e) { alert(e.message) }
+        }
+        return (null);
+    }
+
+    mounted() {
+        var text = "<bookstore>"
+        text = text + "<book>";
+        text = text + "<title>Harry Potter</title>";
+        text = text + "<author>J K. Rowling</author>";
+        text = text + "<year>2005</year>";
+        text = text + "</book>";
+        text = text + "</bookstore>";
+
+        let xmlDoc = this.loadXMLString(text);
+        console.log(xmlDoc.getElementsByTagName("title")[0])
+        xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue = "Hello Future"
+        console.log(xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue)
+        console.log(xmlDoc.getElementsByTagName("author")[0].childNodes[0].nodeValue)
+        console.log(xmlDoc.getElementsByTagName("year")[0].childNodes[0].nodeValue)
+        console.log(xmlDoc.textContent); // null
+        
+        var text = (new XMLSerializer()).serializeToString(xmlDoc)
+        console.log(text);
+    }
+
 }
 </script>

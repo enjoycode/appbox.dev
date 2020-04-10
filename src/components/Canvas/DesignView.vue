@@ -60,7 +60,6 @@ export default {
                 this.designSurface.OnResize(newSize, this.$refs.stage.clientHeight)
             } else {
                 this.$nextTick(() => {
-                    console.log(this.$refs.stage.clientWidth, this.$refs.stage.clientHeight)
                     this.$refs.surface.width = this.$refs.adorner.width = this.$refs.stage.clientWidth
                     this.$refs.surface.height = this.$refs.adorner.height = this.$refs.stage.clientHeight
                     this.designSurface = new DesignSurface(this.$refs.surface, this.$refs.adorner, this.pixelRatio, this.$refs.propertyPanel)
