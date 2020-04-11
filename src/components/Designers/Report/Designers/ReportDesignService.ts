@@ -1,18 +1,16 @@
-import Point from '../../../Canvas/Drawing/Point'
-import Rectangle from '../../../Canvas/Drawing/Rectangle'
+import IDesignService from '@/components/Canvas/Services/IDesignService'
+import IShape from '@/components/Canvas/Interfaces/IShape'
+import IConnection from '@/components/Canvas/Interfaces/IConnection'
+import DesignSurface from '@/components/Canvas/DesignSurface'
+import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
+import ReportItemDesigner from './ReportItemDesigner'
 import IServerReportItem from './IServerReportItem'
 import ReportRootDesigner from './ReportRootDesigner'
 import ReportSectionDesigner from './ReportSectionDesigner'
-import ItemDesigner from '../../../Canvas/Designers/ItemDesigner'
+import TableDesigner from './TableDesigner'
 import ReportItemType from './ReportItemType'
 import TextBoxDesigner from './TextBoxDesigner'
 import GraphDesigner from './GraphDesigner'
-import TableDesigner from './TableDesigner'
-import IDesignService from '../../../Canvas/Services/IDesignService'
-import IShape from '../../../Canvas/Interfaces/IShape'
-import IConnection from '../../../Canvas/Interfaces/IConnection'
-import DesignSurface from '../../../Canvas/DesignSurface'
-import ReportItemDesigner from './ReportItemDesigner'
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -36,73 +34,109 @@ export default class ReportDesignService implements IDesignService {
         this._surface.DesignService = this;
     }
 
-    public LoadDesignersFromServer(root: IServerReportItem): void {
-        var rootDesigner = new ReportRootDesigner();
-        rootDesigner.Fetch(root);
-        ReportDesignService.LoopLoadChildren(rootDesigner, root);
+    //TODO: 仅测试用待移除
+    private loadXMLString(txt): XMLDocument {
+        try //Internet Explorer
+        {
+            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = "false";
+            xmlDoc.loadXML(txt);
+            return (xmlDoc);
+        }
+        catch (e) {
+            try //Firefox, Mozilla, Opera, etc.
+            {
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(txt, "text/xml");
+                return (xmlDoc);
+            }
+            catch (e) { alert(e.message) }
+        }
+        return (null);
+    }
+
+    public LoadDesignersFromServer(reportModelId: string): void {
+        //TODO:从服务端加载报表定义Xml
+        var xml = '<Report>'
+        xml += '<PageWidth>200mm</PageWidth>'
+        xml += '<PageHeight>140mm</PageHeight>'
+        xml += '<PageHeader>'
+        xml += '<Height>1in</Height>'
+        xml += '</PageHeader>'
+        xml += '<Body>'
+        xml += '<Height>2in</Height>'
+        xml += '</Body>'
+        xml += '<PageFooter>'
+        xml += '<Height>.8in</Height>'
+        xml += '</PageFooter>'
+        xml += "</Report>";
+        let xmlDoc = this.loadXMLString(xml);
+        var reportNode = xmlDoc.getElementsByTagName("Report")[0]
+
+        var rootDesigner = new ReportRootDesigner(reportNode);
+        //ReportDesignService.LoopLoadChildren(rootDesigner, root);
         this._rootDesigner = rootDesigner;
         this._surface.AddItem(this._rootDesigner);
 
         //必须调用一次
         this._surface.PropertyPanel.setPropertyOwner(this._rootDesigner);
-
         //重新刷新
         this._surface.Invalidate();
     }
 
     public ChangeProperty(item: ItemDesigner, name: string, tag: any, value: any): void {
-        this._channel.invoke("sys.DesignService.ChangeReportItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
-            if (res) {
-                let item = (res as IServerReportItem[])[0]; //todo:暂只返回一个
-                // 先根据ID找到对应的设计器
-                let designer = ReportDesignService.LoopFindByID(this._rootDesigner, item.ID);
-                if (designer) {
-                    designer.Fetch(item);
-                    if (item.Items) {
-                        for (var i = 0; i < item.Items.length; i++) {
-                            var element = item.Items[i];
-                            var subDesigner = ReportDesignService.LoopFindByID(designer, element.ID);
-                            if (subDesigner) {
-                                subDesigner.Fetch(element);
-                            } else {
-                                //添加新增
-                                var newSubDesigner = ReportDesignService.CreateDesigner(element.ItemType);
-                                newSubDesigner.Fetch(element);
-                                ReportDesignService.LoopLoadChildren(newSubDesigner, element);
-                                designer.AddItem(newSubDesigner);
-                            }
-                        }
-                        if (designer.Items.length != item.Items.length) {
-                            //删除节点
-                            var found: ItemDesigner | null ;
-                            for (var i = 0; i < designer.Items.length; i++) {
-                                found = designer.Items[i];
-                                for (var j = 0; j < item.Items.length; j++) {
-                                    if (designer.Items[i].ID == item.Items[j].ID) {
-                                        found = null;
-                                        break;
-                                    }
-                                }
-                                if (found) {
-                                    //删除节点
-                                    designer.RemoveItem(found);
-                                }
-                            }
-                        }
-                        //重新绘制
-                        if (designer instanceof ReportRootDesigner) { //todo: 暂ReportRootDesigner重绘Surface
-                            if (this._rootDesigner.Surface) {
-                                this._rootDesigner.Surface.Invalidate();
-                            }
-                        } else {
-                            designer.Invalidate();
-                        }
-                    }
-                }
-            }
-        }).catch(err => {
-            console.log("ChangeProperty Error:", err);
-        })
+        // this._channel.invoke("sys.DesignService.ChangeReportItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
+        //     if (res) {
+        //         let item = (res as IServerReportItem[])[0]; //todo:暂只返回一个
+        //         // 先根据ID找到对应的设计器
+        //         let designer = ReportDesignService.LoopFindByID(this._rootDesigner, item.ID);
+        //         if (designer) {
+        //             designer.Fetch(item);
+        //             if (item.Items) {
+        //                 for (var i = 0; i < item.Items.length; i++) {
+        //                     var element = item.Items[i];
+        //                     var subDesigner = ReportDesignService.LoopFindByID(designer, element.ID);
+        //                     if (subDesigner) {
+        //                         subDesigner.Fetch(element);
+        //                     } else {
+        //                         //添加新增
+        //                         var newSubDesigner = ReportDesignService.CreateDesigner(element.ItemType);
+        //                         newSubDesigner.Fetch(element);
+        //                         ReportDesignService.LoopLoadChildren(newSubDesigner, element);
+        //                         designer.AddItem(newSubDesigner);
+        //                     }
+        //                 }
+        //                 if (designer.Items.length != item.Items.length) {
+        //                     //删除节点
+        //                     var found: ItemDesigner | null ;
+        //                     for (var i = 0; i < designer.Items.length; i++) {
+        //                         found = designer.Items[i];
+        //                         for (var j = 0; j < item.Items.length; j++) {
+        //                             if (designer.Items[i].ID == item.Items[j].ID) {
+        //                                 found = null;
+        //                                 break;
+        //                             }
+        //                         }
+        //                         if (found) {
+        //                             //删除节点
+        //                             designer.RemoveItem(found);
+        //                         }
+        //                     }
+        //                 }
+        //                 //重新绘制
+        //                 if (designer instanceof ReportRootDesigner) { //todo: 暂ReportRootDesigner重绘Surface
+        //                     if (this._rootDesigner.Surface) {
+        //                         this._rootDesigner.Surface.Invalidate();
+        //                     }
+        //                 } else {
+        //                     designer.Invalidate();
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }).catch(err => {
+        //     console.log("ChangeProperty Error:", err);
+        // })
     }
 
     public TableOperation(opt: string): void {
@@ -203,35 +237,6 @@ export default class ReportDesignService implements IDesignService {
         }
 
         return null;
-    }
-
-    private static LoopLoadChildren(parent: ItemDesigner, item: IServerReportItem): void {
-        if (item.Items) {
-            for (var i = 0; i < item.Items.length; i++) {
-                var element = item.Items[i];
-                var designer = ReportDesignService.CreateDesigner(element.ItemType);
-                designer.Fetch(element);
-                ReportDesignService.LoopLoadChildren(designer, element);
-                parent.AddItem(designer);
-            }
-        }
-    }
-
-    private static CreateDesigner(type: ReportItemType): ItemDesigner {
-        switch (type) {
-            case ReportItemType.ReportRoot:
-                return new ReportRootDesigner();
-            case ReportItemType.ReportSection:
-                return new ReportSectionDesigner();
-            case ReportItemType.TextBox:
-                return new TextBoxDesigner();
-            case ReportItemType.Graph:
-                return new GraphDesigner();
-            case ReportItemType.Table:
-                return new TableDesigner();
-            // default:
-            //     throw new Error("未知的报表元素类型: " + type.toString());
-        }
     }
 
 }

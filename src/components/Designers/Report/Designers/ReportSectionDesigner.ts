@@ -1,15 +1,15 @@
-import DesignAdorners from '../../../Canvas/Adorners/DesignAdorners'
-import DesignAdorner from '../../../Canvas/Adorners/DesignAdorner'
+import ReportXmlNodeDesigner from "./ReportXmlNodeDesigner"
+import DesignAdorners from '@/components/Canvas/Adorners/DesignAdorners'
+import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import SectionSelectionAdorner from '../Adorners/SectionSelectionAdorner'
-import ItemDesigner from '../../../Canvas/Designers/ItemDesigner'
-import Rectangle from '../../../Canvas/Drawing/Rectangle'
-import BoundsSpecified from '../../../Canvas/Enums/BoundsSpecified'
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
+import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import IServerReportItem from './IServerReportItem'
 import ReportDesignService from './ReportDesignService'
-import DesignBehavior from '../../../Canvas/Enums/DesignBehavior'
+import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 
-export default class ReportSectionDesigner extends ItemDesigner {
-    private _bounds: Rectangle = new Rectangle(0, 0, 0, 0);
+export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
+    private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
     public get Bounds(): Rectangle {
         return this._bounds;
     }
@@ -32,12 +32,11 @@ export default class ReportSectionDesigner extends ItemDesigner {
         return this._selectionAdorner;
     }
 
-    public Fetch(serverItem: IServerReportItem) {
-        this._id = serverItem.ID;
-        this._bounds.X = serverItem.Bounds.X;
-        this._bounds.Y = serverItem.Bounds.Y;
-        this._bounds.Width = serverItem.Bounds.Width;
-        this._bounds.Height = serverItem.Bounds.Height;
+    constructor(xmlNode: Node, pageWidth: number, top: number) {
+        super(xmlNode);
+
+        let height = this.TryGetSize("Height", 200);
+        this._bounds = new Rectangle(0, top, pageWidth, height);
     }
 
     protected SetBounds(x: number, y: number, width: number, height: number, specified: BoundsSpecified): void {

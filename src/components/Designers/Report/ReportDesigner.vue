@@ -1,11 +1,11 @@
 <template>
     <div style="height:100%; width:100%">
-        <design-view ref="designView" background="lightgray"></design-view>
+        <design-view ref="designView" @ready="onDesignViewReady" background="lightgray"></design-view>
     </div>
 </template>
 
 <script>
-import DesignView from '../../Canvas/DesignView'
+import DesignView from '@/components/Canvas/DesignView'
 import ReportDesignService from './Designers/ReportDesignService'
 
 export default {
@@ -22,6 +22,13 @@ export default {
         }
     },
     methods: {
+        /** 设计视图已准备好 */
+        onDesignViewReady() {
+            // 先初始化DesignSurface.DesignService实例
+            this.designService = new ReportDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
+            // 开始加载报表定义
+            this.designService.LoadDesignersFromServer(this.target.ID)
+        },
         save() {
             let node = this.target
             let _this = this
@@ -32,7 +39,7 @@ export default {
             })
         },
         MergeCells() {
-           this.designService.TableOperation('MergeCells')
+            this.designService.TableOperation('MergeCells')
         },
         SplitCells() {
             this.designService.TableOperation('SplitCells')
@@ -43,21 +50,6 @@ export default {
         InsertColumn() {
             this.designService.TableOperation('InsertColumn')
         }
-    },
-    mounted() {
-        // 开始加载RootDesigner
-        var _this = this
-        // 先初始化DesignSurface.DesignService实例
-        this.$nextTick(() => {
-            this.designService = new ReportDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
-            $runtime.channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
-                // 开始转换服务端返回的报表项
-                this.designService.LoadDesignersFromServer(res)
-            }).catch(err => {
-                _this.$message.error(err.toString())
-            })
-        })
     }
 }
-
 </script>

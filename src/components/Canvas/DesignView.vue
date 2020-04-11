@@ -1,7 +1,7 @@
 <template>
     <ex-splitter :size="300" @resize="onSplitterResize">
         <!--画布面板-->
-        <div slot="panel1" class="stage" ref="stage" :style="{ background: background }">
+        <div slot="panel1" class="stage" :style="{ background: background }">
             <canvas ref="surface" style="z-index:1" class="layer"></canvas>
             <canvas ref="adorner" style="z-index:2" class="layer" 
                 @mousemove.self="onmousemove" @mousedown.self="onmousedown" @mouseup.self="onmouseup">
@@ -21,12 +21,12 @@ export default {
     components: { PropertyPanel: PropertyPanel },
     props: {
         background: { type: String, default: 'white' }
+        //TODO: 画布大小属性
     },
     data() {
         return {
-            height: 0,
-            designSurface: null,
-            pixelRatio: 1 // hidpi缩放比例
+            designSurface: null,    //指向DesignSurface实例
+            pixelRatio: 1           // hidpi缩放比例
         }
     },
 
@@ -54,16 +54,15 @@ export default {
             this.designSurface.OnMouseUp(arg)
         },
         onSplitterResize(newSize) {
+            let canvasWidth = this.$children[0].panel1Size
+            let canvasHeight = this.$children[0].height
+            this.$refs.surface.width = this.$refs.adorner.width = canvasWidth
+            this.$refs.surface.height = this.$refs.adorner.height = canvasHeight
             if (this.designSurface) { // 可能还没初始化
-                this.$refs.surface.width = this.$refs.adorner.width = this.$refs.stage.clientWidth
-                this.$refs.surface.height = this.$refs.adorner.height = this.$refs.stage.clientHeight
                 this.designSurface.OnResize(newSize, this.$refs.stage.clientHeight)
             } else {
-                this.$nextTick(() => {
-                    this.$refs.surface.width = this.$refs.adorner.width = this.$refs.stage.clientWidth
-                    this.$refs.surface.height = this.$refs.adorner.height = this.$refs.stage.clientHeight
-                    this.designSurface = new DesignSurface(this.$refs.surface, this.$refs.adorner, this.pixelRatio, this.$refs.propertyPanel)
-                })
+                this.designSurface = new DesignSurface(this.$refs.surface, this.$refs.adorner, this.pixelRatio, this.$refs.propertyPanel)
+                this.$emit('ready') //激发已准备好事件
             }
         }
     },
@@ -72,7 +71,6 @@ export default {
         this.pixelRatio = window.devicePixelRatio || 1
     }
 }
-
 </script>
 
 <style scoped>

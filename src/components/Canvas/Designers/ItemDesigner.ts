@@ -172,7 +172,6 @@ export default abstract class ItemDesigner implements IPropertyOwner {
                 newBounds.Y += deltaY;
                 newBounds.Width -= deltaX;
                 newBounds.Height -= deltaY;
-
                 break;
             case ResizeAnchorLocation.LeftCenter:
                 if (newBounds.Width - deltaX <= 0)
