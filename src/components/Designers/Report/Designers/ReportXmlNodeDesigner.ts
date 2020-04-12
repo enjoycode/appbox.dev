@@ -15,6 +15,11 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         this.xmlNode = xmlNode;
     }
 
+    //============IPropertyOwner接口实现=====
+    public getPropertyOwnerType(): string {
+        return this.xmlNode.nodeName;
+    }
+
     // ====以下通用辅助方法====
     public GetNamedChildNode(name: string): Node | null {
         if (!this.xmlNode) return null;

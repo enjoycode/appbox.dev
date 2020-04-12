@@ -1,5 +1,5 @@
 <template>
-    <el-input :readonly="target.readonly" v-model.lazy="value"></el-input>
+    <el-checkbox :readonly="target.readonly" v-model.lazy="value"></el-checkbox>
 </template>
 
 <script>

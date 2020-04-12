@@ -1,7 +1,9 @@
 import TextBoxEditor from './TextBoxEditor'
+import CheckBoxEditor from './CheckBoxEditor'
 
 let editors = {
-    TextBox: TextBoxEditor
+    TextBox: TextBoxEditor,
+    CheckBox: CheckBoxEditor
 }
 
 export function registerEditor(type, component) {

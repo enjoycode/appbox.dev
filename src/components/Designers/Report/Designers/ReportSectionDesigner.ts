@@ -1,12 +1,12 @@
 import ReportXmlNodeDesigner from "./ReportXmlNodeDesigner"
-import DesignAdorners from '@/components/Canvas/Adorners/DesignAdorners'
+// import DesignAdorners from '@/components/Canvas/Adorners/DesignAdorners'
 import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import SectionSelectionAdorner from '../Adorners/SectionSelectionAdorner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
-import IServerReportItem from './IServerReportItem'
-import ReportDesignService from './ReportDesignService'
+// import ReportDesignService from './ReportDesignService'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
+import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 
 export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
@@ -78,5 +78,28 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
             }
             g.translate(-this.Bounds.X, -this.Bounds.Y);
         }
+    }
+
+    //============IPropertyOwner接口实现=====
+    public getPropertyItems(): IPropertyCatalog[] | null {
+        return [
+            {
+                name: "Common",
+                items: [
+                    {
+                        title: "Height", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetNamedChildNode("Height").textContent, setter: (v) => console.log(v)
+                    },
+                    {
+                        title: "PrintOnFirstPage", readonly: false, editorType: "CheckBox",
+                        getter: () => true, setter: (v) => console.log(v)
+                    },
+                    {
+                        title: "PrintOnLastPage", readonly: false, editorType: "CheckBox",
+                        getter: () => true, setter: (v) => console.log(v)
+                    },
+                ]
+            }
+        ];
     }
 }

@@ -3,7 +3,7 @@
         <h4 class="propertyPanel-title">{{ownerType}}</h4>
         <el-collapse class="ide-property-collapse" :value="expands">
             <el-collapse-item v-for="catalog in catalogs" :key="catalog.name" :title="catalog.name" :name="catalog.name">
-                <el-form label-position="right" size="mini" label-width="100px">
+                <el-form label-position="right" size="mini" label-width="120px">
                     <el-form-item v-for="item in catalog.items" :key="item.title" :label="item.title">
                         <component :is="item.editor" :target="item"></component>
                     </el-form-item>
@@ -46,7 +46,6 @@ export default {
         }
     }
 }
-
 </script>
 
 <style scoped>

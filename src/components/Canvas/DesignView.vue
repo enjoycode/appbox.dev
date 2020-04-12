@@ -59,7 +59,7 @@ export default {
             this.$refs.surface.width = this.$refs.adorner.width = canvasWidth
             this.$refs.surface.height = this.$refs.adorner.height = canvasHeight
             if (this.designSurface) { // 可能还没初始化
-                this.designSurface.OnResize(newSize, this.$refs.stage.clientHeight)
+                this.designSurface.OnResize(newSize, canvasHeight)
             } else {
                 this.designSurface = new DesignSurface(this.$refs.surface, this.$refs.adorner, this.pixelRatio, this.$refs.propertyPanel)
                 this.$emit('ready') //激发已准备好事件
