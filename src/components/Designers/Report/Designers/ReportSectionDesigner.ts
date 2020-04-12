@@ -7,6 +7,7 @@ import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 // import ReportDesignService from './ReportDesignService'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
+// import PaintRegion from "@/components/Canvas/Enums/PaintRegion"
 
 export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
@@ -70,7 +71,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
      * override for change height by canvas
      */
     public OnEndResize(): void {
-        this.SetPropertyRSize("Height", this.Bounds.Height, false);
+        this.SetPropertyRSize("Height", this.Bounds.Height/*, PaintRegion.None*/);
         // 通知属性面板刷新相应的值
         if (this.Surface) {
             this.Surface.PropertyPanel.refreshProperty("Height");
@@ -93,24 +94,29 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
 
     //============IPropertyOwner接口实现=====
     public getPropertyItems(): IPropertyCatalog[] | null {
-        return [
+        let cats: IPropertyCatalog[] = [
             {
                 name: "Common",
                 items: [
                     {
                         title: "Height", readonly: false, editorType: "TextBox",
-                        getter: () => this.GetPropertyRSize("Height", "0mm"), setter: (v) => console.log(v)
-                    },
-                    {
-                        title: "PrintOnFirstPage", readonly: false, editorType: "CheckBox",
-                        getter: () => true, setter: (v) => console.log(v)
-                    },
-                    {
-                        title: "PrintOnLastPage", readonly: false, editorType: "CheckBox",
-                        getter: () => true, setter: (v) => console.log(v)
+                        getter: () => this.GetPropertyRSize("Height", "0mm"),
+                        setter: v => this.SetPropertyRSize("Height", v)
                     },
                 ]
             }
-        ];
+        ]
+        if (this.getPropertyOwnerType() !== "Body") {
+            cats[0].items.push({
+                title: "PrintOnFirstPage", readonly: false, editorType: "CheckBox",
+                getter: () => true, setter: (v) => console.log(v)
+            });
+            cats[0].items.push({
+                title: "PrintOnLastPage", readonly: false, editorType: "CheckBox",
+                getter: () => true, setter: (v) => console.log(v)
+            });
+        }
+
+        return cats;
     }
 }

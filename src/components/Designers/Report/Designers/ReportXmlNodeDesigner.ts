@@ -1,4 +1,6 @@
 import ItemDesigner from "@/components/Canvas/Designers/ItemDesigner";
+// import PaintRegion from "@/components/Canvas/Enums/PaintRegion";
+import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified';
 
 /**
  * 所有报表元素的设计者基类
@@ -22,21 +24,34 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         return node.textContent;
     }
 
-    protected SetPropertyRSize(prop: string, value: string | number, byPropertyPanel: boolean) {
+    protected SetPropertyRSize(prop: string, value: string | number/*, paint: PaintRegion*/) {
         let node = this.GetNamedChildNode(prop);
         if (!node) {
             console.warn("Can't find node [" + this.getPropertyOwnerType() + "." + prop);
             return;
         }
-        let unit = this.GetSizeUnit(node);
 
-        if (byPropertyPanel) {
-
-        } else {
+        if (typeof value === 'number') { // 表示由画布激发的变更
+            let unit = this.GetSizeUnit(node);
             let newSize = this.PixelToSize(value as number, unit);
             node.textContent = newSize;
-            console.log("RSize changed to: " + node.textContent);
+        } else { // 表示由属性面板激发的变更
+            node.textContent = value;
+            let pixels = this.SizeToPixel(value);
+            // 需要反向设置Bounds
+            let needRepaint = true;
+            switch (prop) {
+                case "Height": this.SetBounds(0, 0, 0, pixels, BoundsSpecified.Height); break;
+                case "Width": this.SetBounds(0, 0, pixels, 0, BoundsSpecified.Width); break;
+                case "Left": this.SetBounds(pixels, 0, 0, 0, BoundsSpecified.X); break;
+                case "Top": this.SetBounds(0, pixels, 0, 0, BoundsSpecified.Y); break;
+                default: needRepaint = false; break;
+            }
+            if (needRepaint) { // 如果改变Bounds项则重绘
+                if (this.Parent) this.Parent.Invalidate();
+            }
         }
+        // console.log("RSize changed to: " + node.textContent);
     }
 
     //====IPropertyOwner接口实现====
@@ -71,7 +86,37 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
      * @param node eg: <Height>.5in</Height>
      */
     public GetSize(node: Node): number {
+        return this.SizeToPixel(node.textContent); //TODO: use node.nodeValue is null
+    }
+
+    /**
+     * 获取报表单位，有异常返回mm
+     * @param node eg: <Height>.5in</Height>
+     */
+    private GetSizeUnit(node: Node): string {
+        let u = "mm";
         let t = node.textContent; //TODO: use node.nodeValue is null
+        if (!t || t.length === 0 || t[0] === '=') return u;
+
+        t = t.trim();
+        let space = t.lastIndexOf(' ');
+        try {
+            if (space != -1) { // any spaces
+                u = t.substring(space).trim();
+            } else if (t.length >= 3) {
+                u = t.substring(t.length - 2);
+            }
+        } catch (error) {
+            console.log("GetSizeUnit from [" + t + "] error.");
+        }
+        return u;
+    }
+
+    /**
+     * 将报表单位转换为像素值
+     * @param t eg: 2in or 3mm
+     */
+    private SizeToPixel(t: string): number {
         if (!t || t.length === 0 || t[0] === '=') return 0;
 
         // Size is specified in CSS Length Units
@@ -113,29 +158,6 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         }
         // return as pixels
         return size / 2540 * ReportXmlNodeDesigner.POINTSIZE;
-    }
-
-    /**
-     * 获取报表单位，有异常返回mm
-     * @param node eg: <Height>.5in</Height>
-     */
-    private GetSizeUnit(node: Node): string {
-        let u = "mm";
-        let t = node.textContent; //TODO: use node.nodeValue is null
-        if (!t || t.length === 0 || t[0] === '=') return u;
-
-        t = t.trim();
-        let space = t.lastIndexOf(' ');
-        try {
-            if (space != -1) { // any spaces
-                u = t.substring(space).trim();
-            } else if (t.length >= 3) {
-                u = t.substring(t.length - 2);
-            }
-        } catch (error) {
-            console.log("GetSizeUnit from [" + t + "] error.");
-        }
-        return u;
     }
 
     /**
