@@ -109,11 +109,13 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         if (this.getPropertyOwnerType() !== "Body") {
             cats[0].items.push({
                 title: "PrintOnFirstPage", readonly: false, editorType: "CheckBox",
-                getter: () => true, setter: (v) => console.log(v)
+                getter: () => this.GetPropertyBool("PrintOnFirstPage", true),
+                setter: v => this.SetPropertyBool("PrintOnFirstPage", v)
             });
             cats[0].items.push({
                 title: "PrintOnLastPage", readonly: false, editorType: "CheckBox",
-                getter: () => true, setter: (v) => console.log(v)
+                getter: () => this.GetPropertyBool("PrintOnLastPage", true),
+                setter: v => this.SetPropertyBool("PrintOnLastPage", v)
             });
         }
 

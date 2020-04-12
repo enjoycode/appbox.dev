@@ -11,6 +11,7 @@ import TableDesigner from './TableDesigner'
 import ReportItemType from './ReportItemType'
 import TextBoxDesigner from './TextBoxDesigner'
 import GraphDesigner from './GraphDesigner'
+import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -53,6 +54,14 @@ export default class ReportDesignService implements IDesignService {
             catch (e) { alert(e.message) }
         }
         return (null);
+    }
+
+    /**
+     * 获取当前报表定义的xml文本
+     */
+    public GetXmlString(): string {
+        let xmlDoc = (this._rootDesigner as ReportXmlNodeDesigner).XmlNode.ownerDocument;
+        return (new XMLSerializer()).serializeToString(xmlDoc); // TODO:IE不支持 XMLSerializer对象。它通过Node对象的xml属性
     }
 
     public LoadDesignersFromServer(reportModelId: string): void {

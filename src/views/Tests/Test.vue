@@ -1,9 +1,10 @@
 <template>
     <div style="height:500px;margin:20px">
         <el-button @click="onAdd">Add</el-button>
+        <el-button @click="onSave">Save</el-button>
         <br/><br/>
         <!-- <design-view ref="designView" background="lightgray"></design-view> -->
-        <report-designer :target="target"></report-designer>
+        <report-designer ref="designer" :target="target"></report-designer>
     </div>
 </template>
 
@@ -31,6 +32,11 @@ export default class TestView extends Vue {
         // this.designView.designSurface.AddItem(shape)
         // this.designView.designSurface.Invalidate()
     }
+
+    onSave() {
+        (<any>this.$refs.designer).save();
+    }
+
     // testConnection() {
     //     var connection = new TestConDesigner()
     //     connection.CreateConnectionDesigner()
@@ -82,6 +88,5 @@ export default class TestView extends Vue {
 
     mounted() {
     }
-
 }
 </script>

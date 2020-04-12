@@ -11,6 +11,9 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
 
     /** 对应的Xml节点 eg: <TextBox><Value>Hello</Value></TextBox>*/
     protected xmlNode: Node;
+    public get XmlNode(): Node {
+        return this.xmlNode;
+    }
 
     constructor(xmlNode: Node) {
         super();
@@ -27,8 +30,7 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
     protected SetPropertyRSize(prop: string, value: string | number/*, paint: PaintRegion*/) {
         let node = this.GetNamedChildNode(prop);
         if (!node) {
-            console.warn("Can't find node [" + this.getPropertyOwnerType() + "." + prop);
-            return;
+            node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
         }
 
         if (typeof value === 'number') { // 表示由画布激发的变更
@@ -51,7 +53,22 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
                 if (this.Parent) this.Parent.Invalidate();
             }
         }
-        // console.log("RSize changed to: " + node.textContent);
+        // console.log(this.getPropertyOwnerType() + "." + prop + " changed to: " + node.textContent);
+    }
+
+    protected GetPropertyBool(prop: string, defaultValue: boolean): boolean {
+        let node = this.GetNamedChildNode(prop);
+        if (!node) return defaultValue;
+        return node.textContent === 'true' ? true : false;
+    }
+
+    protected SetPropertyBool(prop: string, value: boolean) {
+        let node = this.GetNamedChildNode(prop);
+        if (!node) {
+            node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
+        }
+        node.textContent = value.toString();
+        // console.log(this.getPropertyOwnerType() + "." + prop + " changed to: " + node.textContent);
     }
 
     //====IPropertyOwner接口实现====

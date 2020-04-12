@@ -30,13 +30,14 @@ export default {
             this.designService.LoadDesignersFromServer(this.target.ID)
         },
         save() {
-            let node = this.target
-            let _this = this
-            $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
-                _this.$message.success('保存成功')
-            }).catch(err => {
-                _this.$message.error('保存失败: ' + err)
-            })
+            console.log(this.designService.GetXmlString());
+            // let node = this.target
+            // let _this = this
+            // $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
+            //     _this.$message.success('保存成功')
+            // }).catch(err => {
+            //     _this.$message.error('保存失败: ' + err)
+            // })
         },
         MergeCells() {
             this.designService.TableOperation('MergeCells')
