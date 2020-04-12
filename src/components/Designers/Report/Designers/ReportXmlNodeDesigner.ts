@@ -15,7 +15,25 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         this.xmlNode = xmlNode;
     }
 
-    //============IPropertyOwner接口实现=====
+    //====读写XmlNode属性方法，读仅由属性面板，写可能画布或属性面板====
+    protected SetPropertyRSize(prop: string, value: string | number, byPropertyPanel: boolean) {
+        let node = this.GetNamedChildNode(prop);
+        if (!node) {
+            console.warn("Can't find node [" + this.getPropertyOwnerType() + "." + prop);
+            return;
+        }
+        let unit = this.GetSizeUnit(node);
+
+        if (byPropertyPanel) {
+
+        } else {
+            let newSize = this.PixelToSize(value as number, unit);
+            node.textContent = newSize;
+            console.log("RSize changed to: " + node.textContent);
+        }
+    }
+
+    //====IPropertyOwner接口实现====
     public getPropertyOwnerType(): string {
         return this.xmlNode.nodeName;
     }
@@ -84,11 +102,50 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
             case "cm": size = d * 1000; break;
             case "mm": size = d * 100; break;
             case "pt": size = d * 2540 / ReportXmlNodeDesigner.POINTSIZE; break;
-            case "pc": size = d * (2540 / ReportXmlNodeDesigner.POINTSIZE * 12); break;
+            case "pc": size = d * (2540 / (ReportXmlNodeDesigner.POINTSIZE * 12)); break;
             default: size = d * 2540; break; // Illegal unit
         }
         // return as pixels
         return size / 2540 * ReportXmlNodeDesigner.POINTSIZE;
+    }
+
+    /**
+     * 获取报表单位，有异常返回mm
+     * @param node eg: <Height>.5in</Height>
+     */
+    private GetSizeUnit(node: Node): string {
+        let u = "mm";
+        let t = node.textContent; //TODO: use node.nodeValue is null
+        if (!t || t.length === 0 || t[0] === '=') return u;
+
+        t = t.trim();
+        let space = t.lastIndexOf(' ');
+        try {
+            if (space != -1) { // any spaces
+                u = t.substring(space).trim();
+            } else if (t.length >= 3) {
+                u = t.substring(t.length - 2);
+            }
+        } catch (error) {
+            console.log("GetSizeUnit from [" + t + "] error.");
+        }
+        return u;
+    }
+
+    /**
+     * 将像素值转换为报表单位
+     * @param pixels 像素值
+     * @param unit 单位 eg: mm or in
+     */
+    private PixelToSize(pixels: number, unit: string): string {
+        let inch = pixels / ReportXmlNodeDesigner.POINTSIZE;
+        switch (unit) {
+            case "cm": return (inch * 2.54).toString() + "cm";
+            case "mm": return (inch * 25.4).toString() + "mm";
+            case "pt": return (inch * ReportXmlNodeDesigner.POINTSIZE).toString() + "pt";
+            case "pc": return (inch * ReportXmlNodeDesigner.POINTSIZE * 12).toString() + "pc";
+            default: return inch.toString() + "in";
+        }
     }
 
 }

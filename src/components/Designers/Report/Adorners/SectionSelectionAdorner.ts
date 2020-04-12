@@ -1,9 +1,8 @@
-import Rectangle from '../../../Canvas/Drawing/Rectangle'
-import Point from '../../../Canvas/Drawing/Point'
-import DesignAdorner from '../../../Canvas/Adorners/DesignAdorner'
-import MouseEventArgs from '../../../Canvas/EventArgs/MouseEventArgs'
-import ResizeAnchorLocation from '../../../Canvas/Enums/ResizeAnchorLocation'
-
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
+import Point from '@/components/Canvas/Drawing/Point'
+import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
+import MouseEventArgs from '@/components/Canvas/EventArgs/MouseEventArgs'
+import ResizeAnchorLocation from '@/components/Canvas/Enums/ResizeAnchorLocation'
 
 export default class SectionSelectionAdorner extends DesignAdorner {
     private readonly anchorSize = 6;

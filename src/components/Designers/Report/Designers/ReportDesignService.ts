@@ -35,7 +35,7 @@ export default class ReportDesignService implements IDesignService {
     }
 
     //TODO: 仅测试用待移除
-    private loadXMLString(txt): XMLDocument {
+    private loadXMLString(txt: string): XMLDocument {
         try //Internet Explorer
         {
             var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
@@ -61,13 +61,13 @@ export default class ReportDesignService implements IDesignService {
         xml += '<PageWidth>200mm</PageWidth>'
         xml += '<PageHeight>140mm</PageHeight>'
         xml += '<PageHeader>'
-        xml += '<Height>1in</Height>'
+        xml += '<Height>20mm</Height>'
         xml += '</PageHeader>'
         xml += '<Body>'
-        xml += '<Height>2in</Height>'
+        xml += '<Height>40mm</Height>'
         xml += '</Body>'
         xml += '<PageFooter>'
-        xml += '<Height>.8in</Height>'
+        xml += '<Height>15mm</Height>'
         xml += '</PageFooter>'
         xml += "</Report>";
         let xmlDoc = this.loadXMLString(xml);
@@ -85,6 +85,7 @@ export default class ReportDesignService implements IDesignService {
     }
 
     public ChangeProperty(item: ItemDesigner, name: string, tag: any, value: any): void {
+        console.log("ReportDesignService.ChangeProperty: " + name, value)
         // this._channel.invoke("sys.DesignService.ChangeReportItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
         //     if (res) {
         //         let item = (res as IServerReportItem[])[0]; //todo:暂只返回一个
@@ -140,7 +141,7 @@ export default class ReportDesignService implements IDesignService {
     }
 
     public TableOperation(opt: string): void {
-        var items = this._surface.SelectionService.SelectedItems;        
+        var items = this._surface.SelectionService.SelectedItems;
         if (opt == 'SplitCells') {
             if (items.length != 1) {
                 return;
@@ -149,7 +150,7 @@ export default class ReportDesignService implements IDesignService {
             if (item instanceof ReportItemDesigner && item.Parent) {
                 if (!item.IsTableCell)
                     return;
-                if(item.Cell)
+                if (item.Cell)
                     ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
             }
             return;
@@ -163,7 +164,7 @@ export default class ReportDesignService implements IDesignService {
             if (item instanceof ReportItemDesigner && item.Parent) {
                 if (!item.IsTableCell)
                     return;
-                if(item.Cell)
+                if (item.Cell)
                     ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
             }
             return;
@@ -176,7 +177,7 @@ export default class ReportDesignService implements IDesignService {
             if (item instanceof ReportItemDesigner && item.Parent) {
                 if (!item.IsTableCell)
                     return;
-                if(item.Cell)
+                if (item.Cell)
                     ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
             }
             return;

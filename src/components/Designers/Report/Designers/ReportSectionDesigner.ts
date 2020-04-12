@@ -41,9 +41,9 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
 
     protected SetBounds(x: number, y: number, width: number, height: number, specified: BoundsSpecified): void {
         if (specified !== BoundsSpecified.Height) { //注意：只支持设置高度
+            console.warn("ReportSectionDesigner只支持设置高度值");
             return;
         }
-        // ReportDesignService.ChangeProperty(this, "Height", null, height);
 
         // 开始重新布局，并重新绘制
         let diff = height - this._bounds.Height;
@@ -62,8 +62,16 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
             this.Parent.Bounds.Height += diff;
         }
         if (this.Surface) {
-            this.Surface.Invalidate();
+            this.Surface.Invalidate(); //TODO:不需要全部重画，变动以下部分重画即可
         }
+    }
+
+    /**
+     * override for change height by canvas
+     */
+    public OnEndResize(): void {
+        this.SetPropertyRSize("Height",  this.Bounds.Height, false);
+        // TODO: 通知属性面板刷新相应的值
     }
 
     public Paint(g: CanvasRenderingContext2D): void {
