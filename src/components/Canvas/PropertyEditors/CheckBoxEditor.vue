@@ -22,6 +22,9 @@ export default {
             if (!this.target.readonly) {
                 this.target.setter(this.value)
             }
+        },
+        refresh() {
+            this.$set(this, 'value', this.target.getter())
         }
     },
     mounted() {

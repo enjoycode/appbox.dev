@@ -16,6 +16,12 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
     }
 
     //====读写XmlNode属性方法，读仅由属性面板，写可能画布或属性面板====
+    protected GetPropertyRSize(prop: string, defaultValue: string): string {
+        let node = this.GetNamedChildNode(prop);
+        if (!node) return defaultValue;
+        return node.textContent;
+    }
+
     protected SetPropertyRSize(prop: string, value: string | number, byPropertyPanel: boolean) {
         let node = this.GetNamedChildNode(prop);
         if (!node) {

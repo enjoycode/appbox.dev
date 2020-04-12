@@ -70,8 +70,11 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
      * override for change height by canvas
      */
     public OnEndResize(): void {
-        this.SetPropertyRSize("Height",  this.Bounds.Height, false);
-        // TODO: 通知属性面板刷新相应的值
+        this.SetPropertyRSize("Height", this.Bounds.Height, false);
+        // 通知属性面板刷新相应的值
+        if (this.Surface) {
+            this.Surface.PropertyPanel.refreshProperty("Height");
+        }
     }
 
     public Paint(g: CanvasRenderingContext2D): void {
@@ -96,7 +99,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
                 items: [
                     {
                         title: "Height", readonly: false, editorType: "TextBox",
-                        getter: () => this.GetNamedChildNode("Height").textContent, setter: (v) => console.log(v)
+                        getter: () => this.GetPropertyRSize("Height", "0mm"), setter: (v) => console.log(v)
                     },
                     {
                         title: "PrintOnFirstPage", readonly: false, editorType: "CheckBox",
