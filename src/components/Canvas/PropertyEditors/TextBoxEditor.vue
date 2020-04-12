@@ -1,5 +1,5 @@
 <template>
-    <el-input :readonly="target.readonly" v-model.lazy="value"></el-input>
+    <el-input :readonly="target.readonly" v-model="value" @change="onChange"></el-input>
 </template>
 
 <script>
@@ -15,10 +15,12 @@ export default {
     watch: {
         target(newTarget) {
             this.value = newTarget.getter()
-        },
-        value(newValue) {
+        }
+    },
+    methods: {
+        onChange() {
             if (!this.target.readonly) {
-                this.target.setter(newValue)
+                this.target.setter(this.value)
             }
         }
     },

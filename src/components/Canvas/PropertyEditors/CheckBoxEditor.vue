@@ -1,5 +1,5 @@
 <template>
-    <el-checkbox :readonly="target.readonly" v-model.lazy="value"></el-checkbox>
+    <el-checkbox :readonly="target.readonly" v-model="value" @change="onChange"></el-checkbox>
 </template>
 
 <script>
@@ -9,16 +9,18 @@ export default {
     },
     data() {
         return {
-            value: ''
+            value: false
         }
     },
     watch: {
         target(newTarget) {
             this.value = newTarget.getter()
-        },
-        value(newValue) {
+        }
+    },
+    methods: {
+        onChange() {
             if (!this.target.readonly) {
-                this.target.setter(newValue)
+                this.target.setter(this.value)
             }
         }
     },
