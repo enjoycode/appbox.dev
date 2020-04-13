@@ -1,10 +1,10 @@
 <template>
-    <div class="ide-property-panel">
+    <div class="ide-property-panel" style="padding:5px">
         <h4 class="propertyPanel-title">{{ownerType}}</h4>
         <el-collapse class="ide-property-collapse" :value="expands">
             <el-collapse-item v-for="catalog in catalogs" :key="catalog.name" :title="catalog.name" :name="catalog.name">
                 <el-form label-position="right" size="mini" label-width="120px">
-                    <el-form-item v-for="item in catalog.items" :key="item.title" :label="item.title">
+                    <el-form-item v-for="item in catalog.items" :key="item.title" :label="item.title + ':'">
                         <component ref="editors" :is="item.editor" :target="item"></component>
                     </el-form-item>
                 </el-form>
@@ -58,7 +58,6 @@ export default {
 
 <style scoped>
 .propertyPanel-title {
-    margin-left: 10px;
     margin-top: 5px;
     margin-bottom: 5px;
 }
