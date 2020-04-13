@@ -71,6 +71,23 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         // console.log(this.getPropertyOwnerType() + "." + prop + " changed to: " + node.textContent);
     }
 
+    protected GetPropertyString(prop: string, defaultValue: string): string {
+        let node = this.GetNamedChildNode(prop);
+        if (!node) return defaultValue;
+        return node.textContent;
+    }
+
+    protected SetPropertyString(prop: string, value: string, needInvalidate: boolean = false) {
+        let node = this.GetNamedChildNode(prop);
+        if (!node) {
+            node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
+        }
+        node.textContent = value;
+        if (needInvalidate) {
+            this.Invalidate();
+        }
+    }
+
     //====IPropertyOwner接口实现====
     public getPropertyOwnerType(): string {
         return this.xmlNode.nodeName;

@@ -1,18 +1,17 @@
-import DesignAdorners from '../../../Canvas/Adorners/DesignAdorners'
-import DesignAdorner from '../../../Canvas/Adorners/DesignAdorner'
-import SelectionAdorner from '../../../Canvas/Adorners/SelectionAdorner'
-import ItemDesigner from '../../../Canvas/Designers/ItemDesigner'
-import Rectangle from '../../../Canvas/Drawing/Rectangle'
-import BoundsSpecified from '../../../Canvas/Enums/BoundsSpecified'
-import IServerReportItem from './IServerReportItem'
+import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
+import SelectionAdorner from '@/components/Canvas/Adorners/SelectionAdorner'
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
+import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import TableDesigner from './TableDesigner'
-import DesignBehavior from '../../../Canvas/Enums/DesignBehavior'
-import MouseEventArgs from '../../../Canvas/EventArgs/MouseEventArgs'
-import MouseButtons from '../../../Canvas/Enums/MouseButtons'
+import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
+import MouseEventArgs from '@/components/Canvas/EventArgs/MouseEventArgs'
+import MouseButtons from '@/components/Canvas/Enums/MouseButtons'
 import { ICell } from './ITableLayout'
+import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
+import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 
 
-export default abstract class ReportItemDesigner extends ItemDesigner {
+export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
     /**
      * 是否在表格的单元格内
@@ -43,7 +42,7 @@ export default abstract class ReportItemDesigner extends ItemDesigner {
         return this.IsTableCell ? DesignBehavior.None : DesignBehavior.CanMove | DesignBehavior.CanResize;
     }
 
-    private _bounds: Rectangle = new Rectangle(0, 0, 0, 0);
+    private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
     public get Bounds(): Rectangle {
         return this._bounds;
     }
@@ -64,17 +63,46 @@ export default abstract class ReportItemDesigner extends ItemDesigner {
         this.InvalidateOnBoundsChanged(oldBounds); // this.Invalidate();
     }
 
-    public Fetch(serverItem: IServerReportItem) {
-        this._id = serverItem.ID;
-        this._bounds.X = serverItem.Bounds.X;
-        this._bounds.Y = serverItem.Bounds.Y;
-        this._bounds.Width = serverItem.Bounds.Width;
-        this._bounds.Height = serverItem.Bounds.Height;
-        let si: any = serverItem;
-        if (si.Cell) {
-            this._cell = si.Cell;
+    constructor(xmlNode: Node) {
+        super(xmlNode);
+
+        //转换Bounds
+        let x = this.GetNamedChildNode("Left");
+        if (x) this._bounds.X = this.GetSize(x);
+        let y = this.GetNamedChildNode("Top");
+        if (y) this._bounds.Y = this.GetSize(y);
+        let width = this.GetNamedChildNode("Width");
+        if (width) this._bounds.Width = this.GetSize(width);
+        let height = this.GetNamedChildNode("Height");
+        if (height) this._bounds.Height = this.GetSize(height);
+    }
+
+    /**
+     * override for change position by canvas
+     */
+    public OnEndMove(): void {
+        this.SetPropertyRSize("Left", this.Bounds.X);
+        this.SetPropertyRSize("Top", this.Bounds.Y);
+        // 通知属性面板刷新相应的值
+        if (this.Surface) {
+            this.Surface.PropertyPanel.refreshProperty("Left");
+            this.Surface.PropertyPanel.refreshProperty("Top");
         }
     }
+
+    /**
+     * override for change size by canvas
+     */
+    public OnEndResize(): void {
+        this.SetPropertyRSize("Width", this.Bounds.Width);
+        this.SetPropertyRSize("Height", this.Bounds.Height);
+        // 通知属性面板刷新相应的值
+        if (this.Surface) {
+            this.Surface.PropertyPanel.refreshProperty("Width");
+            this.Surface.PropertyPanel.refreshProperty("Height");
+        }
+    }
+
     public PreviewMouseDown(e: MouseEventArgs): boolean {
         if (e.Button == MouseButtons.Left && this.IsTableCell) {
             //在表格内则开始单元格选取
@@ -88,6 +116,39 @@ export default abstract class ReportItemDesigner extends ItemDesigner {
             }
         }
         return false;
+    }
+
+    //============IPropertyOwner接口实现=====
+    public getPropertyItems(): IPropertyCatalog[] | null {
+        //TODO:在表格内不返回Layout类别
+        let cats: IPropertyCatalog[] = [
+            {
+                name: "Layout",
+                items: [
+                    {
+                        title: "Left", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetPropertyRSize("Left", "0mm"),
+                        setter: v => this.SetPropertyRSize("Left", v)
+                    },
+                    {
+                        title: "Top", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetPropertyRSize("Top", "0mm"),
+                        setter: v => this.SetPropertyRSize("Top", v)
+                    },
+                    {
+                        title: "Width", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetPropertyRSize("Width", "20mm"),
+                        setter: v => this.SetPropertyRSize("Width", v)
+                    },
+                    {
+                        title: "Height", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetPropertyRSize("Height", "10mm"),
+                        setter: v => this.SetPropertyRSize("Height", v)
+                    },
+                ]
+            }
+        ]
+        return cats;
     }
 
 }
