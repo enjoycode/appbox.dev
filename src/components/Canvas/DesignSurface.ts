@@ -113,8 +113,8 @@ export default class DesignSurface {
         }
 
         var ctx = this._canvas.getContext("2d") as CanvasRenderingContext2D;
-        //先清空区域
-        // ctx.clearRect(area.X, area.Y, area.Width, area.Height);
+        //先清空区域 (必需)
+        ctx.clearRect(area.X, area.Y, area.Width, area.Height);
 
         //画各个子元素
         if (this._items) {
