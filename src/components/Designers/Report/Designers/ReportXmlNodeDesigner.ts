@@ -41,16 +41,11 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
             node.textContent = value;
             let pixels = this.SizeToPixel(value);
             // 需要反向设置Bounds
-            let needRepaint = true;
             switch (prop) {
                 case "Height": this.SetBounds(0, 0, 0, pixels, BoundsSpecified.Height); break;
                 case "Width": this.SetBounds(0, 0, pixels, 0, BoundsSpecified.Width); break;
                 case "Left": this.SetBounds(pixels, 0, 0, 0, BoundsSpecified.X); break;
                 case "Top": this.SetBounds(0, pixels, 0, 0, BoundsSpecified.Y); break;
-                default: needRepaint = false; break;
-            }
-            if (needRepaint) { // 如果改变Bounds项则重绘
-                if (this.Parent) this.Parent.Invalidate();
             }
         }
         // console.log(this.getPropertyOwnerType() + "." + prop + " changed to: " + node.textContent);
@@ -191,7 +186,7 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
             default: size = d * 2540; break; // Illegal unit
         }
         // return as pixels
-        return size / 2540 * ReportXmlNodeDesigner.POINTSIZE;
+        return Math.round(size / 2540 * ReportXmlNodeDesigner.POINTSIZE);
     }
 
     /**

@@ -114,23 +114,21 @@ export default abstract class ItemDesigner implements IPropertyOwner {
      * @param deltaY 
      */
     public Move(deltaX: number, deltaY: number): void {
-        if ((this.Behavior & DesignBehavior.CanMove) === 0) {
-            return;
-        }
+        if ((this.Behavior & DesignBehavior.CanMove) === 0) { return; }
+
+        let dx = Math.round(deltaX);
+        let dy = Math.round(deltaY);
+        if (dx === 0 && dy === 0) { return; }
 
         if (this.Parent != null) {
             //预留10像素点 否则移到极限位置时候不容易在选中
-            var newBounds = new Rectangle(this.Bounds.X + deltaX, this.Bounds.Y + deltaY, this.Bounds.Width, this.Bounds.Height);
-            if (newBounds.Y + 10 >= this.Parent.Bounds.Height)
-                return;
-            if (newBounds.X + 10 >= this.Parent.Bounds.Width)
-                return;
-            if (newBounds.X + newBounds.Width <= 10)
-                return;
-            if (newBounds.Y + newBounds.Height <= 10)
-                return;
+            var newBounds = new Rectangle(this.Bounds.X + dx, this.Bounds.Y + dy, this.Bounds.Width, this.Bounds.Height);
+            if (newBounds.Y + 10 >= this.Parent.Bounds.Height) { return; }
+            if (newBounds.X + 10 >= this.Parent.Bounds.Width) { return; }
+            if (newBounds.X + newBounds.Width <= 10) { return; }
+            if (newBounds.Y + newBounds.Height <= 10) { return; }
         }
-        this.SetBounds(this.Bounds.X + deltaX, this.Bounds.Y + deltaY,
+        this.SetBounds(this.Bounds.X + dx, this.Bounds.Y + dy,
             this.Bounds.Width, this.Bounds.Height, BoundsSpecified.Location);
     }
 
@@ -155,9 +153,11 @@ export default abstract class ItemDesigner implements IPropertyOwner {
      * @param deltaY 
      */
     public Resize(location: ResizeAnchorLocation, deltaX: number, deltaY: number): void {
-        if (!(this.Behavior & DesignBehavior.CanResize)) {
-            return;
-        }
+        if (!(this.Behavior & DesignBehavior.CanResize)) { return; }
+
+        let dx = Math.round(deltaX);
+        let dy = Math.round(deltaY);
+        if (dx === 0 && dy === 0) { return; }
 
         //todo: check minSize
         var newBounds = new Rectangle(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
@@ -166,55 +166,55 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         //todo: fix BoundsSpecified
         switch (location) {
             case ResizeAnchorLocation.LeftTop:
-                if (newBounds.Height - deltaY <= 0 || newBounds.Width - deltaX <= 0)
+                if (newBounds.Height - dy <= 0 || newBounds.Width - dx <= 0)
                     break;
-                newBounds.X += deltaX;
-                newBounds.Y += deltaY;
-                newBounds.Width -= deltaX;
-                newBounds.Height -= deltaY;
+                newBounds.X += dx;
+                newBounds.Y += dy;
+                newBounds.Width -= dx;
+                newBounds.Height -= dy;
                 break;
             case ResizeAnchorLocation.LeftCenter:
-                if (newBounds.Width - deltaX <= 0)
+                if (newBounds.Width - dx <= 0)
                     break;
-                newBounds.X += deltaX;
-                newBounds.Width -= deltaX;
+                newBounds.X += dx;
+                newBounds.Width -= dx;
                 break;
             case ResizeAnchorLocation.LeftBottom:
-                if (newBounds.Height + deltaY <= 0 || newBounds.Width - deltaX <= 0)
+                if (newBounds.Height + dy <= 0 || newBounds.Width - dx <= 0)
                     break;
-                newBounds.X += deltaX;
-                newBounds.Width -= deltaX;
-                newBounds.Height += deltaY;
+                newBounds.X += dx;
+                newBounds.Width -= dx;
+                newBounds.Height += dy;
                 break;
             case ResizeAnchorLocation.RightTop:
-                if (newBounds.Height - deltaY <= 0 || newBounds.Width + deltaX <= 0)
+                if (newBounds.Height - dy <= 0 || newBounds.Width + dx <= 0)
                     break;
-                newBounds.Y += deltaY;
-                newBounds.Width += deltaX;
-                newBounds.Height -= deltaY;
+                newBounds.Y += dy;
+                newBounds.Width += dx;
+                newBounds.Height -= dy;
                 break;
             case ResizeAnchorLocation.RightCenter:
-                if (newBounds.Width + deltaX <= 0)
+                if (newBounds.Width + dx <= 0)
                     break;
-                newBounds.Width += deltaX;
+                newBounds.Width += dx;
                 break;
             case ResizeAnchorLocation.RightBottom:
-                if (newBounds.Height + deltaY <= 0 || newBounds.Width + deltaX <= 0)
+                if (newBounds.Height + dy <= 0 || newBounds.Width + dx <= 0)
                     break;
-                newBounds.Width += deltaX;
-                newBounds.Height += deltaY;
+                newBounds.Width += dx;
+                newBounds.Height += dy;
                 break;
             case ResizeAnchorLocation.TopCenter:
-                if (newBounds.Height - deltaY <= 0)
+                if (newBounds.Height - dy <= 0)
                     break;
-                newBounds.Y += deltaY;
-                newBounds.Height -= deltaY;
+                newBounds.Y += dy;
+                newBounds.Height -= dy;
                 specified = BoundsSpecified.Height;
                 break;
             case ResizeAnchorLocation.BottomCenter:
-                if (newBounds.Height + deltaY <= 0)
+                if (newBounds.Height + dy <= 0)
                     break;
-                newBounds.Height += deltaY;
+                newBounds.Height += dy;
                 specified = BoundsSpecified.Height;
                 break;
             default:
@@ -250,12 +250,11 @@ export default abstract class ItemDesigner implements IPropertyOwner {
 
     //============绘制方法===========
     public Invalidate(): void {
-        if (this.Parent) {
-            this.Parent.Invalidate(); //todo:
-        } else if (this.Surface) {
+        if (this.Surface) {
             var ptCanvas = this.PointToSurface(new Point(0, 0));
             var rect = new Rectangle(ptCanvas.X, ptCanvas.Y, this.Bounds.Width, this.Bounds.Height);
             //rect.Inflate(1,1);
+            // TODO:*** 直接转换坐标后调用Paint重画
             this.Surface.Invalidate(rect); // Rectangle.Ceiling(rectpf0Lda
         }
     }
@@ -263,16 +262,14 @@ export default abstract class ItemDesigner implements IPropertyOwner {
     /**
      * 元素Bounds改变后通知Canvas重新绘制合并区域
      */
-    protected InvalidateOnBoundsChanged(oldBounds: Rectangle): void {
-        if (!this.Surface)
-            return;
+    protected InvalidateOnBoundsChanged(oldBounds: Rectangle): void { //TODO: 移除此方法，与Invalidate()合并
+        if (!this.Surface) { return; }
 
         let ptSurface = this.Parent == null ? new Point(0, 0) : this.Parent.PointToSurface(new Point(0, 0));
-
         var invalidRect = Rectangle.Union(oldBounds, this.Bounds);
         invalidRect.X += ptSurface.X;
         invalidRect.Y += ptSurface.Y;
-        invalidRect.Inflate(1, 1);
+        // invalidRect.Inflate(1, 1);
         // console.log("Old:", oldBounds.X, oldBounds.Y, oldBounds.Width, oldBounds.Height);
         // console.log("New:", this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
         // console.log("Union:", invalidRect);

@@ -69,7 +69,7 @@ export default class DesignSurface {
 
             let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
             ctx.scale(ratio, ratio);
-            ctx.save();
+            // ctx.save();
         }
     }
 
@@ -114,12 +114,11 @@ export default class DesignSurface {
 
         var ctx = this._canvas.getContext("2d") as CanvasRenderingContext2D;
         //先清空区域
-        ctx.clearRect(area.X, area.Y, area.Width, area.Height);
+        // ctx.clearRect(area.X, area.Y, area.Width, area.Height);
 
         //画各个子元素
         if (this._items) {
-            for (var i = 0; i < this._items.length; i++) {
-                var element = this._items[i];
+            for (const element of this._items) {
                 if (element.Visible && area.IntersectsWith(element.Bounds)) { //Rectangle.Ceiling(element.Bounds)
                     let offsetX = element.Bounds.X;
                     let offsetY = element.Bounds.Y;

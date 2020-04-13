@@ -5,6 +5,7 @@ export default class TextBoxDesigner extends ReportItemDesigner {
 
     public Paint(g: CanvasRenderingContext2D): void {
         g.save();
+        g.beginPath();
         g.rect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
         g.clip();
 
@@ -12,6 +13,10 @@ export default class TextBoxDesigner extends ReportItemDesigner {
         g.strokeStyle = "rgb(173,219,241)";
         g.lineWidth = 1;
         g.strokeRect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
+
+        // 测试画出范围
+        // g.fillStyle = "red";
+        // g.fillRect(this.Bounds.X + 10, this.Bounds.Y + 10, this.Bounds.Width, this.Bounds.Height);
 
         // 绘制文本, TODO:根据Style绘制，另考虑绑定值不同样式
         let text = this.GetPropertyString("Value", "");

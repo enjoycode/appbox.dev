@@ -97,8 +97,12 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
 
     public Paint(g: CanvasRenderingContext2D): void {
         g.save();
+        g.beginPath();
         g.rect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
         g.clip();
+
+        g.fillStyle = "white";
+        g.fillRect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
 
         g.strokeStyle = "rgb(173,219,241)";
         g.lineWidth = 1;
@@ -106,8 +110,8 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
 
         if (this.Items) {
             g.translate(this.Bounds.X, this.Bounds.Y);
-            for (var i = 0; i < this.Items.length; i++) {
-                this.Items[i].Paint(g);
+            for (const item of this.Items) {
+                item.Paint(g);
             }
             g.translate(-this.Bounds.X, -this.Bounds.Y);
         }

@@ -56,10 +56,11 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         }
 
         let oldBounds = new Rectangle(this._bounds.X, this._bounds.Y, this._bounds.Width, this._bounds.Height);
-        this._bounds.X = x;
-        this._bounds.Y = y;
-        this._bounds.Width = width;
-        this._bounds.Height = height;
+        //根据specified设置
+        if (specified & BoundsSpecified.X) { this._bounds.X = x; }
+        if (specified & BoundsSpecified.Y) { this._bounds.Y = y; }
+        if (specified & BoundsSpecified.Width) { this._bounds.Width = width; }
+        if (specified & BoundsSpecified.Height) { this._bounds.Height = height; }
         this.InvalidateOnBoundsChanged(oldBounds); // this.Invalidate();
     }
 

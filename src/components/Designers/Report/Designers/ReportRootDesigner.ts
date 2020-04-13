@@ -49,26 +49,11 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
         // do nothing
     }
 
-    // private GetSectionHeight(sectionName: string): number {
-    //     if (!this.xmlNode) return 0;
-    //     let section = this.GetNamedChildNode(this.xmlNode, sectionName);
-    //     if (!section) return 0;
-    //     let height = this.GetNamedChildNode(section, "Height");
-    //     if (!height) return 0;
-    //     return this.GetSize(height);
-    // }
-
     public Paint(g: CanvasRenderingContext2D): void {
-        g.fillStyle = "white";
-        g.fillRect(0, 0, this.Bounds.Width, this.Bounds.Height);
-
-        g.strokeStyle = "rgb(173,219,241)";
-        g.lineWidth = 1;
-        g.strokeRect(0, 0, this.Bounds.Width, this.Bounds.Height);
-
+        //不用画也不用转换坐标
         if (this.Items) {
-            for (var i = 0; i < this.Items.length; i++) {
-                this.Items[i].Paint(g);
+            for (const item of this.Items) {
+                item.Paint(g);
             }
         }
     }
