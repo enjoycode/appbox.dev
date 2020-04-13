@@ -43,8 +43,8 @@ export default class DesignAdorners {
 
     public Add(adorner: DesignAdorner) {
         //避免CellSelectionAdorner重复添加
-        for(var i=0;i<this._adorners.length;i++){
-            if(this._adorners[i]===adorner)
+        for (var i = 0; i < this._adorners.length; i++) {
+            if (this._adorners[i] === adorner)
                 return;
         }
         this._adorners.push(adorner);
@@ -181,6 +181,39 @@ export default class DesignAdorners {
         }
     }
 
+    //===========新建相关==============
+    private _creationMode: CreationMode = CreationMode.None;
+    private _x1: number;
+    private _y1: number;
+    private _x2: number;
+    private _y2: number;
+
+    public get CreationStartPoint(): Point { return new Point(this._x1, this._y1); }
+    public get CreationEndPoint(): Point { return new Point(this._x2, this._y2); }
+    public get CreationRectangle(): Rectangle {
+        let x1 = Math.min(this._x1, this._x2);
+        let y1 = Math.min(this._y1, this._y2);
+        let x2 = Math.max(this._x1, this._x2);
+        let y2 = Math.max(this._y1, this._y2);
+        return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    public BeginCreation(x: number, y: number, isConnection: boolean): void {
+        this._creationMode = isConnection ? CreationMode.Connection : CreationMode.Item;
+        this._x1 = this._x2 = x;
+        this._y1 = this._y2 = y;
+    }
+
+    public UpdateCreationEndPoint(x: number, y: number): void {
+        this._x2 = x;
+        this._y2 = y;
+        this.Invalidate();
+    }
+
+    public EndCreation(): void {
+        this._creationMode = CreationMode.None;
+    }
+
     //===========Connector相关==============
     private nearestShapes: Array<IShape> | null;
     public ActiveConnector: IConnector | null;
@@ -197,4 +230,10 @@ export default class DesignAdorners {
             this.Invalidate();
     }
 
+}
+
+enum CreationMode {
+    None,
+    Connection,
+    Item //Shape or Item
 }

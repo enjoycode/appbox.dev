@@ -9,6 +9,7 @@ import IDesignService from './Services/IDesignService'
 import BridgeType from './Core/Declaratives/BridgeType'
 import RoutingService from './Services/RoutingService'
 import { IPropertyPanel } from './Interfaces/IPropertyPanel'
+import ToolboxService from './Services/ToolboxService'
 
 export default class DesignSurface {
 
@@ -19,6 +20,7 @@ export default class DesignSurface {
     private _items: Array<ItemDesigner>;
 
     public readonly Adorners: DesignAdorners;
+    public readonly ToolboxService: ToolboxService;
     public readonly SelectionService: SelectionService;
     public DesignService: IDesignService;
 
@@ -46,11 +48,12 @@ export default class DesignSurface {
         this._propertyPanel = propertyPanel;
 
         this.Adorners = new DesignAdorners(this, adorner);
+        this.ToolboxService = new ToolboxService(this);
         this.SelectionService = new SelectionService(this);
+        // this.routingService = new RoutingService();
 
         this.ScaleCanvas(surface, surface.width, surface.height, ratio);
         this.ScaleCanvas(adorner, adorner.width, adorner.height, ratio);
-        // this.routingService = new RoutingService();
     }
 
     /**
@@ -120,7 +123,7 @@ export default class DesignSurface {
                 if (element.Visible && area.IntersectsWith(element.Bounds)) { //Rectangle.Ceiling(element.Bounds)
                     let offsetX = element.Bounds.X;
                     let offsetY = element.Bounds.Y;
-    
+
                     ctx.translate(offsetX, offsetY);
                     element.Paint(ctx);
                     ctx.translate(-offsetX, -offsetY);
@@ -140,20 +143,20 @@ export default class DesignSurface {
 
         //先判断有没有击中已选择项的锚点
         if (this.Adorners.HitTestItem != null) {
-            //todo: HitTestItem.OnMouseDown
+            //TODO: HitTestItem.OnMouseDown
             return;
         }
 
         //判断有没有选择工具箱项，有则表示在新建模式
-        // if (e.Button == MouseButtons.Left && this.toolboxService.SelectedItem != null) {
-        //     this.toolboxService.BeginCreation(e.X, e.Y);
-        //     return;
-        // }
+        if (e.Button == MouseButtons.Left && this.ToolboxService.SelectedItem) {
+            this.ToolboxService.BeginCreation(e.X, e.Y);
+            return;
+        }
 
         //设置选择的Item
         this.SelectionService.SelectItem(this._hoverItem);
 
-        //todo:如果选择项为Conatiner，则开始设置选择框的起始位置
+        //TODO:如果选择项为Conatiner，则开始设置选择框的起始位置
     }
 
     public OnMouseMove(e: MouseEventArgs) {
@@ -165,14 +168,13 @@ export default class DesignSurface {
 
         //处理Mouse拖动
         if (e.Button === MouseButtons.Left) {
-            //todo:
             if (this.Adorners.HitTestItem) { //先处理装饰层的拖动
                 this.Adorners.HitTestItem.OnMouseMove(e);
             }
-            // else if (this.toolboxService.SelectedItem != null) //已从工具箱选择了新建的对象，并在拖动过程中
-            // {
-            //     this.toolboxService.OnMouseMove(e.X, e.Y);
-            // }
+            else if (this.ToolboxService.SelectedItem) //已从工具箱选择了新建的对象，并在拖动过程中
+            {
+                this.ToolboxService.OnMouseMove(e.X, e.Y);
+            }
             else { //处理已选择的对象的移动
                 this.SelectionService.MoveSelection(e.DeltaX, e.DeltaY);
             }
@@ -184,15 +186,16 @@ export default class DesignSurface {
 
     public OnMouseUp(e: MouseEventArgs) {
         if (e.Button === MouseButtons.Left) {
-            // if (this.toolboxService.SelectedItem != null) //新建模式下结束
-            //     this.toolboxService.EndCreation(e.X, e.Y);
+            if (this.ToolboxService.SelectedItem) { //新建模式下结束
+                this.ToolboxService.EndCreation(e.X, e.Y);
+            }
 
             //通知adorners
             this.Adorners.OnMouseUp(e);
             //通知选择服务结束移动
             this.SelectionService.OnMouseUp(e);
 
-            //todo:清空选择框
+            //TODO:清空选择框
         }
     }
 
@@ -241,4 +244,20 @@ export default class DesignSurface {
         return found;
     }
 
+    public GetContainerUnderMouse(x: number, y: number): ItemDesigner | null {
+        var ctx = this._canvas.getContext("2d") as CanvasRenderingContext2D;
+        let temp = this.GetItemUnderMouse(x, y, ctx);
+        while (temp) {
+            if (temp.IsContainer) {
+                return temp;
+            }
+            temp = temp.Parent;
+        }
+        return null;
+    }
+
+    public ResetHoverItem(): void {
+        this._hoverItem = null;
+        //TODO: 最好重新查找HoverItem
+    }
 }

@@ -50,6 +50,11 @@ export default class SelectionService {
         }
     }
 
+    public ClearSelection(): void {
+        this.SelectItem(null);
+        this._surface.ResetHoverItem();
+    }
+
     public MoveSelection(deltaX: number, deltaY: number): void {
         if (this.SelectedItems.length > 0) {
             this._moving = true;
