@@ -1,5 +1,6 @@
 import ReportItemDesigner from './ReportItemDesigner'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
+import { TextAlignEnum, VerticalAlignEnum } from './ReportStyle';
 
 export default class TextBoxDesigner extends ReportItemDesigner {
 
@@ -14,17 +15,36 @@ export default class TextBoxDesigner extends ReportItemDesigner {
         g.lineWidth = 1;
         g.strokeRect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
 
-        // 测试画出范围
-        // g.fillStyle = "red";
-        // g.fillRect(this.Bounds.X + 10, this.Bounds.Y + 10, this.Bounds.Width, this.Bounds.Height);
-
         // 绘制文本, TODO:根据Style绘制，另考虑绑定值不同样式
         let text = this.GetPropertyString("Value", "");
         if (text.length > 0) {
             g.font = this.Style.PaintFont;
             g.fillStyle = "black";
-            g.textBaseline = "top";
-            g.fillText(text, this.Bounds.X + 2, this.Bounds.Y + 2);
+
+            let x = 0;
+            if (this.Style.TextAlign === TextAlignEnum.Center) {
+                g.textAlign = "center";
+                x = this.Bounds.X + this.Bounds.Width / 2;
+            } else if (this.Style.TextAlign === TextAlignEnum.Right) {
+                g.textAlign = "right";
+                x = this.Bounds.Right - 2;
+            } else {
+                g.textAlign = "left";
+                x = this.Bounds.X + 2;
+            }
+            let y = 0;
+            if (this.Style.VerticalAlign === VerticalAlignEnum.Middle) {
+                g.textBaseline = "middle";
+                y = this.Bounds.Y + this.Bounds.Height / 2;
+            } else if (this.Style.VerticalAlign == VerticalAlignEnum.Bottom) {
+                g.textBaseline = "bottom";
+                y = this.Bounds.Bottom - 2;
+            } else {
+                g.textBaseline = "top";
+                y = this.Bounds.Y + 2
+            }
+
+            g.fillText(text, x, y);
         }
 
         g.restore();

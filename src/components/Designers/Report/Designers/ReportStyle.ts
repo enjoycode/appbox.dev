@@ -50,6 +50,13 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
         this._paintFont = null;
     }
 
+    public get TextAlign(): TextAlignEnum {
+        return TextAlignEnum[this.GetStyle("TextAlign", "General")];
+    }
+    public get VerticalAlign(): VerticalAlignEnum {
+        return VerticalAlignEnum[this.GetStyle("VerticalAlign", "Top")];
+    }
+
     //====用于绘图的辅助方法====
     private _paintFont: string | null;
     public get PaintFont(): string {
@@ -82,6 +89,18 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                         options: ReportStyle.GetEnumNames(FontWeightEnum),
                         getter: () => this.FontWeight,
                         setter: v => { this.FontWeight = v; this._owner.Invalidate(); }
+                    },
+                    {
+                        title: "TextAlign", readonly: false, editor: "Select",
+                        options: ReportStyle.GetEnumNames(TextAlignEnum),
+                        getter: () => this.GetStyle("TextAlign", "General"),
+                        setter: v => { this.SetStyle("TextAlign", v); this._owner.Invalidate(); }
+                    },
+                    {
+                        title: "VerticalAlign", readonly: false, editor: "Select",
+                        options: ReportStyle.GetEnumNames(VerticalAlignEnum),
+                        getter: () => this.GetStyle("VerticalAlign", "Top"),
+                        setter: v => { this.SetStyle("VerticalAlign", v); this._owner.Invalidate(); }
                     }
                 ]
             }
@@ -102,4 +121,18 @@ enum FontWeightEnum {
     Normal,
     Bold,
     Bolder
+}
+
+export enum TextAlignEnum {
+    Left,
+    Center,
+    Right,
+    General,
+    Justified
+}
+
+export enum VerticalAlignEnum {
+    Top,
+    Middle,
+    Bottom
 }
