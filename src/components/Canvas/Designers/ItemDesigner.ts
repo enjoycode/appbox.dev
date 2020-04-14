@@ -241,8 +241,9 @@ export default abstract class ItemDesigner implements IPropertyOwner {
     //============添加及移除方法===========
     /**
      * 当被添加到画布后执行的操作，由子类实现相关逻辑
+     * @param byCreate 是否新建的元素
      */
-    public OnAddToSurface(): void { }
+    public OnAddToSurface(byCreate: boolean): void { }
     /**
      * 当被从画布移除后执行的操作，由子类实现相关逻辑
      */
@@ -297,7 +298,12 @@ export default abstract class ItemDesigner implements IPropertyOwner {
     }
 
     //============容器相关方法===========
-    public AddItem(item: ItemDesigner): void {
+    /**
+     * 添加子级元素
+     * @param item 
+     * @param byCreate 是否新建的
+     */
+    public AddItem(item: ItemDesigner, byCreate: boolean = false): void {
         if (!this.IsContainer)
             throw new Error("非容器元素不能添加子元素");
 
@@ -305,7 +311,7 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         if (!this._items)
             this._items = new Array<ItemDesigner>();
         this._items.push(item);
-        item.OnAddToSurface();
+        item.OnAddToSurface(byCreate);
         //非DiagramHostItem需要刷新Canvas
         this.Invalidate();
     }

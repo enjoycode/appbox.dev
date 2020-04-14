@@ -152,6 +152,24 @@ export default class ReportDesignService implements IDesignService {
         // })
     }
 
+    /**
+     * 删除所有选中的元素
+     */
+    public DeleteSelection(): void {
+        let selection = this._surface.SelectionService.SelectedItems;
+        if (!selection || selection.length === 0) { return; }
+        for (const item of selection) {
+            if (item instanceof ReportItemDesigner && !item.IsTableCell) { //仅ReportItemDesigner可以删除
+                if (item.Parent) {
+                    item.Parent.RemoveItem(item);
+                } else {
+                    console.warn("待删除的元素无上级");
+                }
+            }
+        }
+        this._surface.SelectionService.ClearSelection(); //清除选择
+    }
+
     public TableOperation(opt: string): void {
         var items = this._surface.SelectionService.SelectedItems;
         if (opt == 'SplitCells') {

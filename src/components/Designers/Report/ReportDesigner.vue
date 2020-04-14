@@ -30,7 +30,8 @@ export default {
             this.designService.LoadDesignersFromServer(this.target.ID)
         },
         save() {
-            console.log(this.designService.GetXmlString());
+            //console.log(this.designService.GetXmlString());
+            console.log(this.designService.RootDesigner.XmlNode.ownerDocument)
             // let node = this.target
             // let _this = this
             // $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
@@ -38,6 +39,10 @@ export default {
             // }).catch(err => {
             //     _this.$message.error('保存失败: ' + err)
             // })
+        },
+        /** 删除选中的元素 */
+        DeleteSelection() {
+            this.designService.DeleteSelection()
         },
         MergeCells() {
             this.designService.TableOperation('MergeCells')

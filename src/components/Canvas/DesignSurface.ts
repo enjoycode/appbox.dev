@@ -84,15 +84,16 @@ export default class DesignSurface {
     //===============添加／删除元素方法===================
     /**
      * 添加设计元素
+     * @param byCreate 是否新建的元素
      */
-    public AddItem(item: ItemDesigner): void {
+    public AddItem(item: ItemDesigner, byCreate: boolean = false): void {
         if (!this._items) {
             this._items = new Array<ItemDesigner>();
         }
 
         item.Surface = this;
         this._items.push(item);
-        item.OnAddToSurface();
+        item.OnAddToSurface(byCreate);
     }
 
     public RemoveItem(item: ItemDesigner): void {

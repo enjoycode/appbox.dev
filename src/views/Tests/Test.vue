@@ -1,6 +1,7 @@
 <template>
     <div style="height:500px;margin:20px">
         <el-button @click="onAdd">Add</el-button>
+        <el-button @click="onDel">Remove</el-button>
         <el-button @click="onSave">Save</el-button>
         <br/><br/>
         <!-- <design-view ref="designView" background="lightgray"></design-view> -->
@@ -41,6 +42,10 @@ export default class TestView extends Vue {
         // var shape = new TestShape()
         // this.designView.designSurface.AddItem(shape)
         // this.designView.designSurface.Invalidate()
+    }
+
+    onDel() {
+        (<any>this.$refs.designer).DeleteSelection();
     }
 
     onSave() {

@@ -43,8 +43,8 @@ export default class ActivityDesigner extends ShapeDesigner {
         //     humanAM.ActionsChanging += OnHumanActionsChanging;
     }
 
-    public OnAddToSurface(): void {
-        super.OnAddToSurface();
+    public OnAddToSurface(byCreate: boolean): void {
+        // super.OnAddToSurface(byCreate);
         super.Invalidate();
     }
     public OnRemoveFromSurface(): void {

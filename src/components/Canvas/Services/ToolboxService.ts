@@ -62,7 +62,7 @@ export default class ToolboxService {
             } else {
                 newItem.Bounds = this._surface.Adorners.CreationRectangle;
             }
-            this._surface.AddItem(newItem);
+            this._surface.AddItem(newItem, true);
             //选择新建的
             this._surface.SelectionService.SelectItem(newItem);
         } else { //存在上级容器，需要转换坐标
@@ -79,7 +79,7 @@ export default class ToolboxService {
                 newRect.Y -= ptCanvas.Y;
                 newItem.Bounds = newRect;
             }
-            this._currentContainer.AddItem(newItem);
+            this._currentContainer.AddItem(newItem, true);
             //选择新建的
             this._surface.SelectionService.SelectItem(newItem);
         }
