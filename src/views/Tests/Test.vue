@@ -20,6 +20,7 @@ import TextBoxDesigner from "@/components/Designers/Report/Designers/TextBoxDesi
 import { IDesignToolbox, IDesignToolboxItem } from "@/components/Canvas/Services/ToolboxService";
 import DesignSurface from '@/components/Canvas/DesignSurface';
 import ReportXmlNodeDesigner from '@/components/Designers/Report/Designers/ReportXmlNodeDesigner';
+import XmlUtil from '@/components/Designers/Report/Designers/XmlUtil';
 
 @Component({
     components: { /*DesignView: DesignView*/ ReportDesigner: ReportDesigner }
@@ -124,7 +125,7 @@ class RI_Textbox implements IDesignToolboxItem {
         console.log("Create Report Textbox");
         //parent不可能是DesignSurface
         let p = parent as ReportXmlNodeDesigner;
-        let itemsNode = p.GetNamedChildNode("ReportItems");
+        let itemsNode = XmlUtil.GetNamedChildNode(p.XmlNode, "ReportItems");
         if (!itemsNode) {
             itemsNode = p.XmlNode.appendChild(p.XmlNode.ownerDocument.createElement("ReportItems"));
         }

@@ -34,7 +34,7 @@ export default {
                 for (const cat of cats) {
                     this.expands.push(cat.name)
                     for (const item of cat.items) {
-                        item.editor = getEditor(item.editorType)
+                        item.editor = getEditor(item.editor)
                     }
                 }
                 this.catalogs = cats

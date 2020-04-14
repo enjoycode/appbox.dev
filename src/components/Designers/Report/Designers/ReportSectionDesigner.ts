@@ -127,7 +127,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
                 name: "Common",
                 items: [
                     {
-                        title: "Height", readonly: false, editorType: "TextBox",
+                        title: "Height", readonly: false, editor: "TextBox",
                         getter: () => this.GetPropertyRSize("Height", "0mm"),
                         setter: v => this.SetPropertyRSize("Height", v)
                     },
@@ -136,12 +136,12 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         ]
         if (this.getPropertyOwnerType() !== "Body") {
             cats[0].items.push({
-                title: "PrintOnFirstPage", readonly: false, editorType: "CheckBox",
+                title: "PrintOnFirstPage", readonly: false, editor: "CheckBox",
                 getter: () => this.GetPropertyBool("PrintOnFirstPage", true),
                 setter: v => this.SetPropertyBool("PrintOnFirstPage", v)
             });
             cats[0].items.push({
-                title: "PrintOnLastPage", readonly: false, editorType: "CheckBox",
+                title: "PrintOnLastPage", readonly: false, editor: "CheckBox",
                 getter: () => this.GetPropertyBool("PrintOnLastPage", true),
                 setter: v => this.SetPropertyBool("PrintOnLastPage", v)
             });

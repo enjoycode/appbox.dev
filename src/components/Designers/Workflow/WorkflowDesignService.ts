@@ -36,8 +36,8 @@ class WorkflowRootDesigner implements IPropertyOwner {
         var res = new Array<IPropertyCatalog>();
         res.push({
             name: "属性", items: [
-                { title: "标识", editorType: "TextBox", readonly: true, getter: () => this._service.ModelID, setter: (v) => { } },
-                { title: "参数", editorType: "TextBox", readonly: false, getter: () => '参数列表', setter: (v) => { } }
+                { title: "标识", editor: "TextBox", readonly: true, getter: () => this._service.ModelID, setter: (v) => { } },
+                { title: "参数", editor: "TextBox", readonly: false, getter: () => '参数列表', setter: (v) => { } }
             ]
         });
         return res;

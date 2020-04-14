@@ -127,22 +127,22 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
                 name: "Layout",
                 items: [
                     {
-                        title: "Left", readonly: false, editorType: "TextBox",
+                        title: "Left", readonly: false, editor: "TextBox",
                         getter: () => this.GetPropertyRSize("Left", "0mm"),
                         setter: v => this.SetPropertyRSize("Left", v)
                     },
                     {
-                        title: "Top", readonly: false, editorType: "TextBox",
+                        title: "Top", readonly: false, editor: "TextBox",
                         getter: () => this.GetPropertyRSize("Top", "0mm"),
                         setter: v => this.SetPropertyRSize("Top", v)
                     },
                     {
-                        title: "Width", readonly: false, editorType: "TextBox",
+                        title: "Width", readonly: false, editor: "TextBox",
                         getter: () => this.GetPropertyRSize("Width", "20mm"),
                         setter: v => this.SetPropertyRSize("Width", v)
                     },
                     {
-                        title: "Height", readonly: false, editorType: "TextBox",
+                        title: "Height", readonly: false, editor: "TextBox",
                         getter: () => this.GetPropertyRSize("Height", "10mm"),
                         setter: v => this.SetPropertyRSize("Height", v)
                     },

@@ -12,6 +12,14 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
         this._styleNode = XmlUtil.GetNamedChildNode(owner.XmlNode, "Style");
     }
 
+    private GetStyle(prop: string, defaultValue: string): string | null {
+        if (this._styleNode) {
+            let node = XmlUtil.GetNamedChildNode(this._styleNode, prop);
+            if (node) { return node.textContent; }
+        }
+        return defaultValue;
+    }
+
     private SetStyle(prop: string, value: string) {
         if (!this._styleNode) {
             this._styleNode = this._owner.XmlNode.appendChild(this._owner.XmlNode.ownerDocument.createElement("Style"));
@@ -25,14 +33,20 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
     }
 
     public get FontSize(): number {
-        if (this._styleNode) {
-            let node = XmlUtil.GetNamedChildNode(this._styleNode, "FontSize");
-            if (node) { return XmlUtil.SizeToPixel(node.textContent); }
-        }
-        return 10;
+        let v = this.GetStyle("FontSize", null /*注意未找到返回null*/);
+        return v === null ? 10 : XmlUtil.SizeToPixel(v);
     }
+
     public set FontSize(value) {
         this.SetStyle("FontSize", value.toString() + "pt");
+        this._paintFont = null;
+    }
+
+    public get FontWeight(): string {
+        return this.GetStyle("FontWeight", "Normal");
+    }
+    public set FontWeight(value) {
+        this.SetStyle("FontWeight", value);
         this._paintFont = null;
     }
 
@@ -40,21 +54,34 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
     private _paintFont: string | null;
     public get PaintFont(): string {
         if (!this._paintFont) {
-            this._paintFont = this.FontSize + "px sans-serif"
+            this._paintFont = this.FontSize + "px sans-serif";
+            if (this.FontWeight === "Bold" || this.FontWeight === "Bolder") {
+                this._paintFont = "bold " + this._paintFont;
+            }
         }
         return this._paintFont;
     }
 
     //====用于PropertyPanel的方法====
+    private static GetEnumNames(e: any): string[] {
+        return Object.keys(e).filter(key => isNaN(+key))
+    }
+
     public GetPropertyItems(): IPropertyCatalog[] {
         let cats: IPropertyCatalog[] = [
             {
                 name: "Style",
                 items: [
                     {
-                        title: "FontSize", readonly: false, editorType: "TextBox",
+                        title: "FontSize", readonly: false, editor: "TextBox",
                         getter: () => this.FontSize,
                         setter: v => { this.FontSize = v; this._owner.Invalidate(); }
+                    },
+                    {
+                        title: "FontWeight", readonly: false, editor: "Select",
+                        options: ReportStyle.GetEnumNames(FontWeightEnum),
+                        getter: () => this.FontWeight,
+                        setter: v => { this.FontWeight = v; this._owner.Invalidate(); }
                     }
                 ]
             }
@@ -62,4 +89,17 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
         return cats;
     }
 
+}
+
+//====Enums====
+enum FontStyleEnum {
+    Normal,
+    Italic
+}
+
+enum FontWeightEnum {
+    Lighter,
+    Normal,
+    Bold,
+    Bolder
 }

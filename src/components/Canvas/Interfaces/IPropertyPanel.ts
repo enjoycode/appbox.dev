@@ -13,12 +13,12 @@ export interface IPropertyCatalog {
 }
 
 export interface IPropertyItem {
-    /**
-     * 属性名称
-     */
+    /** 属性名称 */
     title: string;
-    /**编辑器类型*/
-    editorType: string;
+    /** 编辑器类型 eg:TextBox*/
+    editor: string;
+    /** 编辑器对应的选项 */
+    options?: any;
     readonly: boolean;
     getter(): any;
     setter(value: any): void;

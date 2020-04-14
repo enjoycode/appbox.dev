@@ -37,17 +37,17 @@ export default class TextBoxDesigner extends ReportItemDesigner {
             name: "Common",
             items: [
                 {
-                    title: "Value", readonly: false, editorType: "TextBox",
+                    title: "Value", readonly: false, editor: "TextBox",
                     getter: () => this.GetPropertyString("Value", ""),
                     setter: v => this.SetPropertyString("Value", v, true)
                 },
                 {
-                    title: "CanGrow", readonly: false, editorType: "CheckBox",
+                    title: "CanGrow", readonly: false, editor: "CheckBox",
                     getter: () => this.GetPropertyBool("CanGrow", false),
                     setter: v => this.SetPropertyBool("CanGrow", v)
                 },
                 {
-                    title: "CanShrink", readonly: false, editorType: "CheckBox",
+                    title: "CanShrink", readonly: false, editor: "CheckBox",
                     getter: () => this.GetPropertyBool("CanShrink", false),
                     setter: v => this.SetPropertyBool("CanShrink", v)
                 },

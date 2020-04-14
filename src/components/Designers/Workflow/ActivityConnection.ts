@@ -181,13 +181,13 @@ export default class ActivityConnection extends ConnectionDesigner {
         let _this = this;
         res.push({
             name: "显示", items: [
-                { title: "标题", editorType: "TextBox", readonly: true, getter: () => _this.Title, setter: (v) => { } }
+                { title: "标题", editor: "TextBox", readonly: true, getter: () => _this.Title, setter: (v) => { } }
             ]
         });
         res.push({
             name: "位置", items: [
-                { title: "开始点", editorType: "TextBox", readonly: true, getter: () => _this.StartPoint.toString(), setter: (v) => { } },
-                { title: "结束点", editorType: "TextBox", readonly: true, getter: () => _this.EndPoint.toString(), setter: (v) => { } }
+                { title: "开始点", editor: "TextBox", readonly: true, getter: () => _this.StartPoint.toString(), setter: (v) => { } },
+                { title: "结束点", editor: "TextBox", readonly: true, getter: () => _this.EndPoint.toString(), setter: (v) => { } }
             ]
         });
         return res;
