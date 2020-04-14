@@ -4,8 +4,7 @@ import ConnectionDesigner from '../Designers/ConnectionDesigner';
 import Point from '../Drawing/Point';
 
 export interface IDesignToolbox {
-    SelectedItem: IDesignToolboxItem;
-    ClearSelectedItem(): void;
+    SelectedItem: IDesignToolboxItem | null;
 }
 
 export interface IDesignToolboxItem {
@@ -16,7 +15,7 @@ export interface IDesignToolboxItem {
     /**
      * 创建对应的设计元素的实例
      */
-    Create(): ItemDesigner;
+    Create(parent: DesignSurface | ItemDesigner): ItemDesigner;
 }
 
 export default class ToolboxService {
@@ -44,7 +43,7 @@ export default class ToolboxService {
         //通知Adorners开始画新建框
         this._surface.Adorners.BeginCreation(x, y, this.SelectedItem.IsConnection);
 
-        this._surface.Adorners.Canvas.style.cursor = "cross";
+        this._surface.Adorners.Canvas.style.cursor = "crosshair";
     }
 
     public OnMouseMove(x: number, y: number): void {
@@ -55,8 +54,8 @@ export default class ToolboxService {
         //通知Adorners停止画新建框
         this._surface.Adorners.EndCreation();
         //开始创建元素，并加入画布
-        let newItem = this.SelectedItem.Create();
         if (!this._currentContainer) { //没有选择任何上级容器，直接添加至画布
+            let newItem = this.SelectedItem.Create(this._surface);
             if (newItem instanceof ConnectionDesigner) {
                 newItem.StartPoint = this._surface.Adorners.CreationStartPoint;
                 newItem.EndPoint = this._surface.Adorners.CreationEndPoint;
@@ -64,7 +63,10 @@ export default class ToolboxService {
                 newItem.Bounds = this._surface.Adorners.CreationRectangle;
             }
             this._surface.AddItem(newItem);
+            //选择新建的
+            this._surface.SelectionService.SelectItem(newItem);
         } else { //存在上级容器，需要转换坐标
+            let newItem = this.SelectedItem.Create(this._currentContainer);
             let ptCanvas = this._currentContainer.PointToSurface(new Point(0, 0));
             if (newItem instanceof ConnectionDesigner) {
                 let startPt = this._surface.Adorners.CreationStartPoint;
@@ -78,13 +80,13 @@ export default class ToolboxService {
                 newItem.Bounds = newRect;
             }
             this._currentContainer.AddItem(newItem);
+            //选择新建的
+            this._surface.SelectionService.SelectItem(newItem);
         }
-        //选择新建的
-        this._surface.SelectionService.SelectItem(newItem);
 
         this._surface.Adorners.Canvas.style.cursor = "";
         if (this.Toolbox) {
-            this.Toolbox.ClearSelectedItem();
+            this.Toolbox.SelectedItem = null;
         }
     }
 

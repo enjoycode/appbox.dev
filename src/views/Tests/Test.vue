@@ -14,12 +14,18 @@ import DesignView from '@/components/Canvas/DesignView.vue'
 import TestShape from './TestShape'
 import TestConDesigner from './TestConDesigner'
 import ReportDesigner from "@/components/Designers/Report/ReportDesigner.vue";
+import ItemDesigner from "@/components/Canvas/Designers/ItemDesigner";
+import TextBoxDesigner from "@/components/Designers/Report/Designers/TextBoxDesigner";
+import { IDesignToolbox, IDesignToolboxItem } from "@/components/Canvas/Services/ToolboxService";
+import DesignSurface from '@/components/Canvas/DesignSurface';
+import ReportXmlNodeDesigner from '@/components/Designers/Report/Designers/ReportXmlNodeDesigner';
 
 @Component({
     components: { /*DesignView: DesignView*/ ReportDesigner: ReportDesigner }
 })
 export default class TestView extends Vue {
-    private target = { ID: 123456 }
+    private target = { ID: 123456 };
+    private toolbox = new MockToolbox();
 
     // onConnection() {
     //     this.testConnection()
@@ -28,6 +34,10 @@ export default class TestView extends Vue {
     //     return this.$refs.designView
     // }
     onAdd() {
+        (<any>this.$refs.designer).$refs.designView.designSurface.ToolboxService.Toolbox = this.toolbox;
+
+        console.log("Begin Create Report Textbox")
+        this.toolbox.SelectedItem = new RI_Textbox();
         // var shape = new TestShape()
         // this.designView.designSurface.AddItem(shape)
         // this.designView.designSurface.Invalidate()
@@ -87,6 +97,34 @@ export default class TestView extends Vue {
     }
 
     mounted() {
+    }
+}
+
+/** 测试用工具箱 */
+class MockToolbox implements IDesignToolbox {
+    private item: IDesignToolboxItem | null;
+
+    public get SelectedItem(): IDesignToolboxItem | null {
+        return this.item;
+    }
+    public set SelectedItem(value) {
+        this.item = value;
+    }
+}
+
+class RI_Textbox implements IDesignToolboxItem {
+    public get IsConnection(): boolean { return false; }
+
+    public Create(parent: DesignSurface | ItemDesigner): ItemDesigner {
+        console.log("Create Report Textbox");
+        //parent不可能是DesignSurface
+        let p = parent as ReportXmlNodeDesigner;
+        let itemsNode = p.GetNamedChildNode("ReportItems");
+        if (!itemsNode) {
+            itemsNode = p.XmlNode.appendChild(p.XmlNode.ownerDocument.createElement("ReportItems"));
+        }
+        let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement("Textbox"));
+        return new TextBoxDesigner(newNode);
     }
 }
 </script>

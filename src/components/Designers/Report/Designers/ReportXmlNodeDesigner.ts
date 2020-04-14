@@ -20,6 +20,16 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         this.xmlNode = xmlNode;
     }
 
+    //====添加/删除方法====
+    public OnAddToSurface(): void {
+        // super.OnAddToSurface();
+        let pt = "pt";
+        this.SetPropertyRSize("Left", this.Bounds.X.toString() + pt, true);
+        this.SetPropertyRSize("Top", this.Bounds.Y.toString() + pt, true);
+        this.SetPropertyRSize("Width", this.Bounds.Width.toString() + pt, true);
+        this.SetPropertyRSize("Height", this.Bounds.Height.toString() + pt, true);
+    }
+
     //====读写XmlNode属性方法，读仅由属性面板，写可能画布或属性面板====
     protected GetPropertyRSize(prop: string, defaultValue: string): string {
         let node = this.GetNamedChildNode(prop);
@@ -27,7 +37,13 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         return node.textContent;
     }
 
-    protected SetPropertyRSize(prop: string, value: string | number/*, paint: PaintRegion*/) {
+    /**
+     * 设置指定属性的报表单位
+     * @param prop 属性名称
+     * @param value 数值单位为像素，字符串表示由PropertyPanel设置的值
+     * @param byCreate 是否由新建时设置，是则不需要反向设置Bounds
+     */
+    protected SetPropertyRSize(prop: string, value: string | number, byCreate: boolean = false) {
         let node = this.GetNamedChildNode(prop);
         if (!node) {
             node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
@@ -37,15 +53,17 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
             let unit = this.GetSizeUnit(node);
             let newSize = this.PixelToSize(value as number, unit);
             node.textContent = newSize;
-        } else { // 表示由属性面板激发的变更
+        } else { // 表示由属性面板激发的变更，或画布新建元素后设置
             node.textContent = value;
-            let pixels = this.SizeToPixel(value);
-            // 需要反向设置Bounds
-            switch (prop) {
-                case "Height": this.SetBounds(0, 0, 0, pixels, BoundsSpecified.Height); break;
-                case "Width": this.SetBounds(0, 0, pixels, 0, BoundsSpecified.Width); break;
-                case "Left": this.SetBounds(pixels, 0, 0, 0, BoundsSpecified.X); break;
-                case "Top": this.SetBounds(0, pixels, 0, 0, BoundsSpecified.Y); break;
+            if (!byCreate) {
+                let pixels = this.SizeToPixel(value);
+                // 需要反向设置Bounds
+                switch (prop) {
+                    case "Height": this.SetBounds(0, 0, 0, pixels, BoundsSpecified.Height); break;
+                    case "Width": this.SetBounds(0, 0, pixels, 0, BoundsSpecified.Width); break;
+                    case "Left": this.SetBounds(pixels, 0, 0, 0, BoundsSpecified.X); break;
+                    case "Top": this.SetBounds(0, pixels, 0, 0, BoundsSpecified.Y); break;
+                }
             }
         }
         // console.log(this.getPropertyOwnerType() + "." + prop + " changed to: " + node.textContent);

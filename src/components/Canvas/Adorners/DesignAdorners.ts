@@ -91,17 +91,15 @@ export default class DesignAdorners {
      * 重新绘制整个装饰层
      */
     public Invalidate() { //todo: 暂全部重画
-        var ctx = this._canvas.getContext("2d") as CanvasRenderingContext2D;
+        let ctx = this._canvas.getContext("2d") as CanvasRenderingContext2D;
         //先清空画布
         ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
 
-        // if (this.creationModel == CreationMode.None && adorners.Count == 0)
-        //     return;
+        if (this._creationMode == CreationMode.None && this._adorners.length == 0)
+            return;
 
-        var item: DesignAdorner;
-        var ptCanvas: Point = new Point(0, 0);
-        for (var i = 0; i < this._adorners.length; i++) {
-            item = this._adorners[i];
+        let ptCanvas: Point = new Point(0, 0);
+        for (const item of this._adorners) {
             ptCanvas = item.Target.PointToSurface(new Point(0, 0));
 
             ctx.translate(ptCanvas.X, ptCanvas.Y);
@@ -110,18 +108,19 @@ export default class DesignAdorners {
         }
 
         //画新建框或新建连接线
-        // if (this.creationModel == CreationMode.Item) {
-        //     var x1 = Math.Min(X1, X2);
-        //     var y1 = Math.Min(Y1, Y2);
-        //     var x2 = Math.Max(X1, X2);
-        //     var y2 = Math.Max(Y1, Y2);
-        //     graphics.DrawRectangle(Color.Black, 1, new Rectangle(x1, y1, x2 - x1, y2 - y1));
-        // }
-        // else if (this.creationModel == CreationMode.Connection) {
-        //     graphics.DrawLine(Color.DarkGray, 2f, X1, Y1, X2, Y2);
-        // }
-
-        this.DrawShapeConnectors(ctx); //突出画需要连接至的附件的IShape
+        if (this._creationMode == CreationMode.Item) {
+            let x1 = Math.min(this._x1, this._x2);
+            let y1 = Math.min(this._y1, this._y2);
+            let x2 = Math.max(this._x1, this._x2);
+            let y2 = Math.max(this._y1, this._y2);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+        }
+        else if (this._creationMode == CreationMode.Connection) {
+            //graphics.DrawLine(Color.DarkGray, 2f, X1, Y1, X2, Y2);
+            this.DrawShapeConnectors(ctx); //突出画需要连接至的附件的IShape
+        }
     }
 
     private DrawShapeConnectors(g: CanvasRenderingContext2D): void {
