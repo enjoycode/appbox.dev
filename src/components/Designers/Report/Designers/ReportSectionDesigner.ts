@@ -8,6 +8,7 @@ import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 // import PaintRegion from "@/components/Canvas/Enums/PaintRegion"
 import TextBoxDesigner from "./TextBoxDesigner"
+import XmlUtil from './XmlUtil'
 
 export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
@@ -40,7 +41,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         this._bounds = new Rectangle(0, top, pageWidth, height);
 
         // 开始加载报表元素
-        let itemsNode = this.GetNamedChildNode("ReportItems");
+        let itemsNode = XmlUtil.GetNamedChildNode(this.xmlNode, "ReportItems");
         if (itemsNode) {
             for (const cnode of itemsNode.childNodes) {
                 if (cnode.nodeType === Node.ELEMENT_NODE) {

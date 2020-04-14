@@ -21,6 +21,7 @@ export default class TextBoxDesigner extends ReportItemDesigner {
         // 绘制文本, TODO:根据Style绘制，另考虑绑定值不同样式
         let text = this.GetPropertyString("Value", "");
         if (text.length > 0) {
+            g.font = this.Style.PaintFont;
             g.fillStyle = "black";
             g.textBaseline = "top";
             g.fillText(text, this.Bounds.X + 2, this.Bounds.Y + 2);
@@ -31,7 +32,7 @@ export default class TextBoxDesigner extends ReportItemDesigner {
 
     //============IPropertyOwner接口实现=====
     public getPropertyItems(): IPropertyCatalog[] | null {
-        var cats: IPropertyCatalog[] = super.getPropertyItems();
+        let cats: IPropertyCatalog[] = super.getPropertyItems();
         cats.splice(0, 0, {
             name: "Common",
             items: [
@@ -39,7 +40,17 @@ export default class TextBoxDesigner extends ReportItemDesigner {
                     title: "Value", readonly: false, editorType: "TextBox",
                     getter: () => this.GetPropertyString("Value", ""),
                     setter: v => this.SetPropertyString("Value", v, true)
-                }
+                },
+                {
+                    title: "CanGrow", readonly: false, editorType: "CheckBox",
+                    getter: () => this.GetPropertyBool("CanGrow", false),
+                    setter: v => this.SetPropertyBool("CanGrow", v)
+                },
+                {
+                    title: "CanShrink", readonly: false, editorType: "CheckBox",
+                    getter: () => this.GetPropertyBool("CanShrink", false),
+                    setter: v => this.SetPropertyBool("CanShrink", v)
+                },
             ]
         });
         return cats;

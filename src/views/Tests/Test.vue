@@ -175,6 +175,6 @@ class RI_Textbox implements IDesignToolboxItem {
 }
 
 .ide-property-panel .el-form > .el-form-item {
-    margin-bottom: 10px;
+    margin-bottom: 5px; /* 属性间间隔 */
 }
 </style>

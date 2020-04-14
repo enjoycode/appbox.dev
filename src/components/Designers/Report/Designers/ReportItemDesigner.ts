@@ -9,7 +9,8 @@ import MouseButtons from '@/components/Canvas/Enums/MouseButtons'
 import { ICell } from './ITableLayout'
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
-
+import XmlUtil from './XmlUtil'
+import ReportStyle from './ReportStyle'
 
 export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
@@ -17,14 +18,10 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
      * 是否在表格的单元格内
      * 注意：不要使用 this.Parent instance of TableDesigner https://github.com/webpack/webpack/issues/4520
      */
-    public get IsTableCell(): boolean {
-        return this._cell != null;
-    }
+    public get IsTableCell(): boolean { return this._cell != null; }
 
     private _cell: ICell | null;
-    public get Cell(): ICell | null {
-        return this._cell;
-    }
+    public get Cell(): ICell | null { return this._cell; }
 
     public get SelectionAdorner(): DesignAdorner | null {
         if (this.IsTableCell) {
@@ -43,9 +40,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     }
 
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
-    public get Bounds(): Rectangle {
-        return this._bounds;
-    }
+    public get Bounds(): Rectangle { return this._bounds; }
     public set Bounds(value) {
         this.SetBounds(value.X, value.Y, value.Width, value.Height, BoundsSpecified.All);
     }
@@ -64,17 +59,21 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         this.InvalidateOnBoundsChanged(oldBounds); // this.Invalidate();
     }
 
+    private readonly _style: ReportStyle;
+    public get Style(): ReportStyle { return this._style; }
+
     constructor(xmlNode: Node) {
         super(xmlNode);
+        this._style = new ReportStyle(this);
 
         //转换Bounds
-        let x = this.GetNamedChildNode("Left");
+        let x = XmlUtil.GetNamedChildNode(this.xmlNode, "Left");
         if (x) this._bounds.X = this.GetSize(x);
-        let y = this.GetNamedChildNode("Top");
+        let y = XmlUtil.GetNamedChildNode(this.xmlNode, "Top");
         if (y) this._bounds.Y = this.GetSize(y);
-        let width = this.GetNamedChildNode("Width");
+        let width = XmlUtil.GetNamedChildNode(this.xmlNode, "Width");
         if (width) this._bounds.Width = this.GetSize(width);
-        let height = this.GetNamedChildNode("Height");
+        let height = XmlUtil.GetNamedChildNode(this.xmlNode, "Height");
         if (height) this._bounds.Height = this.GetSize(height);
     }
 
@@ -121,9 +120,10 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
     //============IPropertyOwner接口实现=====
     public getPropertyItems(): IPropertyCatalog[] | null {
-        //TODO:在表格内不返回Layout类别
-        let cats: IPropertyCatalog[] = [
-            {
+        let cats = this.Style.GetPropertyItems();
+        // 在表格内不返回Layout类别
+        if (!this.IsTableCell) {
+            cats.splice(0, 0, {
                 name: "Layout",
                 items: [
                     {
@@ -147,8 +147,8 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
                         setter: v => this.SetPropertyRSize("Height", v)
                     },
                 ]
-            }
-        ]
+            });
+        }
         return cats;
     }
 

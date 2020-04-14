@@ -3,6 +3,7 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import ReportSectionDesigner from './ReportSectionDesigner';
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
+import XmlUtil from './XmlUtil';
 
 export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
@@ -23,19 +24,19 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
         // 开始加载Sections
         let pageWidth = this.TryGetSize("PageWidth", 400);
-        let header = this.GetNamedChildNode("PageHeader");
+        let header = XmlUtil.GetNamedChildNode(this.xmlNode, "PageHeader");
         if (header) {
             let ph = new ReportSectionDesigner(header, pageWidth, height);
             this.AddItem(ph);
             height += ph.Bounds.Height;
         }
-        let body = this.GetNamedChildNode("Body");
+        let body = XmlUtil.GetNamedChildNode(this.xmlNode, "Body");
         if (body) {
             let bd = new ReportSectionDesigner(body, pageWidth, height);
             this.AddItem(bd);
             height += bd.Bounds.Height;
         }
-        let footer = this.GetNamedChildNode("PageFooter");
+        let footer = XmlUtil.GetNamedChildNode(this.xmlNode, "PageFooter");
         if (footer) {
             let ft = new ReportSectionDesigner(footer, pageWidth, height);
             this.AddItem(ft);
@@ -63,7 +64,7 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
      * 仅由PropertyPanel设置后重新布局并重画
      */
     private OnChangePageWidth(width: string) {
-        this._bounds.Width = this.SizeToPixel(width);
+        this._bounds.Width = XmlUtil.SizeToPixel(width);
         for (const item of this.Items) {
             item.Bounds.Width = this._bounds.Width; //直接设置
         }
