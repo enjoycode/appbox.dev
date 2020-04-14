@@ -176,7 +176,7 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
      * 将报表单位转换为像素值
      * @param t eg: 2in or 3mm
      */
-    private SizeToPixel(t: string): number {
+    protected SizeToPixel(t: string): number {
         if (!t || t.length === 0 || t[0] === '=') return 0;
 
         // Size is specified in CSS Length Units

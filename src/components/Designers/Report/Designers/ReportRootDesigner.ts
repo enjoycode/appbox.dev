@@ -1,8 +1,8 @@
 import ReportXmlNodeDesigner from "./ReportXmlNodeDesigner"
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
-import IServerReportItem from './IServerReportItem'
 import ReportSectionDesigner from './ReportSectionDesigner';
+import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 
 export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
@@ -56,6 +56,47 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
                 item.Paint(g);
             }
         }
+    }
+
+    //============IPropertyOwner接口实现=====
+    /**
+     * 仅由PropertyPanel设置后重新布局并重画
+     */
+    private OnChangePageWidth(width: string) {
+        this._bounds.Width = this.SizeToPixel(width);
+        for (const item of this.Items) {
+            item.Bounds.Width = this._bounds.Width; //直接设置
+        }
+        this.Surface.Invalidate();
+    }
+
+    /**
+     * 仅由PropertyPanel设置后重新布局并重画
+     */
+    private OnChangePageHeight(height: string) {
+        // TODO:计算所有Section高度是否超出总高
+    }
+
+    public getPropertyItems(): IPropertyCatalog[] | null {
+        let cats: IPropertyCatalog[] = [
+            {
+                name: "Common",
+                items: [
+                    {
+                        title: "PageWidth", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetPropertyRSize("PageWidth", "200mm"),
+                        setter: v => { this.SetPropertyRSize("PageWidth", v); this.OnChangePageWidth(v); }
+                    },
+                    {
+                        title: "PageHeight", readonly: false, editorType: "TextBox",
+                        getter: () => this.GetPropertyRSize("PageHeight", "150mm"),
+                        setter: v => { this.SetPropertyRSize("PageHeight", v); this.OnChangePageHeight(v); }
+                    },
+                ]
+            }
+        ];
+
+        return cats;
     }
 
 }
