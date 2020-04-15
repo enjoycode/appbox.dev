@@ -7,7 +7,7 @@ import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 // import PaintRegion from "@/components/Canvas/Enums/PaintRegion"
-import TextBoxDesigner from "./TextBoxDesigner"
+import TextboxDesigner from "./TextboxDesigner"
 import XmlUtil from './XmlUtil'
 
 export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
@@ -47,7 +47,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
                 if (cnode.nodeType === Node.ELEMENT_NODE) {
                     switch (cnode.nodeName) {
                         case "Textbox":
-                            this.AddItem(new TextBoxDesigner(cnode));
+                            this.AddItem(new TextboxDesigner(cnode));
                             break;
                         default:
                             console.warn("未实现");

@@ -1,6 +1,7 @@
 <template>
     <div style="height:500px;margin:20px">
-        <el-button @click="onAdd">Add</el-button>
+        <el-button @click="onAdd('textbox')">Add Textbox</el-button>
+        <el-button @click="onAdd('table')">Add Table</el-button>
         <el-button @click="onDel">Remove</el-button>
         <el-button @click="onSave">Save</el-button>
         <br/><br/>
@@ -17,10 +18,12 @@ import TestConDesigner from './TestConDesigner'
 import ReportDesigner from "@/components/Designers/Report/ReportDesigner.vue";
 import ItemDesigner from "@/components/Canvas/Designers/ItemDesigner";
 import TextBoxDesigner from "@/components/Designers/Report/Designers/TextBoxDesigner";
+import TableDesigner from "@/components/Designers/Report/Designers/TableDesigner";
 import { IDesignToolbox, IDesignToolboxItem } from "@/components/Canvas/Services/ToolboxService";
 import DesignSurface from '@/components/Canvas/DesignSurface';
 import ReportXmlNodeDesigner from '@/components/Designers/Report/Designers/ReportXmlNodeDesigner';
 import XmlUtil from '@/components/Designers/Report/Designers/XmlUtil';
+import ReportItemDesigner from '@/components/Designers/Report/Designers/ReportItemDesigner';
 
 @Component({
     components: { /*DesignView: DesignView*/ ReportDesigner: ReportDesigner }
@@ -35,11 +38,16 @@ export default class TestView extends Vue {
     // public get designView(): any /*DesignView*/ {
     //     return this.$refs.designView
     // }
-    onAdd() {
+    onAdd(type) {
         (<any>this.$refs.designer).$refs.designView.designSurface.ToolboxService.Toolbox = this.toolbox;
+        if (type === 'textbox') {
+            console.log("Begin Create Report Textbox")
+            this.toolbox.SelectedItem = new ReportToolboxItem<TextBoxDesigner>(TextBoxDesigner);
+        } else if (type === 'table') {
+            console.log("Begin Create Report Table")
+            this.toolbox.SelectedItem = new ReportToolboxItem<TableDesigner>(TableDesigner);
+        }
 
-        console.log("Begin Create Report Textbox")
-        this.toolbox.SelectedItem = new RI_Textbox();
         // var shape = new TestShape()
         // this.designView.designSurface.AddItem(shape)
         // this.designView.designSurface.Invalidate()
@@ -118,19 +126,26 @@ class MockToolbox implements IDesignToolbox {
     }
 }
 
-class RI_Textbox implements IDesignToolboxItem {
+class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxItem {
     public get IsConnection(): boolean { return false; }
+    private readonly factory: (node: Node) => T;
+    private readonly type: string;
+
+    constructor(ctor: { new(node: Node): T }) {
+        this.factory = (n) => new ctor(n);
+
+        let funcNameRegex = /function (.{1,})\(/;
+        let results = (funcNameRegex).exec(ctor.toString());
+        let name = (results && results.length > 1) ? results[1] : "";
+        this.type = name.slice(0, name.length - 8 /* xxxDesigner */);
+    }
 
     public Create(parent: DesignSurface | ItemDesigner): ItemDesigner {
-        console.log("Create Report Textbox");
         //parent不可能是DesignSurface
         let p = parent as ReportXmlNodeDesigner;
-        let itemsNode = XmlUtil.GetNamedChildNode(p.XmlNode, "ReportItems");
-        if (!itemsNode) {
-            itemsNode = p.XmlNode.appendChild(p.XmlNode.ownerDocument.createElement("ReportItems"));
-        }
-        let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement("Textbox"));
-        return new TextBoxDesigner(newNode);
+        let itemsNode = p.GetOrCreateChildNode("ReportItems");
+        let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement(this.type));
+        return this.factory(newNode);
     }
 }
 </script>

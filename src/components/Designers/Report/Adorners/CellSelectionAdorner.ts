@@ -563,21 +563,21 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
     public OnMouseUp(e: MouseEventArgs) {
         if (this._hitTestElement) {
-            if (this._hitTestElement instanceof ResizeHandle) {
-                let tableDesigner = this.Target as TableDesigner;
-                let tableLayout = tableDesigner.TableLayout;
-                if (this._hitTestElement.IsRow) {
-                    let newSize = tableLayout.Rows[this._hitTestElement.Index].Size;
-                    ReportDesignService.ChangeProperty(this.Target, "ResizeRow", this._hitTestElement.Index, newSize);
-                } else {
-                    //notify server resize column width
-                    let newSize = tableLayout.Columns[this._hitTestElement.Index].Size;
-                    ReportDesignService.ChangeProperty(this.Target, "ResizeCol", this._hitTestElement.Index, newSize);
-                }
-            } else if (this._hitTestElement instanceof MoveTableHandle) {
-                let tableDesigner = this.Target as TableDesigner;
-                tableDesigner.OnEndMove();
-            }
+            // if (this._hitTestElement instanceof ResizeHandle) {
+            //     let tableDesigner = this.Target as TableDesigner;
+            //     let tableLayout = tableDesigner.TableLayout;
+            //     if (this._hitTestElement.IsRow) {
+            //         let newSize = tableLayout.Rows[this._hitTestElement.Index].Size;
+            //         ReportDesignService.ChangeProperty(this.Target, "ResizeRow", this._hitTestElement.Index, newSize);
+            //     } else {
+            //         //notify server resize column width
+            //         let newSize = tableLayout.Columns[this._hitTestElement.Index].Size;
+            //         ReportDesignService.ChangeProperty(this.Target, "ResizeCol", this._hitTestElement.Index, newSize);
+            //     }
+            // } else if (this._hitTestElement instanceof MoveTableHandle) {
+            //     let tableDesigner = this.Target as TableDesigner;
+            //     tableDesigner.OnEndMove();
+            // }
         }
     }
 

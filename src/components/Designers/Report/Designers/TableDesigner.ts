@@ -1,11 +1,8 @@
-import ItemDesigner from '../../../Canvas/Designers/ItemDesigner'
+import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
 import ReportItemDesigner from './ReportItemDesigner'
-import Rectangle from '../../../Canvas/Drawing/Rectangle'
-import BoundsSpecified from '../../../Canvas/Enums/BoundsSpecified'
-import IServerReportItem from './IServerReportItem'
-import { ITableLayout, IRow, IColumn, ICell} from './ITableLayout'
-import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
-import Point from '../../../Canvas/Drawing/Point'
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
+// import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
+import Point from '@/components/Canvas/Drawing/Point'
 
 export default class TableDesigner extends ReportItemDesigner {
 
@@ -13,32 +10,24 @@ export default class TableDesigner extends ReportItemDesigner {
         return true;
     }
 
-    private _tableLayout: ITableLayout;
-    public get TableLayout(): ITableLayout {
-        return this._tableLayout;
-    }
+    // private _tableLayout: ITableLayout;
+    // public get TableLayout(): ITableLayout {
+    //     return this._tableLayout;
+    // }
 
-    private _cellSelectionAdorner: CellSelectionAdorner | null;
-    public get CellSelectionAdorner(): CellSelectionAdorner {
-        if (!this._cellSelectionAdorner && this.Surface) {
-            this._cellSelectionAdorner = new CellSelectionAdorner(this.Surface.Adorners, this);
-        }
-        return this._cellSelectionAdorner as CellSelectionAdorner;
-    }
-
-    public Fetch(serverItem: IServerReportItem) {
-        super.Fetch(serverItem);
-
-        //处理TableLayout
-        let a: any = serverItem;
-        this._tableLayout = a.TableLayout;
-    }
+    // private _cellSelectionAdorner: CellSelectionAdorner | null;
+    // public get CellSelectionAdorner(): CellSelectionAdorner {
+    //     if (!this._cellSelectionAdorner && this.Surface) {
+    //         this._cellSelectionAdorner = new CellSelectionAdorner(this.Surface.Adorners, this);
+    //     }
+    //     return this._cellSelectionAdorner as CellSelectionAdorner;
+    // }
 
     public Paint(g: CanvasRenderingContext2D): void {
         g.translate(this.Bounds.X, this.Bounds.Y);
-        for (var i = 0; i < this.Items.length; i++) {
-            this.Items[i].Paint(g);
-        }
+        // for (var i = 0; i < this.Items.length; i++) {
+        //     this.Items[i].Paint(g);
+        // }
         g.translate(-this.Bounds.X, -this.Bounds.Y);
     }
 

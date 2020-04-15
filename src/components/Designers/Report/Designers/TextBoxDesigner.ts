@@ -2,7 +2,7 @@ import ReportItemDesigner from './ReportItemDesigner'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 import { TextAlignEnum, VerticalAlignEnum } from './ReportStyle';
 
-export default class TextBoxDesigner extends ReportItemDesigner {
+export default class TextboxDesigner extends ReportItemDesigner {
 
     public Paint(g: CanvasRenderingContext2D): void {
         g.save();

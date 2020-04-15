@@ -119,6 +119,14 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
     }
 
     // ====以下通用辅助方法====
+    public GetOrCreateChildNode(name: string): Node {
+        let cnode = XmlUtil.GetNamedChildNode(this.xmlNode, name);
+        if (!cnode) {
+            cnode = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(name));
+        }
+        return cnode;
+    }
+
     /**
      * 尝试获取当前节点下的Size值，转换为像素
      * @param sizeName eg: Height
