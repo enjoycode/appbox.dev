@@ -20,10 +20,9 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
     constructor(xmlNode: Node) {
         super(xmlNode);
 
-        let height = 0;
-
         // 开始加载Sections
-        let pageWidth = this.TryGetSize("PageWidth", 400);
+        let height = 0;
+        let pageWidth = XmlUtil.TryGetSize(this.xmlNode, "PageWidth", 400);
         let header = XmlUtil.GetNamedChildNode(this.xmlNode, "PageHeader");
         if (header) {
             let ph = new ReportSectionDesigner(header, pageWidth, height);

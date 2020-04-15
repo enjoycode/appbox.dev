@@ -67,14 +67,10 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         this._style = new ReportStyle(this);
 
         //转换Bounds
-        let x = XmlUtil.GetNamedChildNode(this.xmlNode, "Left");
-        if (x) this._bounds.X = this.GetSize(x);
-        let y = XmlUtil.GetNamedChildNode(this.xmlNode, "Top");
-        if (y) this._bounds.Y = this.GetSize(y);
-        let width = XmlUtil.GetNamedChildNode(this.xmlNode, "Width");
-        if (width) this._bounds.Width = this.GetSize(width);
-        let height = XmlUtil.GetNamedChildNode(this.xmlNode, "Height");
-        if (height) this._bounds.Height = this.GetSize(height);
+        this._bounds.X = XmlUtil.TryGetSize(this.xmlNode, "Left", 0);
+        this._bounds.Y = XmlUtil.TryGetSize(this.xmlNode, "Top", 0);
+        this._bounds.Width = XmlUtil.TryGetSize(this.xmlNode, "Width", 200);
+        this._bounds.Height = XmlUtil.TryGetSize(this.xmlNode, "Height", 100);
     }
 
     /**

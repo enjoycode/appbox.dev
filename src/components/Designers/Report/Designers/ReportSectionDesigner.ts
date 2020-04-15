@@ -3,29 +3,21 @@ import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import SectionSelectionAdorner from '../Adorners/SectionSelectionAdorner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
-// import ReportDesignService from './ReportDesignService'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
-import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
-// import PaintRegion from "@/components/Canvas/Enums/PaintRegion"
+import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 import TextboxDesigner from "./TextboxDesigner"
 import XmlUtil from './XmlUtil'
 
 export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
-    public get Bounds(): Rectangle {
-        return this._bounds;
-    }
+    public get Bounds(): Rectangle { return this._bounds; }
     public set Bounds(value) {
         this.SetBounds(value.X, value.Y, value.Width, value.Height, BoundsSpecified.All);
     }
 
-    public get IsContainer(): boolean {
-        return true;
-    }
+    public get IsContainer(): boolean { return true; }
 
-    public get Behavior(): DesignBehavior {
-        return DesignBehavior.CanResize;
-    }
+    public get Behavior(): DesignBehavior { return DesignBehavior.CanResize; }
 
     public get SelectionAdorner(): DesignAdorner | null {
         if (!this._selectionAdorner && this.Surface) {
@@ -37,7 +29,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     constructor(xmlNode: Node, pageWidth: number, top: number) {
         super(xmlNode);
 
-        let height = this.TryGetSize("Height", 200);
+        let height = XmlUtil.TryGetSize(this.xmlNode, "Height", 200);
         this._bounds = new Rectangle(0, top, pageWidth, height);
 
         // 开始加载报表元素

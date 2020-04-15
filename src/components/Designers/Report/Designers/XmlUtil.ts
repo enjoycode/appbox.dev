@@ -13,6 +13,25 @@ export default class XmlUtil {
         return null;
     }
 
+    public static GetOrCreateChildNode(node: Node, name: string): Node {
+        let cnode = XmlUtil.GetNamedChildNode(node, name);
+        if (!cnode) {
+            cnode = node.appendChild(node.ownerDocument.createElement(name));
+        }
+        return cnode;
+    }
+
+    /**
+     * 尝试获取指定名称的子节点的报表单位（转换为像素）
+     * @param sizeName eg: Height
+     * @param defaultValue 不存在则返回的默认值
+     */
+    public static TryGetSize(node: Node, sizeName: string, defaultValue: number): number {
+        let cnode = XmlUtil.GetNamedChildNode(node, sizeName);
+        if (!cnode) return defaultValue;
+        return XmlUtil.SizeToPixel(cnode.textContent); //TODO: use node.nodeValue is null
+    }
+
     /**
      * 将报表单位转换为像素值
      * @param t eg: 2in or 3mm
@@ -75,6 +94,29 @@ export default class XmlUtil {
             case "pc": return (inch * XmlUtil.POINTSIZE * 12).toString() + "pc";
             default: return inch.toString() + "in";
         }
+    }
+
+    /**
+     * 获取报表单位，有异常返回mm
+     * @param node eg: <Height>.5in</Height>
+     */
+    public static GetSizeUnit(node: Node): string {
+        let u = "mm";
+        let t = node.textContent; //TODO: use node.nodeValue is null
+        if (!t || t.length === 0 || t[0] === '=') return u;
+
+        t = t.trim();
+        let space = t.lastIndexOf(' ');
+        try {
+            if (space != -1) { // any spaces
+                u = t.substring(space).trim();
+            } else if (t.length >= 3) {
+                u = t.substring(t.length - 2);
+            }
+        } catch (error) {
+            console.log("GetSizeUnit from [" + t + "] error.");
+        }
+        return u;
     }
 
 }

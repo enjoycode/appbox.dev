@@ -3,6 +3,7 @@ import ReportItemDesigner from './ReportItemDesigner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 // import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
+import XmlUtil from './XmlUtil';
 
 export default class TableDesigner extends ReportItemDesigner {
 
@@ -23,6 +24,18 @@ export default class TableDesigner extends ReportItemDesigner {
     //     return this._cellSelectionAdorner as CellSelectionAdorner;
     // }
 
+    constructor(xmlNode: Node) {
+        super(xmlNode);
+
+        // 先尝试读取列
+        let colsNode = XmlUtil.GetNamedChildNode(this.xmlNode, "TableColumns");
+        if (!colsNode) { // 表示新建的
+
+        } else {
+            
+        }
+    }
+
     public Paint(g: CanvasRenderingContext2D): void {
         g.translate(this.Bounds.X, this.Bounds.Y);
         // for (var i = 0; i < this.Items.length; i++) {
@@ -31,7 +44,7 @@ export default class TableDesigner extends ReportItemDesigner {
         g.translate(-this.Bounds.X, -this.Bounds.Y);
     }
 
-    //--Cell Selection Methods---
+    //====Cell Selection Methods====
     private StartPos: Point = new Point(0, 0);
     private EndPos: Point = new Point(0, 0);
     private DragRect: Rectangle = new Rectangle(0,0,0,0);

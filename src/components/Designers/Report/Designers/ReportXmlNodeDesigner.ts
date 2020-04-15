@@ -56,13 +56,9 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
      * @param byCreate 是否由新建时设置，是则不需要反向设置Bounds
      */
     protected SetPropertyRSize(prop: string, value: string | number, byCreate: boolean = false) {
-        let node = XmlUtil.GetNamedChildNode(this.xmlNode, prop);
-        if (!node) {
-            node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
-        }
-
+        let node = XmlUtil.GetOrCreateChildNode(this.xmlNode, prop);
         if (typeof value === 'number') { // 表示由画布激发的变更
-            let unit = this.GetSizeUnit(node);
+            let unit = XmlUtil.GetSizeUnit(node);
             let newSize = XmlUtil.PixelToSize(value as number, unit);
             node.textContent = newSize;
         } else { // 表示由属性面板激发的变更，或画布新建元素后设置
@@ -88,10 +84,7 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
     }
 
     protected SetPropertyBool(prop: string, value: boolean) {
-        let node = XmlUtil.GetNamedChildNode(this.xmlNode, prop);
-        if (!node) {
-            node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
-        }
+        let node = XmlUtil.GetOrCreateChildNode(this.xmlNode, prop);
         node.textContent = value.toString();
         // console.log(this.getPropertyOwnerType() + "." + prop + " changed to: " + node.textContent);
     }
@@ -103,10 +96,7 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
     }
 
     protected SetPropertyString(prop: string, value: string, needInvalidate: boolean = false) {
-        let node = XmlUtil.GetNamedChildNode(this.xmlNode, prop);
-        if (!node) {
-            node = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(prop));
-        }
+        let node = XmlUtil.GetOrCreateChildNode(this.xmlNode, prop);
         node.textContent = value;
         if (needInvalidate) {
             this.Invalidate();
@@ -116,57 +106,6 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
     //====IPropertyOwner接口实现====
     public getPropertyOwnerType(): string {
         return this.xmlNode.nodeName;
-    }
-
-    // ====以下通用辅助方法====
-    public GetOrCreateChildNode(name: string): Node {
-        let cnode = XmlUtil.GetNamedChildNode(this.xmlNode, name);
-        if (!cnode) {
-            cnode = this.xmlNode.appendChild(this.xmlNode.ownerDocument.createElement(name));
-        }
-        return cnode;
-    }
-
-    /**
-     * 尝试获取当前节点下的Size值，转换为像素
-     * @param sizeName eg: Height
-     * @param defaultValue 不存在则返回的默认值
-     */
-    public TryGetSize(sizeName: string, defaultValue: number): number {
-        let node = XmlUtil.GetNamedChildNode(this.xmlNode, sizeName);
-        if (!node) return defaultValue;
-        return this.GetSize(node);
-    }
-
-    /**
-     * 解析报表单位至像素值
-     * @param node eg: <Height>.5in</Height>
-     */
-    public GetSize(node: Node): number {
-        return XmlUtil.SizeToPixel(node.textContent); //TODO: use node.nodeValue is null
-    }
-
-    /**
-     * 获取报表单位，有异常返回mm
-     * @param node eg: <Height>.5in</Height>
-     */
-    private GetSizeUnit(node: Node): string {
-        let u = "mm";
-        let t = node.textContent; //TODO: use node.nodeValue is null
-        if (!t || t.length === 0 || t[0] === '=') return u;
-
-        t = t.trim();
-        let space = t.lastIndexOf(' ');
-        try {
-            if (space != -1) { // any spaces
-                u = t.substring(space).trim();
-            } else if (t.length >= 3) {
-                u = t.substring(t.length - 2);
-            }
-        } catch (error) {
-            console.log("GetSizeUnit from [" + t + "] error.");
-        }
-        return u;
     }
 
 }
