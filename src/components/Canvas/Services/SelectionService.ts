@@ -80,8 +80,8 @@ export default class SelectionService {
         if (this._moving) {
             this._moving = false;
             //逐个处理选择的元素
-            for (var i = 0; i < this._selectedItems.length; i++) {
-                this._selectedItems[i].OnEndMove();
+            for (const item of this._selectedItems) {
+                item.OnEndMove();
             }
         }
     }

@@ -118,10 +118,12 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
      * override for change position by canvas
      */
     public OnEndMove(): void {
+        if (this.IsTableCell) { return; } // 忽略不处理单元格
+
         this.SetPropertyRSize("Left", this.Bounds.X);
         this.SetPropertyRSize("Top", this.Bounds.Y);
-        // 通知属性面板刷新相应的值
-        if (this.Surface) {
+        // 通知属性面板刷新相应的值，需要排除Table,因为选择的是单元格非整个表格
+        if (this.Surface && this.getPropertyOwnerType() !== "Table") {
             this.Surface.PropertyPanel.refreshProperty("Left");
             this.Surface.PropertyPanel.refreshProperty("Top");
         }

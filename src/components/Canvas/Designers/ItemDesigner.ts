@@ -132,6 +132,7 @@ export default abstract class ItemDesigner implements IPropertyOwner {
      */
     public OnEndMove(): void {
         if ((this.Behavior & DesignBehavior.CanMove) === 0) {
+            // console.warn("当前行为不允许移动: ", this.getPropertyOwnerType());
             return;
         }
 
