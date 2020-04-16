@@ -171,103 +171,68 @@ export default class ReportDesignService implements IDesignService {
     }
 
     public TableOperation(opt: string): void {
-        var items = this._surface.SelectionService.SelectedItems;
-        if (opt == 'SplitCells') {
-            if (items.length != 1) {
-                return;
-            }
-            let item = items[0]
-            if (item instanceof ReportItemDesigner && item.Parent) {
-                if (!item.IsTableCell)
-                    return;
-                if (item.Cell)
-                    ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-            }
-            return;
-        }
+        // var items = this._surface.SelectionService.SelectedItems;
+        // if (opt == 'SplitCells') {
+        //     if (items.length != 1) {
+        //         return;
+        //     }
+        //     let item = items[0]
+        //     if (item instanceof ReportItemDesigner && item.Parent) {
+        //         if (!item.IsTableCell)
+        //             return;
+        //         if (item.Cell)
+        //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
+        //     }
+        //     return;
+        // }
 
-        if (opt == 'InsertRow') {
-            if (items.length != 1) {
-                return;
-            }
-            let item = items[0]
-            if (item instanceof ReportItemDesigner && item.Parent) {
-                if (!item.IsTableCell)
-                    return;
-                if (item.Cell)
-                    ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-            }
-            return;
-        }
-        if (opt == 'InsertColumn') {
-            if (items.length != 1) {
-                return;
-            }
-            let item = items[0]
-            if (item instanceof ReportItemDesigner && item.Parent) {
-                if (!item.IsTableCell)
-                    return;
-                if (item.Cell)
-                    ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-            }
-            return;
-        }
-        if (opt == 'MergeCells') {
-            if (items.length <= 1)
-                return;
-            var cells: string = '';
-            for (var i = 0; i < items.length; i++) {
-                let item = items[i];
-                if (item instanceof ReportItemDesigner && item.Parent) {
-                    if (!item.IsTableCell)
-                        return;
-                    if (item.Cell)
-                        cells += item.ID + ';';
-                }
-            }
-            var parent = items[0].Parent;
-            if (parent)
-                ReportDesignService.ChangeProperty(parent, opt, items.length, cells);
-            return;
-        }
+        // if (opt == 'InsertRow') {
+        //     if (items.length != 1) {
+        //         return;
+        //     }
+        //     let item = items[0]
+        //     if (item instanceof ReportItemDesigner && item.Parent) {
+        //         if (!item.IsTableCell)
+        //             return;
+        //         if (item.Cell)
+        //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
+        //     }
+        //     return;
+        // }
+        // if (opt == 'InsertColumn') {
+        //     if (items.length != 1) {
+        //         return;
+        //     }
+        //     let item = items[0]
+        //     if (item instanceof ReportItemDesigner && item.Parent) {
+        //         if (!item.IsTableCell)
+        //             return;
+        //         if (item.Cell)
+        //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
+        //     }
+        //     return;
+        // }
+        // if (opt == 'MergeCells') {
+        //     if (items.length <= 1)
+        //         return;
+        //     var cells: string = '';
+        //     for (var i = 0; i < items.length; i++) {
+        //         let item = items[i];
+        //         if (item instanceof ReportItemDesigner && item.Parent) {
+        //             if (!item.IsTableCell)
+        //                 return;
+        //             if (item.Cell)
+        //                 cells += item.ID + ';';
+        //         }
+        //     }
+        //     var parent = items[0].Parent;
+        //     if (parent)
+        //         ReportDesignService.ChangeProperty(parent, opt, items.length, cells);
+        //     return;
+        // }
     }
 
-    public GetShapes(): Array<IShape> {
-        return [];
-    }
-
-    public GetConnections(): Array<IConnection> {
-        return [];
-    }
-
-    //======================以下静态辅助方法=====================
-    /**
-     * 改变设计元素的某项属性，此静态方法只是调用实例同名方法的代理
-     * @param item 
-     * @param name 
-     * @param tag 用于辅助定位元素属性，如TableLayout.RowIndex
-     * @param value 
-     */
-    public static ChangeProperty(item: ItemDesigner, name: string, tag: any, value: any): void {
-        if (item.Surface) {
-            item.Surface.DesignService.ChangeProperty(item, name, tag, value);
-        }
-    }
-
-    private static LoopFindByID(parent: ItemDesigner, id: number): ItemDesigner | null {
-        if (parent.ID === id)
-            return parent;
-
-        if (parent.Items) {
-            var found: ItemDesigner | null = null;
-            for (var i = 0; i < parent.Items.length; i++) {
-                found = ReportDesignService.LoopFindByID(parent.Items[i], id);
-                if (found)
-                    return found;
-            }
-        }
-
-        return null;
-    }
+    public GetShapes(): Array<IShape> { return []; }
+    public GetConnections(): Array<IConnection> { return []; }
 
 }
