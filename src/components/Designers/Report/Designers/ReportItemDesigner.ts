@@ -25,7 +25,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
     public get SelectionAdorner(): DesignAdorner | null {
         if (this.IsTableCell) {
-            let tableDesigner = this.Parent as TableDesigner;
+            let tableDesigner = this._cell.Row.Owner.Owner;
             return tableDesigner.CellSelectionAdorner;
         } else {
             if (!this._selectionAdorner && this.Surface) {
@@ -100,6 +100,17 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         // TODO:暂简单判断上级是否ReportItems
         if (parentNode.nodeName === "ReportItems" && parentNode.childNodes.length === 0) {
             parentNode.parentNode.removeChild(parentNode);
+        }
+    }
+
+    /**
+     * override for in TableCell
+     */
+    public Invalidate(): void {
+        if (this._cell) {
+            this._cell.Row.Owner.Owner.Invalidate();
+        } else {
+            super.Invalidate();
         }
     }
 

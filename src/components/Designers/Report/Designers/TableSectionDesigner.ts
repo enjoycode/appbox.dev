@@ -12,6 +12,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
     private readonly _rowsNode: Node;
     private readonly _rows: TableRow[] = [];
+    public get Rows(): TableRow[] { return this._rows; }
     public readonly Owner: TableDesigner;
 
     public get IsContainer(): boolean { return true; } //必须设为true

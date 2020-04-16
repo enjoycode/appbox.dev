@@ -1,7 +1,7 @@
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
 import ReportItemDesigner from './ReportItemDesigner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
-// import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
+import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
 import XmlUtil from './XmlUtil';
 import { TableColumn } from './TableLayout';
@@ -27,13 +27,13 @@ export default class TableDesigner extends ReportItemDesigner {
     //     return this._tableLayout;
     // }
 
-    // private _cellSelectionAdorner: CellSelectionAdorner | null;
-    // public get CellSelectionAdorner(): CellSelectionAdorner {
-    //     if (!this._cellSelectionAdorner && this.Surface) {
-    //         this._cellSelectionAdorner = new CellSelectionAdorner(this.Surface.Adorners, this);
-    //     }
-    //     return this._cellSelectionAdorner as CellSelectionAdorner;
-    // }
+    private _cellSelectionAdorner: CellSelectionAdorner | null;
+    public get CellSelectionAdorner(): CellSelectionAdorner {
+        if (!this._cellSelectionAdorner && this.Surface) {
+            this._cellSelectionAdorner = new CellSelectionAdorner(this.Surface.Adorners, this);
+        }
+        return this._cellSelectionAdorner;
+    }
 
     constructor(xmlNode: Node) {
         super(xmlNode);
