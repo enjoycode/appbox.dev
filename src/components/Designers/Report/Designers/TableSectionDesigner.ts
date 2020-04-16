@@ -1,10 +1,12 @@
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner';
-import { TableRow } from './TableLayout';
+import { TableRow, TableCell } from './TableLayout';
 import TableDesigner from './TableDesigner';
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified';
 import XmlUtil from './XmlUtil';
+import Point from '@/components/Canvas/Drawing/Point';
+import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner';
 
 export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
@@ -12,7 +14,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
     private readonly _rows: TableRow[] = [];
     public readonly Owner: TableDesigner;
 
-    // public get IsContainer(): boolean { return true; }
+    public get IsContainer(): boolean { return true; } //必须设为true
     public get Behavior(): DesignBehavior { return DesignBehavior.None; }
 
     private readonly _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //每次重新计算，这里仅缓存
@@ -61,6 +63,31 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         } else {
             console.warn("未实现");
         }
+    }
+    
+    // override for find TableCell
+    public FindHoverItem(p: Point, ctx: CanvasRenderingContext2D): ItemDesigner | null {
+        // 先找到对应的行
+        let row: TableRow | null;
+        let offsetY = 0;
+        for (const r of this._rows) {
+            if (r.Height + offsetY >= p.Y) {
+                row = r; break;
+            }
+            offsetY += r.Height;
+        }
+        if (!row) { return this; }
+        // 再找到对应的单元格
+        let cell: TableCell | null;
+        let offsetX = 0;
+        for (const c of row.Cells) {
+            if (c.LastWidth + offsetX >= p.X) {
+                cell = c; break;
+            }
+            offsetX += c.LastWidth;
+        }
+        if (!cell || !cell.Target ) { return this; }
+        return cell.Target;
     }
 
     public Paint(g: CanvasRenderingContext2D): void {

@@ -291,6 +291,28 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         return x >= 0 && x <= this.Bounds.Width && y >= 0 && y <= this.Bounds.Height;
     }
 
+    /**
+     * 上层调用时本身已Hover，用于确认ContainerItem下的子项是否Hover
+     * 如果找不到子项，必须返回自己
+     * @param p 已转换为当前元素的坐标系
+     */
+    public FindHoverItem(p: Point, ctx: CanvasRenderingContext2D): ItemDesigner | null {
+        if (!this._items) { return this; }
+
+        let found: ItemDesigner | null = null;
+        for (const element of this._items) {
+            let clientX = p.X - element.Bounds.X;
+            let clientY = p.Y - element.Bounds.Y;
+            if (element.Visible && element.HitTest(clientX, clientY, ctx)) {
+                found = element;
+                if (found.IsContainer) {
+                    found = found.FindHoverItem(new Point(clientX, clientY), ctx);
+                }
+            }
+        }
+        return found == null ? this : found;
+    }
+
     //============容器相关方法===========
     /**
      * 添加子级元素
@@ -322,30 +344,6 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         this._items.splice(index, 1);
         //todo: 非DiagramHostItem需要刷新Canvas
         this.Invalidate();
-    }
-
-    /**
-     * 上层调用时本身已Hover，用于确认ContainerItem下的子项是否Hover
-     * 如果找不到子项，必须返回自己
-     * @param p 已转换为当前元素的坐标系
-     */
-    public FindHoverItem(p: Point, ctx: CanvasRenderingContext2D): ItemDesigner | null {
-        var found: ItemDesigner | null = null;
-        if (this._items) {
-            for (var i = 0; i < this._items.length; i++) {
-                var element = this._items[i];
-                let clientX = p.X - element.Bounds.X;
-                let clientY = p.Y - element.Bounds.Y;
-                if (element.Visible && element.HitTest(clientX, clientY, ctx)) {
-                    found = element;
-                    if (found.IsContainer) {
-                        found = found.FindHoverItem(new Point(clientX, clientY), ctx);
-                    }
-                }
-            }
-        }
-
-        return found == null ? this : found;
     }
 
     //============填充服务端数据方法===========

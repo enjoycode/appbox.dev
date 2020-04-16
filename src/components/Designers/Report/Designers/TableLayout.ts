@@ -95,6 +95,7 @@ export class TableCell {
     private readonly _itemsNode: Node;
     public readonly Row: TableRow;
     private _target: ReportItemDesigner;
+    public get Target(): ReportItemDesigner { return this._target; }
     private _lastWidth: number;
     public get LastWidth(): number { return this._lastWidth; }
 
@@ -107,7 +108,7 @@ export class TableCell {
         if (this._itemsNode.childNodes.length === 0) { // 新建的直接初始化
             let cnode = XmlUtil.CreateChildNode(this._itemsNode, "Textbox");
             this._target = new TextboxDesigner(cnode, this);
-            //TODO: add to Report.Items
+            //不需要AddItem to parent(TableSectionDesigner)
         }
     }
 
