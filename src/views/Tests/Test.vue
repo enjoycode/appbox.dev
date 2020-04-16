@@ -17,7 +17,7 @@ import TestShape from './TestShape'
 import TestConDesigner from './TestConDesigner'
 import ReportDesigner from "@/components/Designers/Report/ReportDesigner.vue";
 import ItemDesigner from "@/components/Canvas/Designers/ItemDesigner";
-import TextBoxDesigner from "@/components/Designers/Report/Designers/TextBoxDesigner";
+import TextboxDesigner from "@/components/Designers/Report/Designers/TextboxDesigner";
 import TableDesigner from "@/components/Designers/Report/Designers/TableDesigner";
 import { IDesignToolbox, IDesignToolboxItem } from "@/components/Canvas/Services/ToolboxService";
 import DesignSurface from '@/components/Canvas/DesignSurface';
@@ -42,7 +42,7 @@ export default class TestView extends Vue {
         (<any>this.$refs.designer).$refs.designView.designSurface.ToolboxService.Toolbox = this.toolbox;
         if (type === 'textbox') {
             console.log("Begin Create Report Textbox")
-            this.toolbox.SelectedItem = new ReportToolboxItem<TextBoxDesigner>(TextBoxDesigner);
+            this.toolbox.SelectedItem = new ReportToolboxItem<TextboxDesigner>(TextboxDesigner);
         } else if (type === 'table') {
             console.log("Begin Create Report Table")
             this.toolbox.SelectedItem = new ReportToolboxItem<TableDesigner>(TableDesigner);
@@ -109,9 +109,6 @@ export default class TestView extends Vue {
         }
         return (null);
     }
-
-    mounted() {
-    }
 }
 
 /** 测试用工具箱 */
@@ -143,7 +140,7 @@ class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxI
     public Create(parent: DesignSurface | ItemDesigner): ItemDesigner {
         //parent不可能是DesignSurface
         let p = parent as ReportXmlNodeDesigner;
-        let itemsNode = p.GetOrCreateChildNode("ReportItems");
+        let itemsNode = XmlUtil.GetOrCreateChildNode(p.XmlNode, "ReportItems");
         let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement(this.type));
         return this.factory(newNode);
     }

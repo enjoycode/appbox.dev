@@ -13,12 +13,16 @@ export default class XmlUtil {
         return null;
     }
 
-    public static GetOrCreateChildNode(node: Node, name: string): Node {
-        let cnode = XmlUtil.GetNamedChildNode(node, name);
+    public static GetOrCreateChildNode(parent: Node, name: string): Node {
+        let cnode = XmlUtil.GetNamedChildNode(parent, name);
         if (!cnode) {
-            cnode = node.appendChild(node.ownerDocument.createElement(name));
+            cnode = parent.appendChild(parent.ownerDocument.createElement(name));
         }
         return cnode;
+    }
+
+    public static CreateChildNode(parent: Node, name: string): Node {
+        return parent.appendChild(parent.ownerDocument.createElement(name));
     }
 
     /**
@@ -28,7 +32,7 @@ export default class XmlUtil {
      */
     public static TryGetSize(node: Node, sizeName: string, defaultValue: number): number {
         let cnode = XmlUtil.GetNamedChildNode(node, sizeName);
-        if (!cnode) return defaultValue;
+        if (!cnode) return defaultValue; //TODO: 入参表示是否需要创建
         return XmlUtil.SizeToPixel(cnode.textContent); //TODO: use node.nodeValue is null
     }
 
@@ -97,11 +101,11 @@ export default class XmlUtil {
     }
 
     /**
-     * 获取报表单位，有异常返回mm
+     * 获取报表单位，有异常返回pt
      * @param node eg: <Height>.5in</Height>
      */
     public static GetSizeUnit(node: Node): string {
-        let u = "mm";
+        let u = "pt";
         let t = node.textContent; //TODO: use node.nodeValue is null
         if (!t || t.length === 0 || t[0] === '=') return u;
 

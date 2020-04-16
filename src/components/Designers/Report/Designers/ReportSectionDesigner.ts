@@ -16,7 +16,6 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     }
 
     public get IsContainer(): boolean { return true; }
-
     public get Behavior(): DesignBehavior { return DesignBehavior.CanResize; }
 
     public get SelectionAdorner(): DesignAdorner | null {

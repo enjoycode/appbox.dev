@@ -5,15 +5,16 @@ import { TextAlignEnum, VerticalAlignEnum } from './ReportStyle';
 export default class TextboxDesigner extends ReportItemDesigner {
 
     public Paint(g: CanvasRenderingContext2D): void {
+        let b = this.Bounds; // 注意在表格内是计算出来的
         g.save();
         g.beginPath();
-        g.rect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
+        g.rect(b.X, b.Y, b.Width, b.Height);
         g.clip();
 
         // 绘制边框，TODO:根据Style绘制，如果在表格内还需要参考表格Style
         g.strokeStyle = "rgb(173,219,241)";
         g.lineWidth = 1;
-        g.strokeRect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
+        g.strokeRect(b.X, b.Y, b.Width, b.Height);
 
         // 绘制文本, TODO:根据Style绘制，另考虑绑定值不同样式
         let text = this.GetPropertyString("Value", "");
@@ -24,24 +25,24 @@ export default class TextboxDesigner extends ReportItemDesigner {
             let x = 0;
             if (this.Style.TextAlign === TextAlignEnum.Center) {
                 g.textAlign = "center";
-                x = this.Bounds.X + this.Bounds.Width / 2;
+                x = b.X + b.Width / 2;
             } else if (this.Style.TextAlign === TextAlignEnum.Right) {
                 g.textAlign = "right";
-                x = this.Bounds.Right - 2;
+                x = b.Right - 2;
             } else {
                 g.textAlign = "left";
-                x = this.Bounds.X + 2;
+                x = b.X + 2;
             }
             let y = 0;
             if (this.Style.VerticalAlign === VerticalAlignEnum.Middle) {
                 g.textBaseline = "middle";
-                y = this.Bounds.Y + this.Bounds.Height / 2;
+                y = b.Y + b.Height / 2;
             } else if (this.Style.VerticalAlign == VerticalAlignEnum.Bottom) {
                 g.textBaseline = "bottom";
-                y = this.Bounds.Bottom - 2;
+                y = b.Bottom - 2;
             } else {
                 g.textBaseline = "top";
-                y = this.Bounds.Y + 2
+                y = b.Y + 2
             }
 
             g.fillText(text, x, y);

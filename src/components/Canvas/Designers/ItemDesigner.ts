@@ -43,26 +43,20 @@ export default abstract class ItemDesigner implements IPropertyOwner {
     public Parent: ItemDesigner | null;
 
     public abstract get Bounds(): Rectangle;
-    public abstract set Bounds(value: Rectangle);
+    public abstract set Bounds(value: Rectangle); // TODO: remove it
 
-    public get Visible(): boolean {
-        return true;
-    }
+    public get Visible(): boolean { return true; }
 
     /**
      * 当前实例是否容器
      */
-    public get IsContainer(): boolean {
-        return false;
-    }
+    public get IsContainer(): boolean { return false; }
 
     private _items: Array<ItemDesigner>;
     /**
      * 获取当前元素的下级元素数组
      */
-    public get Items(): Array<ItemDesigner> {
-        return this._items;
-    }
+    public get Items(): Array<ItemDesigner> { return this._items; }
 
     protected _selectionAdorner: DesignAdorner | null = null;
     public get SelectionAdorner(): DesignAdorner | null {
@@ -312,8 +306,10 @@ export default abstract class ItemDesigner implements IPropertyOwner {
             this._items = new Array<ItemDesigner>();
         this._items.push(item);
         item.OnAddToSurface(byCreate);
+        // if (!byCreate) {
         //非DiagramHostItem需要刷新Canvas
         this.Invalidate();
+        // }
     }
 
     public RemoveItem(item: ItemDesigner): void {

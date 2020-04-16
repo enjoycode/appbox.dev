@@ -6,11 +6,11 @@ import TableDesigner from './TableDesigner'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import MouseEventArgs from '@/components/Canvas/EventArgs/MouseEventArgs'
 import MouseButtons from '@/components/Canvas/Enums/MouseButtons'
-import { ICell } from './ITableLayout'
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
-import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
+import { IPropertyCatalog, IPropertyItem } from '@/components/Canvas/Interfaces/IPropertyPanel'
 import XmlUtil from './XmlUtil'
 import ReportStyle from './ReportStyle'
+import { TableCell } from './TableLayout'
 
 export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
@@ -20,8 +20,8 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
      */
     public get IsTableCell(): boolean { return this._cell != null; }
 
-    private _cell: ICell | null;
-    public get Cell(): ICell | null { return this._cell; }
+    private _cell: TableCell | null;
+    public get Cell(): TableCell | null { return this._cell; }
 
     public get SelectionAdorner(): DesignAdorner | null {
         if (this.IsTableCell) {
@@ -40,13 +40,17 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     }
 
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
-    public get Bounds(): Rectangle { return this._bounds; }
+    public get Bounds(): Rectangle {
+        if (this._cell) { this._cell.CalcTargetBounds(this._bounds); } // 如果在单元格内每次计算获取
+        return this._bounds;
+    }
     public set Bounds(value) {
         this.SetBounds(value.X, value.Y, value.Width, value.Height, BoundsSpecified.All);
     }
 
     protected SetBounds(x: number, y: number, width: number, height: number, specified: BoundsSpecified): void {
         if (this.IsTableCell) { //注意：在TableCell内不允许操作
+            console.warn("不允许设置在表格内的元素的Bounds");
             return;
         }
 
@@ -62,15 +66,41 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     private readonly _style: ReportStyle;
     public get Style(): ReportStyle { return this._style; }
 
-    constructor(xmlNode: Node) {
+    constructor(xmlNode: Node, cell: TableCell | null = null) {
         super(xmlNode);
         this._style = new ReportStyle(this);
+        this._cell = cell;
 
-        //转换Bounds
-        this._bounds.X = XmlUtil.TryGetSize(this.xmlNode, "Left", 0);
-        this._bounds.Y = XmlUtil.TryGetSize(this.xmlNode, "Top", 0);
-        this._bounds.Width = XmlUtil.TryGetSize(this.xmlNode, "Width", 200);
-        this._bounds.Height = XmlUtil.TryGetSize(this.xmlNode, "Height", 100);
+        if (!cell) { // 不在表格内则转换单位    
+            this._bounds.X = XmlUtil.TryGetSize(this.xmlNode, "Left", 0);
+            this._bounds.Y = XmlUtil.TryGetSize(this.xmlNode, "Top", 0);
+            this._bounds.Width = XmlUtil.TryGetSize(this.xmlNode, "Width", 200);
+            this._bounds.Height = XmlUtil.TryGetSize(this.xmlNode, "Height", 100);
+        }
+    }
+
+    //====添加/删除方法====
+    public OnAddToSurface(byCreate: boolean): void {
+        // console.log("OnAddToSurface: ", this.getPropertyOwnerType());
+        // super.OnAddToSurface(byCreate);
+        if (byCreate) { //仅处理新建的元素
+            let pt = "pt";
+            this.SetPropertyRSize("Left", this.Bounds.X.toString() + pt, true);
+            this.SetPropertyRSize("Top", this.Bounds.Y.toString() + pt, true);
+            this.SetPropertyRSize("Width", this.Bounds.Width.toString() + pt, true);
+            this.SetPropertyRSize("Height", this.Bounds.Height.toString() + pt, true);
+        }
+    }
+
+    public OnRemoveFromSurface(): void {
+        // super.OnRemoveFromSurface();
+        let parentNode = this.xmlNode.parentNode;
+        if (!parentNode) { console.warn("删除元素无法找到上级节点的ReportItems节点"); }
+        parentNode.removeChild(this.xmlNode);
+        // TODO:暂简单判断上级是否ReportItems
+        if (parentNode.nodeName === "ReportItems" && parentNode.childNodes.length === 0) {
+            parentNode.parentNode.removeChild(parentNode);
+        }
     }
 
     /**
@@ -119,31 +149,32 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         let cats = this.Style.GetPropertyItems();
         // 在表格内不返回Layout类别
         if (!this.IsTableCell) {
-            cats.splice(0, 0, {
-                name: "Layout",
-                items: [
-                    {
-                        title: "Left", readonly: false, editor: "TextBox",
-                        getter: () => this.GetPropertyRSize("Left", "0mm"),
-                        setter: v => this.SetPropertyRSize("Left", v)
-                    },
-                    {
-                        title: "Top", readonly: false, editor: "TextBox",
-                        getter: () => this.GetPropertyRSize("Top", "0mm"),
-                        setter: v => this.SetPropertyRSize("Top", v)
-                    },
-                    {
-                        title: "Width", readonly: false, editor: "TextBox",
-                        getter: () => this.GetPropertyRSize("Width", "20mm"),
-                        setter: v => this.SetPropertyRSize("Width", v)
-                    },
-                    {
-                        title: "Height", readonly: false, editor: "TextBox",
-                        getter: () => this.GetPropertyRSize("Height", "10mm"),
-                        setter: v => this.SetPropertyRSize("Height", v)
-                    },
-                ]
-            });
+            let items: IPropertyItem[] = [
+                {
+                    title: "Left", readonly: false, editor: "TextBox",
+                    getter: () => this.GetPropertyRSize("Left", "0mm"),
+                    setter: v => this.SetPropertyRSize("Left", v)
+                },
+                {
+                    title: "Top", readonly: false, editor: "TextBox",
+                    getter: () => this.GetPropertyRSize("Top", "0mm"),
+                    setter: v => this.SetPropertyRSize("Top", v)
+                }
+            ];
+            if (this.getPropertyOwnerType() !== "Table") {
+                items.push({
+                    title: "Width", readonly: false, editor: "TextBox",
+                    getter: () => this.GetPropertyRSize("Width", "20mm"),
+                    setter: v => this.SetPropertyRSize("Width", v)
+                });
+                items.push({
+                    title: "Height", readonly: false, editor: "TextBox",
+                    getter: () => this.GetPropertyRSize("Height", "10mm"),
+                    setter: v => this.SetPropertyRSize("Height", v)
+                });
+            }
+
+            cats.splice(0, 0, { name: "Layout", items: items });
         }
         return cats;
     }

@@ -19,29 +19,6 @@ export default abstract class ReportXmlNodeDesigner extends ItemDesigner {
         this.xmlNode = xmlNode;
     }
 
-    //====添加/删除方法====
-    public OnAddToSurface(byCreate: boolean): void {
-        // super.OnAddToSurface(byCreate);
-        if (byCreate) { //仅处理新建的元素
-            let pt = "pt";
-            this.SetPropertyRSize("Left", this.Bounds.X.toString() + pt, true);
-            this.SetPropertyRSize("Top", this.Bounds.Y.toString() + pt, true);
-            this.SetPropertyRSize("Width", this.Bounds.Width.toString() + pt, true);
-            this.SetPropertyRSize("Height", this.Bounds.Height.toString() + pt, true);
-        }
-    }
-
-    public OnRemoveFromSurface(): void {
-        // super.OnRemoveFromSurface();
-        let parentNode = this.xmlNode.parentNode;
-        if (!parentNode) { console.warn("删除元素无法找到上级节点的ReportItems节点"); }
-        parentNode.removeChild(this.xmlNode);
-        // TODO:暂简单判断上级是否ReportItems
-        if (parentNode.nodeName === "ReportItems" && parentNode.childNodes.length === 0) {
-            parentNode.parentNode.removeChild(parentNode);
-        }
-    }
-
     //====读写XmlNode属性方法，读仅由属性面板，写可能画布或属性面板====
     protected GetPropertyRSize(prop: string, defaultValue: string): string {
         let node = XmlUtil.GetNamedChildNode(this.xmlNode, prop);
