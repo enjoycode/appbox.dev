@@ -131,25 +131,26 @@ export default class TableDesigner extends ReportItemDesigner {
     public GetCellsInBound(dragRect: Rectangle): Array<ItemDesigner> | null {
         // TODO: 不允许跨Section选择
         var dragCell: Array<ItemDesigner> = new Array<ItemDesigner>();
-        for (var i = 0; i < this.Items.length; i++) {
+        // let rowBounds = new Rectangle(0, 0, 0, 0);
+        let cellBounds = new Rectangle(0, 0, 0, 0);
+        for (const item of this.Items) {
+            const sec = item as TableSectionDesigner;
+            let sb = sec.Bounds;
             //判断选择矩形与单元格是否相交
-            var item = this.Items[i];
-            if (dragRect.Contains(item.Bounds.X, item.Bounds.Y) ||
-                dragRect.Contains(item.Bounds.X + item.Bounds.Width, item.Bounds.Y) ||
-                dragRect.Contains(item.Bounds.X, item.Bounds.Y + item.Bounds.Height) ||
-                dragRect.Contains(item.Bounds.X + item.Bounds.Width, item.Bounds.Y + item.Bounds.Height))
-                dragCell.push(item);
-            if (item.Bounds.Contains(dragRect.X, dragRect.Y) ||
-                item.Bounds.Contains(dragRect.X + dragRect.Width, dragRect.Y) ||
-                item.Bounds.Contains(dragRect.X, dragRect.Y + dragRect.Height) ||
-                item.Bounds.Contains(dragRect.X + dragRect.Width, dragRect.Y + dragRect.Height))
-                dragCell.push(item);
-            if (dragRect.X > item.Bounds.X && dragRect.Width + dragRect.X < item.Bounds.Width + item.Bounds.X &&
-                dragRect.Y < item.Bounds.Y && dragRect.Y + dragRect.Height > item.Bounds.Height + item.Bounds.Y)
-                dragCell.push(item);
-            if (item.Bounds.X > dragRect.X && item.Bounds.Width + item.Bounds.X < dragRect.Width + dragRect.X &&
-                item.Bounds.Y < dragRect.Y && item.Bounds.Y + item.Bounds.Height > dragRect.Height + dragRect.Y)
-                dragCell.push(item);
+            if (sb.IntersectsWith(dragRect)) {
+                for (const row of sec.Rows) {
+                    //TODO:行相交
+                    for (const cell of row.Cells) {
+                        cellBounds.X = cell.LastX;
+                        cellBounds.Y = cell.LastY;
+                        cellBounds.Width = cell.LastWidth;
+                        cellBounds.Height = row.Height;
+                        if (cellBounds.IntersectsWith(dragRect)) {
+                            dragCell.push(cell.Target);
+                        }
+                    }
+                }
+            }
         }
         return dragCell;
     }

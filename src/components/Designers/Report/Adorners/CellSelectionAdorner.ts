@@ -108,7 +108,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
         let sx: number, sy: number, ex: number, ey: number;
         let sx2: number, sy2: number, ex2: number, ey2: number;
         let draw: boolean = false;
-        for (let i = 0; i < cells.length; i++) {
+        for (var i = 0; i < cells.length; i++) {
             const element = cells[i];
             if (element instanceof ReportItemDesigner && element.Cell.Row.Owner.Owner === this.Target) {
                 //Top
@@ -122,7 +122,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
                     var comp = cells[j];
                     if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
-                        x = Math.ceil(comp.Cell.LastY); y = Math.ceil(comp.Cell.LastY + comp.Cell.Row.Height);
+                        x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY + comp.Cell.Row.Height);
                         x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
                         if (ey != y) { continue; }
 
