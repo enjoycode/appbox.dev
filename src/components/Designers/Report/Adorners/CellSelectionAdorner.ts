@@ -111,22 +111,20 @@ export default class CellSelectionAdorner extends DesignAdorner {
         for (let i = 0; i < cells.length; i++) {
             const element = cells[i];
             if (element instanceof ReportItemDesigner && element.Cell.Row.Owner.Owner === this.Target) {
-                //top
+                //Top
                 draw = true;
-                sx = Math.ceil(element.Bounds.X); sy = Math.ceil(element.Bounds.Y);
-                ex = Math.ceil(element.Bounds.X + element.Bounds.Width); ey = sy;
+                sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY);
+                ex = Math.ceil(element.Cell.LastX + element.Cell.LastWidth); ey = sy;
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
-                    if (i == j)
-                        continue;
+                    if (i == j) { continue; }
+
                     var comp = cells[j];
                     if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
-                        x = Math.ceil(comp.Bounds.X); y = Math.ceil(comp.Bounds.Y + comp.Bounds.Height);
-                        x2 = Math.ceil(x + comp.Bounds.Width); y2 = y;
-                        if (ey != y) {
-                            continue;
-                        }
+                        x = Math.ceil(comp.Cell.LastY); y = Math.ceil(comp.Cell.LastY + comp.Cell.Row.Height);
+                        x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
+                        if (ey != y) { continue; }
 
                         if (sx >= x && ex <= x2 && sx2 == ex2) {
                             //正上方全部被遮挡
@@ -174,22 +172,21 @@ export default class CellSelectionAdorner extends DesignAdorner {
                     }
                     g.stroke();
                 }
-                //bottom
+
+                //Bottom
                 draw = true;
-                sx = Math.ceil(element.Bounds.X); sy = Math.ceil(element.Bounds.Y + element.Bounds.Height);
-                ex = Math.ceil(element.Bounds.X + element.Bounds.Width); ey = sy;
+                sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY + element.Cell.Row.Height);
+                ex = Math.ceil(element.Cell.LastX + element.Cell.LastWidth); ey = sy;
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
-                    if (i == j)
-                        continue;
+                    if (i == j) { continue; }
+
                     var comp = cells[j];
                     if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
-                        x = Math.ceil(comp.Bounds.X); y = Math.ceil(comp.Bounds.Y);
-                        x2 = Math.ceil(x + comp.Bounds.Width); y2 = y;
-                        if (ey != y) {
-                            continue;
-                        }
+                        x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY);
+                        x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
+                        if (ey != y) { continue; }
 
                         if (sx >= x && ex <= x2 && sx2 == ex2) {
                             //正下方全部被遮挡
@@ -235,22 +232,21 @@ export default class CellSelectionAdorner extends DesignAdorner {
                     }
                     g.stroke();
                 }
+
                 //Left
                 draw = true;
-                sx = Math.ceil(element.Bounds.X); sy = Math.ceil(element.Bounds.Y);
-                ex = sx; ey = Math.ceil(sy + element.Bounds.Height);
+                sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY);
+                ex = sx; ey = Math.ceil(sy + element.Cell.Row.Height);
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
-                    if (i == j)
-                        continue;
+                    if (i == j) { continue; }
+
                     var comp = cells[j];
                     if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
-                        x = Math.ceil(comp.Bounds.X + comp.Bounds.Width); y = Math.ceil(comp.Bounds.Y);
-                        x2 = x; y2 = Math.ceil(y + comp.Bounds.Height);
-                        if (ex != x) {
-                            continue;
-                        }
+                        x = Math.ceil(comp.Cell.LastX + comp.Cell.LastWidth); y = Math.ceil(comp.Cell.LastY);
+                        x2 = x; y2 = Math.ceil(y + comp.Cell.Row.Height);
+                        if (ex != x) { continue; }
 
                         if (sy >= y && ey <= y2 && sy2 == ey2) {
                             //Left方全部被遮挡
@@ -310,17 +306,17 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
                 //Right
                 draw = true;
-                sx = Math.ceil(element.Bounds.X + element.Bounds.Width); sy = Math.ceil(element.Bounds.Y);
-                ex = sx; ey = Math.ceil(sy + element.Bounds.Height);
+                sx = Math.ceil(element.Cell.LastX + element.Cell.LastWidth); sy = Math.ceil(element.Cell.LastY);
+                ex = sx; ey = Math.ceil(sy + element.Cell.Row.Height);
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
-                    if (i == j)
-                        continue;
+                    if (i == j) { continue; }
+
                     var comp = cells[j];
                     if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
-                        x = Math.ceil(comp.Bounds.X); y = Math.ceil(comp.Bounds.Y);
-                        x2 = x; y2 = Math.ceil(y + comp.Bounds.Height);
+                        x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY);
+                        x2 = x; y2 = Math.ceil(y + comp.Cell.Row.Height);
                         if (ex != x) { continue; }
 
                         if (sy >= y && ey <= y2 && sy2 == ey2) {

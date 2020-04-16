@@ -65,7 +65,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
             console.warn("未实现");
         }
     }
-    
+
     // override for find TableCell
     public FindHoverItem(p: Point, ctx: CanvasRenderingContext2D): ItemDesigner | null {
         // 先找到对应的行
@@ -87,7 +87,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
             }
             offsetX += c.LastWidth;
         }
-        if (!cell || !cell.Target ) { return this; }
+        if (!cell || !cell.Target) { return this; }
         return cell.Target;
     }
 
@@ -96,7 +96,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         g.translate(b.X, b.Y);
         let diffY = 0;
         for (const row of this._rows) {
-            row.Paint(g);
+            row.Paint(g, diffY + b.Y);
             g.translate(0, row.Height);
             diffY += row.Height;
         }

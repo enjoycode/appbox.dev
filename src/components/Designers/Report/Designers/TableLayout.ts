@@ -79,10 +79,10 @@ export class TableRow {
         }
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, offsetY: number): void {
         let diffX = 0;
         for (const cell of this._cells) {
-            cell.Paint(g);
+            cell.Paint(g, diffX, offsetY);
             g.translate(cell.LastWidth, 0);
             diffX += cell.LastWidth;
         }
@@ -96,6 +96,11 @@ export class TableCell {
     public readonly Row: TableRow;
     private _target: ReportItemDesigner;
     public get Target(): ReportItemDesigner { return this._target; }
+    //以下LastXXX用于缓存，防止重复计算相对于Table边框的位置
+    private _lastX: number;
+    public get LastX(): number { return this._lastX; }
+    private _lastY: number;
+    public get LastY(): number { return this._lastY; }
     private _lastWidth: number;
     public get LastWidth(): number { return this._lastWidth; }
 
@@ -132,7 +137,9 @@ export class TableCell {
         bounds.Height = this.Row.Height;
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, offsetX: number, offsetY: number): void {
+        this._lastX = offsetX;
+        this._lastY = offsetY;
         if (this._target) { this._target.Paint(g); }
     }
 
