@@ -42,7 +42,7 @@ export default class TableDesigner extends ReportItemDesigner {
         this._columnsNode = XmlUtil.GetOrCreateChildNode(this.xmlNode, "TableColumns");
         if (this._columnsNode.childNodes.length > 0) { // 表示非新建的，新建的在OnAddToSurface时初始化
             for (let i = 0; i < this._columnsNode.childNodes.length; i++) {
-                this._columns.push(new TableColumn(this, this._columnsNode.childNodes[i], i));
+                this._columns.push(new TableColumn(this, this._columnsNode.childNodes[i]));
                 this.Bounds.Width += this._columns[i].Width;
             }
             // 再尝试读取Header/Details/Footer, TODO:TableGroups处理
@@ -95,7 +95,7 @@ export default class TableDesigner extends ReportItemDesigner {
         let len = this._columnsNode.childNodes.length;
         if (len === 0 || index >= len) { //添加至尾部
             let cnode = XmlUtil.CreateChildNode(this._columnsNode, "TableColumn");
-            let col = new TableColumn(this, cnode, index);
+            let col = new TableColumn(this, cnode);
             col.Width = width;
             this._columns.push(col);
         } else {

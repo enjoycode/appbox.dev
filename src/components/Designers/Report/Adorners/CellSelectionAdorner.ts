@@ -2,13 +2,11 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import Point from '@/components/Canvas/Drawing/Point'
 import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import MouseEventArgs from '@/components/Canvas/EventArgs/MouseEventArgs'
-// import { ITableLayout, IRow, IColumn } from '../Designers/ITableLayout'
 import TableDesigner from '../Designers/TableDesigner'
-import DesignSurface from '@/components/Canvas/DesignSurface'
-import ReportDesignService from '../Designers/ReportDesignService'
 import ReportItemDesigner from '../Designers/ReportItemDesigner'
 import TableSectionDesigner from '../Designers/TableSectionDesigner'
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
+import { TableColumn, TableRow } from '../Designers/TableLayout'
 
 const offset = 10;
 const HandleSize = 5;
@@ -21,8 +19,8 @@ interface IElement {
 class ResizeHandle implements IElement {
     Bounds: Rectangle;
     Cursor: string;
-    IsRow: boolean;
-    Index: number;
+    Column: TableColumn | null;
+    Row: TableRow | null;
 
     HitTest(pt: Point): [boolean, string] {
         if (this.Bounds.Contains(pt.X, pt.Y)) {
@@ -419,37 +417,34 @@ export default class CellSelectionAdorner extends DesignAdorner {
     }
 
     private GetElements(): Array<IElement> {
-        var ls = new Array<IElement>();
-        let tableLayout = (this.Target as TableDesigner).TableLayout;
+        let ls = new Array<IElement>();
+        let table = this.Target as TableDesigner;
 
         //加入列ResizeHandle
-        var x = 0;
-        for (var i = 0; i < tableLayout.Columns.length; i++) {
-            var column = tableLayout.Columns[i];
-            var resizeHandle = new ResizeHandle();
-            resizeHandle.Bounds = new Rectangle(x + column.Size - HandleSize / 2, -offset, HandleSize, offset);
+        let x = 0;
+        for (const column of table.Columns) {
+            let resizeHandle = new ResizeHandle();
+            resizeHandle.Bounds = new Rectangle(x + column.Width - HandleSize / 2, -offset, HandleSize, offset);
             resizeHandle.Cursor = "ew-resize";
-            resizeHandle.IsRow = false;
-            resizeHandle.Index = i;
+            resizeHandle.Column = column;
             ls.push(resizeHandle);
-            x += column.Size;
+            x += column.Width;
         }
-
         //加入行ResizeHandle
-        var y = 0;
-        for (var i = 0; i < tableLayout.Rows.length; i++) {
-            var row = tableLayout.Rows[i];
-            var resizeHandle = new ResizeHandle();
-            resizeHandle.Bounds = new Rectangle(-offset, y + row.Size - HandleSize / 2, offset, HandleSize);
-            resizeHandle.Cursor = "ns-resize";
-            resizeHandle.IsRow = true;
-            resizeHandle.Index = i;
-            ls.push(resizeHandle);
-            y += row.Size;
+        let y = 0;
+        for (const item of table.Items) {
+            let sec = item as TableSectionDesigner;
+            for (const row of sec.Rows) {
+                let resizeHandle = new ResizeHandle();
+                resizeHandle.Bounds = new Rectangle(-offset, y + row.Height - HandleSize / 2, offset, HandleSize);
+                resizeHandle.Cursor = "ns-resize";
+                resizeHandle.Row = row;
+                ls.push(resizeHandle);
+                y += row.Height;
+            }
         }
-
         //add move table handle
-        var moveHandle = new MoveTableHandle();
+        let moveHandle = new MoveTableHandle();
         moveHandle.Bounds = new Rectangle(0, 0, 15, 15);
         moveHandle.Cursor = "move";
         ls.push(moveHandle);
@@ -458,109 +453,67 @@ export default class CellSelectionAdorner extends DesignAdorner {
     }
 
     public HitTest(pt: Point): [boolean, string] {
-        // console.log("HitTest at: ", pt);
-        return [false, ""];
-        // var ls = this.GetElements();
-        // var hitElement: IElement | null = null;
-        // var hitCursor: string = "";
-        // for (var i = 0; i < ls.length; i++) {
-        //     var res = ls[i].HitTest(pt);
-        //     if (res[0]) {
-        //         hitElement = ls[i];
-        //         hitCursor = res[1];
-        //     }
-        // }
+        let ls = this.GetElements();
+        let hitElement: IElement | null = null;
+        let hitCursor: string = "";
+        for (let i = 0; i < ls.length; i++) {
+            let res = ls[i].HitTest(pt);
+            if (res[0]) {
+                hitElement = ls[i];
+                hitCursor = res[1];
+            }
+        }
 
-        // if (hitElement) {
-        //     this._hitTestElement = hitElement;
-        //     return [true, hitCursor];
-        // }
-        // else {
-        //     this._hitTestElement = null;
-        //     return [false, hitCursor];
-        // }
+        if (hitElement) {
+            this._hitTestElement = hitElement;
+            return [true, hitCursor];
+        }
+        else {
+            this._hitTestElement = null;
+            return [false, hitCursor];
+        }
     }
 
     public OnMouseMove(e: MouseEventArgs) {
-        //todo: debounce延迟处理
+        //TODO: debounce延迟处理
         if (this._hitTestElement) {
-            // if (this._hitTestElement instanceof ResizeHandle) {
-            //     let tableDesigner = this.Target as TableDesigner;
-            //     let tableLayout = tableDesigner.TableLayout;
-            //     if (this._hitTestElement.IsRow) {
-            //         // resize row height
-            //         if (e.DeltaY !== 0) {
-            //             for (var i = 0; i < tableDesigner.Items.length; i++) {
-            //                 var element = tableDesigner.Items[i] as ReportItemDesigner;
-            //                 if (element.Cell) {
-            //                     if (element.Cell.RI === this._hitTestElement.Index
-            //                         || element.Cell.RI + element.Cell.RS - 1 === this._hitTestElement.Index) {
-            //                         element.Bounds.Height += e.DeltaY;
-            //                     } else if (element.Cell.RI > this._hitTestElement.Index) {
-            //                         element.Bounds.Y += e.DeltaY;
-            //                     }
-            //                 }
-            //             }
-
-            //             for (var i = 0; i < tableLayout.Rows.length; i++) {
-            //                 var row = tableLayout.Rows[i];
-            //                 if (row.Index == this._hitTestElement.Index) {
-            //                     row.Size += e.DeltaY;
-            //                 }
-            //             }
-
-            //             tableDesigner.Bounds.Height += e.DeltaY;
-            //         }
-            //     } else {
-            //         // resize column width
-            //         if (e.DeltaX !== 0) {
-            //             for (var i = 0; i < tableDesigner.Items.length; i++) {
-            //                 var element = tableDesigner.Items[i] as ReportItemDesigner;
-            //                 if (element.Cell) {
-            //                     if (element.Cell.CI === this._hitTestElement.Index
-            //                         || element.Cell.CI + element.Cell.CS - 1 === this._hitTestElement.Index) {
-            //                         element.Bounds.Width += e.DeltaX;
-            //                     } else if (element.Cell.CI > this._hitTestElement.Index) {
-            //                         element.Bounds.X += e.DeltaX;
-            //                     }
-            //                 }
-            //             }
-
-            //             for (var i = 0; i < tableLayout.Columns.length; i++) {
-            //                 var cl = tableLayout.Columns[i];
-            //                 if (cl.Index == this._hitTestElement.Index) {
-            //                     cl.Size += e.DeltaX;
-            //                 }
-            //             }
-
-            //             tableDesigner.Bounds.Width += e.DeltaX;
-            //         }
-            //     }
-            //     tableDesigner.Invalidate();
-            // } else if (this._hitTestElement instanceof MoveTableHandle) {
-            //     let tableDesigner = this.Target as TableDesigner;
-            //     tableDesigner.Move(e.DeltaX, e.DeltaY);
-            // }
+            if (this._hitTestElement instanceof ResizeHandle) {
+                let tableDesigner = this.Target as TableDesigner;
+                if (this._hitTestElement.Row) { // resize row height
+                    if (e.DeltaY === 0) { return; }
+                    this._hitTestElement.Row.Height += e.DeltaY;
+                    //如果Row对应的TableSection.Bounds改为缓存，则这里需要重新计算
+                    tableDesigner.Bounds.Height += e.DeltaY; //需要更新缓存值
+                } else { // resize column width
+                    if (e.DeltaX === 0) { return; }
+                    this._hitTestElement.Column.Width += e.DeltaX;
+                    tableDesigner.Bounds.Width += e.DeltaX; //需要更新缓存值
+                }
+                tableDesigner.Parent.Invalidate(); // tableDesigner.Invalidate();
+            } else if (this._hitTestElement instanceof MoveTableHandle) {
+                let tableDesigner = this.Target as TableDesigner;
+                tableDesigner.Move(e.DeltaX, e.DeltaY);
+            }
         }
     }
 
     public OnMouseUp(e: MouseEventArgs) {
         if (this._hitTestElement) {
-            // if (this._hitTestElement instanceof ResizeHandle) {
-            //     let tableDesigner = this.Target as TableDesigner;
-            //     let tableLayout = tableDesigner.TableLayout;
-            //     if (this._hitTestElement.IsRow) {
-            //         let newSize = tableLayout.Rows[this._hitTestElement.Index].Size;
-            //         ReportDesignService.ChangeProperty(this.Target, "ResizeRow", this._hitTestElement.Index, newSize);
-            //     } else {
-            //         //notify server resize column width
-            //         let newSize = tableLayout.Columns[this._hitTestElement.Index].Size;
-            //         ReportDesignService.ChangeProperty(this.Target, "ResizeCol", this._hitTestElement.Index, newSize);
-            //     }
-            // } else if (this._hitTestElement instanceof MoveTableHandle) {
-            //     let tableDesigner = this.Target as TableDesigner;
-            //     tableDesigner.OnEndMove();
-            // }
+            if (this._hitTestElement instanceof ResizeHandle) {
+                // let tableDesigner = this.Target as TableDesigner;
+                // let tableLayout = tableDesigner.TableLayout;
+                // if (this._hitTestElement.IsRow) {
+                //     let newSize = tableLayout.Rows[this._hitTestElement.Index].Size;
+                //     ReportDesignService.ChangeProperty(this.Target, "ResizeRow", this._hitTestElement.Index, newSize);
+                // } else {
+                //     //notify server resize column width
+                //     let newSize = tableLayout.Columns[this._hitTestElement.Index].Size;
+                //     ReportDesignService.ChangeProperty(this.Target, "ResizeCol", this._hitTestElement.Index, newSize);
+                // }
+            } else if (this._hitTestElement instanceof MoveTableHandle) {
+                let tableDesigner = this.Target as TableDesigner;
+                tableDesigner.OnEndMove();
+            }
         }
     }
 

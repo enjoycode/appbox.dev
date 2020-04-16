@@ -9,9 +9,6 @@ export class TableColumn {
 
     private readonly _node: Node;
     public readonly Owner: TableDesigner;
-    private _index: number;
-    public get Index(): number { return this._index; }
-    //TODO:设置Index后续列的Index + 1
 
     private _width: number; //only for cache
     public get Width(): number { return this._width; }
@@ -27,10 +24,9 @@ export class TableColumn {
         // this.Owner.Invalidate();
     }
 
-    constructor(owner: TableDesigner, xmlNode: Node, index: number) {
+    constructor(owner: TableDesigner, xmlNode: Node) {
         this.Owner = owner;
         this._node = xmlNode;
-        this._index = index;
         this._width = XmlUtil.TryGetSize(this._node, "Width", 120);
     }
 
