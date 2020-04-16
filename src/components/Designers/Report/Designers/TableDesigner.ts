@@ -129,6 +129,7 @@ export default class TableDesigner extends ReportItemDesigner {
     }
 
     public GetCellsInBound(dragRect: Rectangle): Array<ItemDesigner> | null {
+        // TODO: 不允许跨Section选择
         var dragCell: Array<ItemDesigner> = new Array<ItemDesigner>();
         for (var i = 0; i < this.Items.length; i++) {
             //判断选择矩形与单元格是否相交

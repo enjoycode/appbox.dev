@@ -60,18 +60,15 @@ export default class SelectionService {
             this._moving = true;
 
             //再处理移动所有选择的对象
-            for (var i = 0; i < this._selectedItems.length; i++) {
-                //单元格内选择
-                if (this._selectedItems[i] instanceof ReportItemDesigner) {
-                    var _this = this._selectedItems[i] as ReportItemDesigner;
-                    if (_this.IsTableCell) {
-                        var tableDesigner = _this.Parent as TableDesigner;
-                        tableDesigner.MoveCellSelection(deltaX, deltaY);
-                        break;
-                    }
+            for (const item of this._selectedItems) {
+                //判断是否单元格内选择
+                if (item instanceof ReportItemDesigner && item.IsTableCell) {
+                    let tableDesigner = item.Cell.Row.Owner.Owner;
+                    tableDesigner.MoveCellSelection(deltaX, deltaY);
+                    break;
                 }
-                this._selectedItems[i].Move(deltaX, deltaY);
-            }            
+                item.Move(deltaX, deltaY);
+            }
         }
     }
 

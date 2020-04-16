@@ -144,11 +144,8 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         if (e.Button == MouseButtons.Left && this.IsTableCell) {
             //在表格内则开始单元格选取
 
-            if (null == this.Parent)
-                return false;
-
-            var tableDesigner = this.Parent as TableDesigner;
-            if (null != tableDesigner) {
+            let tableDesigner = this.Cell.Row.Owner.Owner;
+            if (tableDesigner) {
                 tableDesigner.BeginCellSelection(e.X, e.Y);
             }
         }
