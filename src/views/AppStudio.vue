@@ -160,6 +160,6 @@
     }
 
     .ide-property-panel .el-form>.el-form-item {
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
 </style>

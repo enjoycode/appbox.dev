@@ -7,6 +7,7 @@ import ReportItemDesigner from './ReportItemDesigner'
 import ReportRootDesigner from './ReportRootDesigner'
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 import XmlUtil from './XmlUtil'
+import { IDesignToolbox } from '@/components/Canvas/Services/ToolboxService'
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -15,19 +16,21 @@ interface IChannel {
 export default class ReportDesignService implements IDesignService {
 
     private readonly _surface: DesignSurface;
+    public get Surface(): DesignSurface { return this._surface; }
     private readonly _channel: IChannel;
     private readonly _modelId: string
     private _rootDesigner: ItemDesigner;
-
-    public get RootDesigner(): ItemDesigner {
-        return this._rootDesigner;
-    }
+    public get RootDesigner(): ItemDesigner { return this._rootDesigner; }
 
     constructor(surface: DesignSurface, channel: IChannel, modelId: string) {
         this._surface = surface;
         this._channel = channel;
         this._modelId = modelId;
         this._surface.DesignService = this;
+    }
+
+    public SetToolbox(toolbox: IDesignToolbox): void {
+        this._surface.ToolboxService.Toolbox = toolbox;
     }
 
     /**
