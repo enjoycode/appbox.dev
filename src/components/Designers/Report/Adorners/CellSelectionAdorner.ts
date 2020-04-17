@@ -398,7 +398,15 @@ export default class CellSelectionAdorner extends DesignAdorner {
         for (const sec of table.Items) {
             const section = sec as TableSectionDesigner;
             //TODO: 考虑画section边框
+            let sectionType = section.getPropertyOwnerType();
+            let sectionTitle = "D";
+            if (sectionType === "Header") { sectionTitle = "H"; }
+            else if (sectionType === "Footer") { sectionType = "F"; }
+            g.textBaseline = "middle";
+
             for (const row of section.Rows) {
+                g.fillStyle = "black";
+                g.fillText(sectionTitle, -offset + 1.5, y + row.Height / 2);
                 g.strokeRect(-offset, y, offset, row.Height);
                 y += row.Height;
             }
