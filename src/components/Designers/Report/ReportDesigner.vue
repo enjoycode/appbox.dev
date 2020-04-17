@@ -80,15 +80,15 @@ export default {
         },
 
         save() {
-            //console.log(this.designService.GetXmlString());
             console.log(this.designService.RootDesigner.XmlNode.ownerDocument)
-            // let node = this.target
-            // let _this = this
-            // $runtime.channel.invoke('sys.DesignService.SaveModel', [node.Type, node.ID]).then(res => {
-            //     _this.$message.success('保存成功')
-            // }).catch(err => {
-            //     _this.$message.error('保存失败: ' + err)
-            // })
+            let node = this.target
+            let args = [node.Type, node.ID, this.designService.GetXmlString()]
+            let _this = this
+            $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
+                _this.$message.success('Save Report succeed.')
+            }).catch(err => {
+                _this.$message.error('Save error: ' + err)
+            })
         },
     }
 }
