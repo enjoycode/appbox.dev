@@ -13,15 +13,11 @@ export class TableColumn {
     private _width: number; //only for cache
     public get Width(): number { return this._width; }
     public set Width(value) {
-        this._width = value;
-        // 1.设置xml属性
+        this._width = value; // 更新缓存
         let cnode = XmlUtil.GetOrCreateChildNode(this._node, "Width");
         let unit = XmlUtil.GetSizeUnit(cnode);
         let newSize = XmlUtil.PixelToSize(value, unit);
         cnode.textContent = newSize;
-        // 2.开始重新布局
-        // this.Owner.OnChangeColumnWidth(this)
-        // this.Owner.Invalidate();
     }
 
     constructor(owner: TableDesigner, xmlNode: Node) {
@@ -44,15 +40,11 @@ export class TableRow {
     private _height: number; //only for cache
     public get Height(): number { return this._height; }
     public set Height(value) {
-        this._height = value;
-        // 1.设置xml属性
+        this._height = value; //更新缓存
         let cnode = XmlUtil.GetOrCreateChildNode(this._node, "Height");
         let unit = XmlUtil.GetSizeUnit(cnode);
         let newSize = XmlUtil.PixelToSize(value, unit);
         cnode.textContent = newSize;
-        // 2.开始重新布局
-        // this.Owner.OnChangeRowHeight(this)
-        // this.Owner.Owner.Invalidate();
     }
 
     constructor(owner: TableSectionDesigner, xmlNode: Node) {
