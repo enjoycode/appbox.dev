@@ -3,6 +3,26 @@ export default class XmlUtil {
 
     private static readonly POINTSIZE: number = 72.27;
 
+    public static LoadXMLString(txt: string): XMLDocument {
+        try //Internet Explorer
+        {
+            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = "false";
+            xmlDoc.loadXML(txt);
+            return (xmlDoc);
+        }
+        catch (e) {
+            try //Firefox, Mozilla, Opera, etc.
+            {
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(txt, "text/xml");
+                return (xmlDoc);
+            }
+            catch (e) { alert(e.message) }
+        }
+        return (null);
+    }
+
     public static GetNamedChildNode(node: Node | null, name: string): Node | null {
         if (!node) return null;
         for (const child of node.childNodes) {

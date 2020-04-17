@@ -6,6 +6,7 @@ import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
 import ReportItemDesigner from './ReportItemDesigner'
 import ReportRootDesigner from './ReportRootDesigner'
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
+import XmlUtil from './XmlUtil'
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -27,27 +28,6 @@ export default class ReportDesignService implements IDesignService {
         this._channel = channel;
         this._modelId = modelId;
         this._surface.DesignService = this;
-    }
-
-    //TODO: 仅测试用待移除
-    private loadXMLString(txt: string): XMLDocument {
-        try //Internet Explorer
-        {
-            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-            xmlDoc.async = "false";
-            xmlDoc.loadXML(txt);
-            return (xmlDoc);
-        }
-        catch (e) {
-            try //Firefox, Mozilla, Opera, etc.
-            {
-                var parser = new DOMParser();
-                xmlDoc = parser.parseFromString(txt, "text/xml");
-                return (xmlDoc);
-            }
-            catch (e) { alert(e.message) }
-        }
-        return (null);
     }
 
     /**
@@ -82,7 +62,7 @@ export default class ReportDesignService implements IDesignService {
         xml += '<Height>15mm</Height>'
         xml += '</PageFooter>'
         xml += "</Report>";
-        let xmlDoc = this.loadXMLString(xml);
+        let xmlDoc = XmlUtil.LoadXMLString(xml);
         var reportNode = xmlDoc.getElementsByTagName("Report")[0]
 
         var rootDesigner = new ReportRootDesigner(reportNode);
