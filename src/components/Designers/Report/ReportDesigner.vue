@@ -56,7 +56,7 @@ export default {
             
             // 开始加载报表定义
             let _this = this;
-            $$runtime.channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
+            $runtime.channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
                 _this.designService.LoadDesigners(res)
             }).catch(err => {
                 _this.$message.error('Open Report error:' + err)
