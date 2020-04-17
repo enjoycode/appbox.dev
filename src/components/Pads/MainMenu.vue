@@ -44,8 +44,9 @@
                         { title: 'Folder', icon: 'fas fa-folder fa-fw', index: 'NewFolder' },
                         { title: 'Entity', icon: 'fas fa-table fa-fw', index: 'NewEntity' },
                         { title: 'Service', icon: 'fas fa-cog fa-fw', index: 'NewService' },
-                        { title: 'View', icon: 'far fa-window-maximize fa-fw', index: 'NewViewModel' },
-                        { title: 'Enum', icon: 'fas fa-th-list fa-fw', index: 'NewEnumModel' },
+                        { title: 'View', icon: 'far fa-window-maximize fa-fw', index: 'NewView' },
+                        { title: 'Report', icon: 'far fa-file fa-fw', index: 'NewReport' },
+                        { title: 'Enum', icon: 'fas fa-th-list fa-fw', index: 'NewEnum' },
                         { title: 'Permission', icon: 'fas fa-lock fa-fw', index: 'NewPermission' }
                     ]
                 },
@@ -63,17 +64,17 @@
                         { title: 'Reload', icon: 'fas fa-sync fa-fw', index: 'ReloadTree' },
                     ]
                 },
-                {
-                    title: 'Report',
-                    icon: null,
-                    index: 'report',
-                    nodes: [
-                        { title: 'Add Row', icon: '', index: 'InsertRow' },
-                        { title: 'Add Column', icon: '', index: 'InsertColumn' },
-                        { title: 'Merge Cells', icon: '', index: 'MergeCells' },
-                        { title: 'Split Cell', icon: '', index: 'SplitCells' }
-                    ]
-                },
+                // {
+                //     title: 'Report',
+                //     icon: null,
+                //     index: 'report',
+                //     nodes: [
+                //         { title: 'Add Row', icon: '', index: 'InsertRow' },
+                //         { title: 'Add Column', icon: '', index: 'InsertColumn' },
+                //         { title: 'Merge Cells', icon: '', index: 'MergeCells' },
+                //         { title: 'Split Cell', icon: '', index: 'SplitCells' }
+                //     ]
+                // },
                 {
                     title: 'Tools',
                     icon: null,
