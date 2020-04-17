@@ -38,30 +38,11 @@ export default class ReportDesignService implements IDesignService {
         return (new XMLSerializer()).serializeToString(xmlDoc); // TODO:IE不支持 XMLSerializer对象。它通过Node对象的xml属性
     }
 
-    public LoadDesignersFromServer(reportModelId: string): void {
-        //TODO:从服务端加载报表定义Xml
-        var xml = '<Report>'
-        xml += '<PageWidth>200mm</PageWidth>'
-        xml += '<PageHeight>140mm</PageHeight>'
-        xml += '<PageHeader>'
-        xml += '<Height>20mm</Height>'
-        xml += '<ReportItems>'
-        xml += '<Textbox Name="Textbox1">'
-        xml += '<Left>50pt</Left>'
-        xml += '<Top>10pt</Top>'
-        xml += '<Width>100pt</Width>'
-        xml += '<Height>30pt</Height>'
-        xml += '<Value>测试报表 Hello Future! 1234567890</Value>'
-        xml += '</Textbox>'
-        xml += '</ReportItems>'
-        xml += '</PageHeader>'
-        xml += '<Body>'
-        xml += '<Height>40mm</Height>'
-        xml += '</Body>'
-        xml += '<PageFooter>'
-        xml += '<Height>15mm</Height>'
-        xml += '</PageFooter>'
-        xml += "</Report>";
+    /**
+     * 解析并加载报表至设计界面内
+     * @param xml 报表定义Xml
+     */
+    public LoadDesigners(xml: string): void {
         let xmlDoc = XmlUtil.LoadXMLString(xml);
         var reportNode = xmlDoc.getElementsByTagName("Report")[0]
 

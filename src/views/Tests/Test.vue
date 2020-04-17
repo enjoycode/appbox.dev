@@ -30,7 +30,7 @@ import ReportItemDesigner from '@/components/Designers/Report/Designers/ReportIt
     components: { /*DesignView: DesignView*/ ReportDesigner: ReportDesigner }
 })
 export default class TestView extends Vue {
-    private target = { ID: 123456 };
+    private target = { ID: 0 };
     private toolbox = new MockToolbox();
 
     // onConnection() {

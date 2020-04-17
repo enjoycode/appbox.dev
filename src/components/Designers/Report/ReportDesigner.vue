@@ -26,9 +26,43 @@ export default {
         onDesignViewReady() {
             // 先初始化DesignSurface.DesignService实例
             this.designService = new ReportDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
+            
+            if (this.target.ID === 0) { // TODO: 仅测试用
+                let xml = '<Report>'
+                xml += '<PageWidth>200mm</PageWidth>'
+                xml += '<PageHeight>140mm</PageHeight>'
+                xml += '<PageHeader>'
+                xml += '<Height>20mm</Height>'
+                xml += '<ReportItems>'
+                xml += '<Textbox Name="Textbox1">'
+                xml += '<Left>50pt</Left>'
+                xml += '<Top>10pt</Top>'
+                xml += '<Width>100pt</Width>'
+                xml += '<Height>30pt</Height>'
+                xml += '<Value>测试报表 Hello Future! 1234567890</Value>'
+                xml += '</Textbox>'
+                xml += '</ReportItems>'
+                xml += '</PageHeader>'
+                xml += '<Body>'
+                xml += '<Height>40mm</Height>'
+                xml += '</Body>'
+                xml += '<PageFooter>'
+                xml += '<Height>15mm</Height>'
+                xml += '</PageFooter>'
+                xml += "</Report>";
+                this.designService.LoadDesigners(xml)
+                return
+            }
+            
             // 开始加载报表定义
-            this.designService.LoadDesignersFromServer(this.target.ID)
+            let _this = this;
+            $$runtime.channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
+                _this.designService.LoadDesigners(res)
+            }).catch(err => {
+                _this.$message.error('Open Report error:' + err)
+            })
         },
+
         save() {
             //console.log(this.designService.GetXmlString());
             console.log(this.designService.RootDesigner.XmlNode.ownerDocument)
