@@ -80,7 +80,7 @@ export default {
         },
 
         save() {
-            console.log(this.designService.RootDesigner.XmlNode.ownerDocument)
+            console.log(this.designService.RootDesigner.XmlNode.ownerDocument) //TODO: for debug
             let node = this.target
             let args = [node.Type, node.ID, this.designService.GetXmlString()]
             let _this = this

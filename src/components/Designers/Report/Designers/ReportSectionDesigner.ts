@@ -7,6 +7,7 @@ import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 import TextboxDesigner from "./TextboxDesigner"
 import XmlUtil from './XmlUtil'
+import ReportItemFactory from './ReportItemFactory'
 
 export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
@@ -36,14 +37,8 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         if (itemsNode) {
             for (const cnode of itemsNode.childNodes) {
                 if (cnode.nodeType === Node.ELEMENT_NODE) {
-                    switch (cnode.nodeName) {
-                        case "Textbox":
-                            this.AddItem(new TextboxDesigner(cnode));
-                            break;
-                        default:
-                            console.warn("未实现");
-                            break;
-                    }
+                    let child = ReportItemFactory.Make(cnode, null);
+                    if (child) { this.AddItem(child); }
                 }
             }
         }

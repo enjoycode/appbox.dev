@@ -48,8 +48,8 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
         // 开始加载Rows
         this._rowsNode = XmlUtil.GetOrCreateChildNode(this.xmlNode, "TableRows");
-        for (let i = 0; i < this._rowsNode.childNodes.length; i++) {
-            this._rows.push(new TableRow(this, this._rowsNode.childNodes[i]));
+        for (const cnode of this._rowsNode.childNodes) {
+            this._rows.push(new TableRow(this, cnode));
         }
     }
 

@@ -4,6 +4,7 @@ import TableSectionDesigner from './TableSectionDesigner';
 import ReportItemDesigner from './ReportItemDesigner';
 import TextboxDesigner from './TextboxDesigner';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
+import ReportItemFactory from './ReportItemFactory';
 
 export class TableColumn {
 
@@ -54,6 +55,9 @@ export class TableRow {
 
         //开始加载Cells
         this._cellsNode = XmlUtil.GetOrCreateChildNode(this._node, "TableCells");
+        for (const cellNode of this._cellsNode.childNodes) {
+            this._cells.push(new TableCell(this, cellNode));
+        }
     }
 
     public InsertCell(colIndex: number) {
@@ -128,10 +132,20 @@ export class TableCell {
 
         //开始加载Cell内的ReportItems
         this._itemsNode = XmlUtil.GetOrCreateChildNode(this._node, "ReportItems");
+        if (this._itemsNode.childNodes.length > 1) {
+            console.warn("TableCell contains multi children: ", this._node);
+        }
         if (this._itemsNode.childNodes.length === 0) { // 新建的直接初始化
             let cnode = XmlUtil.CreateChildNode(this._itemsNode, "Textbox");
             this._target = new TextboxDesigner(cnode, this);
             //不需要AddItem to parent(TableSectionDesigner)
+        } else {
+            for (const cnode of this._itemsNode.childNodes) {
+                if (cnode.nodeType === Node.ELEMENT_NODE) {
+                    this._target = ReportItemFactory.Make(cnode, this);
+                    break;
+                }
+            }
         }
     }
 

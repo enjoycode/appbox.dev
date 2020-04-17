@@ -74,8 +74,10 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         if (!cell) { // 不在表格内则转换单位    
             this._bounds.X = XmlUtil.TryGetSize(this.xmlNode, "Left", 0);
             this._bounds.Y = XmlUtil.TryGetSize(this.xmlNode, "Top", 0);
-            this._bounds.Width = XmlUtil.TryGetSize(this.xmlNode, "Width", 200);
-            this._bounds.Height = XmlUtil.TryGetSize(this.xmlNode, "Height", 100);
+            if (this.getPropertyOwnerType() !== "Table") { // 需要排除Table
+                this._bounds.Width = XmlUtil.TryGetSize(this.xmlNode, "Width", 200);
+                this._bounds.Height = XmlUtil.TryGetSize(this.xmlNode, "Height", 100);
+            }
         }
     }
 
