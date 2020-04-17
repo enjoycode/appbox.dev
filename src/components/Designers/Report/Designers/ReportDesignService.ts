@@ -154,6 +154,21 @@ export default class ReportDesignService implements IDesignService {
         row.Owner.Table.Parent.Invalidate(); //需要重画
     }
 
+    public DeleteColumn(): string | null {
+        let selection = this._surface.SelectionService.SelectedItems;
+        if (selection.length === 0 || !(selection[0] instanceof ReportItemDesigner)
+            || !(selection[0] as ReportItemDesigner).IsTableCell) {
+            return "Please select some TableCell first.";
+        }
+        // 计算出当前列
+        let reportItem = selection[0] as ReportItemDesigner;
+        let table = reportItem.Cell.Row.Owner.Table;
+        if (table.Columns.length === 1) { return "Cann't delete last column."; }
+        let colIndex = reportItem.Cell.ColIndex;
+        reportItem.Cell.Row.Owner.Table.DeleteColumn(colIndex);
+        table.Parent.Invalidate(); //需要重画
+    }
+
     // public TableOperation(opt: string): void {
     // var items = this._surface.SelectionService.SelectedItems;
     // if (opt == 'SplitCells') {

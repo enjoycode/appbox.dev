@@ -94,6 +94,7 @@ export default class TableDesigner extends ReportItemDesigner {
     public InsertColumn(index: number, width: number = 100) {
         let len = this._columnsNode.childNodes.length;
         if (index > len) { index = len; }
+        // 添加Xml节点及列
         let cnode = XmlUtil.CreateChildNode(this._columnsNode, "TableColumn");
         let col = new TableColumn(this, cnode);
         col.Width = width;
@@ -115,7 +116,19 @@ export default class TableDesigner extends ReportItemDesigner {
     }
 
     public DeleteColumn(index: number) {
-
+        if (this._columns.length === 1) { return; }
+        let col = this._columns[index];
+        // 删除Xml节点及列
+        this._columnsNode.removeChild(col.Node)
+        this._columns.splice(index, 1);
+        // 同步删除各行的单元格
+        for (const item of this.Items) {
+            let sec = item as TableSectionDesigner;
+            for (const row of sec.Rows) {
+                row.DeleteCell(index);
+            }
+        }
+        this.Bounds.Width -= col.Width; //更新缓存值
     }
 
     public Paint(g: CanvasRenderingContext2D): void {

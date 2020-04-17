@@ -6,12 +6,37 @@
                 <el-radio-button v-for="item in views" :key="item.label" :label="item.label">{{item.title}}</el-radio-button>
             </el-radio-group>
             &nbsp;
-            <!-- <el-button-group v-show="activeView==='members'">
-                <el-button @click="onAddMember" size="small" icon="el-icon-circle-plus">Add</el-button>
-                <el-button @click="onRemoveMember" :disabled="currentMember==null" size="small" icon="el-icon-remove">Remove</el-button>
-                <el-button @click="onRenameMember" :disabled="currentMember==null" size="small" icon="fas fa-edit"> Rename</el-button>
-                <el-button @click="onFindUsages" :disabled="currentMember==null" size="small" icon="fas fa-link"> Usages</el-button>
-            </el-button-group> -->
+            <!-- 报表设计相关命令 -->
+            <el-dropdown @command="onTableCommand">
+                <el-button size="small" icon="fas fa-table">
+                    Insert<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="ICL">Column Left</el-dropdown-item>
+                    <el-dropdown-item command="ICR">Column Right</el-dropdown-item>
+                    <el-dropdown-item command="IRA" divided>Row Above</el-dropdown-item>
+                    <el-dropdown-item command="IRB">Row Below</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+            <el-dropdown @command="onTableCommand">
+                <el-button size="small" icon="fas fa-table">
+                    Delete<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="DC">Column</el-dropdown-item>
+                    <el-dropdown-item command="DR">Row</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+            <el-dropdown @command="onTableCommand">
+                <el-button size="small" icon="fas fa-table">
+                    Cells<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="CM">Merge</el-dropdown-item>
+                    <el-dropdown-item command="CS">Split</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+            <el-button @click="onDeleteSelection" size="small" icon="fas fa-times fa-fw">Delete Selection</el-button>
         </div>
         <!-- 内容区域 -->
         <div class="content">
@@ -77,6 +102,20 @@ export default {
             }).catch(err => {
                 _this.$message.error('Open Report error:' + err)
             })
+        },
+
+        onTableCommand(cmd) {
+            let error = null
+            switch (cmd) {
+                case "ICL": error = this.designService.InsertColumn(true); break;
+                case "ICR": error = this.designService.InsertColumn(false); break;
+                case "DC": error = this.designService.DeleteColumn(); break;
+                default: break;
+            }
+            if (error) { this.$message.error(error) }
+        },
+        onDeleteSelection() {
+            this.designService.DeleteSelection()
         },
 
         save() {

@@ -9,6 +9,7 @@ import ReportItemFactory from './ReportItemFactory';
 export class TableColumn {
 
     private readonly _node: Node;
+    public get Node(): Node { return this._node; }
     public readonly Owner: TableDesigner;
 
     private _width: number; //only for cache
@@ -60,7 +61,7 @@ export class TableRow {
         }
     }
 
-    public InsertCell(colIndex: number) {
+    private FindCellIndex(colIndex: number): number {
         let ci = 0;
         let pos = 0;
         for (let i = 0; i < this.Cells.length; i++) {
@@ -72,9 +73,20 @@ export class TableRow {
                 ci += cell.ColSpan;
             }
         }
+        return pos;
+    }
+
+    public InsertCell(colIndex: number) {
+        let pos = this.FindCellIndex(colIndex);
         let cellNode = XmlUtil.CreateChildNode(this._cellsNode, "TableCell");
         let cell = new TableCell(this, cellNode);
         this._cells.splice(pos, 0, cell);
+    }
+
+    public DeleteCell(colIndex: number) {
+        let pos = this.FindCellIndex(colIndex);
+        this._cellsNode.removeChild(this._cells[pos].Node);
+        this._cells.splice(pos, 1);
     }
 
     /**
@@ -101,6 +113,7 @@ export class TableRow {
 
 export class TableCell {
     private readonly _node: Node;
+    public get Node(): Node { return this._node; }
     private readonly _itemsNode: Node;
     public readonly Row: TableRow;
     private _target: ReportItemDesigner;
