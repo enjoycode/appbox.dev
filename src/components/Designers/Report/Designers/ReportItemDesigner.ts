@@ -25,7 +25,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
     public get SelectionAdorner(): DesignAdorner | null {
         if (this.IsTableCell) {
-            let tableDesigner = this._cell.Row.Owner.Owner;
+            let tableDesigner = this._cell.Row.Owner.Table;
             return tableDesigner.CellSelectionAdorner;
         } else {
             if (!this._selectionAdorner && this.Surface) {
@@ -108,7 +108,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
      */
     public Invalidate(): void {
         if (this._cell) {
-            this._cell.Row.Owner.Owner.Invalidate();
+            this._cell.Row.Owner.Table.Invalidate();
         } else {
             super.Invalidate();
         }
@@ -146,7 +146,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
         if (e.Button == MouseButtons.Left && this.IsTableCell) {
             //在表格内则开始单元格选取
 
-            let tableDesigner = this.Cell.Row.Owner.Owner;
+            let tableDesigner = this.Cell.Row.Owner.Table;
             if (tableDesigner) {
                 tableDesigner.BeginCellSelection(e.X, e.Y);
             }

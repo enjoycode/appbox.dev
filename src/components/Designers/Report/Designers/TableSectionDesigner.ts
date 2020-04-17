@@ -13,7 +13,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
     private readonly _rowsNode: Node;
     private readonly _rows: TableRow[] = [];
     public get Rows(): TableRow[] { return this._rows; }
-    public readonly Owner: TableDesigner;
+    public readonly Table: TableDesigner;
 
     public get IsContainer(): boolean { return true; } //必须设为true
     public get Behavior(): DesignBehavior { return DesignBehavior.None; }
@@ -24,10 +24,10 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         let name = this.getPropertyOwnerType();
         this._bounds.Y = 0; //reset it
         if (name === "Details") {
-            if (this.Owner.Header) { this._bounds.Y += this.Owner.Header.Bounds.Height; }
+            if (this.Table.Header) { this._bounds.Y += this.Table.Header.Bounds.Height; }
         } else if (name === "Footer") {
-            if (this.Owner.Header) { this._bounds.Y += this.Owner.Header.Bounds.Height; }
-            if (this.Owner.Details) { this._bounds.Y += this.Owner.Details.Bounds.Height; }
+            if (this.Table.Header) { this._bounds.Y += this.Table.Header.Bounds.Height; }
+            if (this.Table.Details) { this._bounds.Y += this.Table.Details.Bounds.Height; }
         }
 
         this._bounds.Height = 0; //reset it
@@ -35,7 +35,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
             this._bounds.Height += row.Height;
         }
         this._bounds.X = 0;
-        this._bounds.Width = this.Owner.Bounds.Width;
+        this._bounds.Width = this.Table.Bounds.Width;
         return this._bounds;
     }
     protected SetBounds(x: number, y: number, width: number, height: number, specified: BoundsSpecified): void {
@@ -44,7 +44,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
     constructor(owner: TableDesigner, node: Node) {
         super(node);
-        this.Owner = owner;
+        this.Table = owner;
 
         // 开始加载Rows
         this._rowsNode = XmlUtil.GetOrCreateChildNode(this.xmlNode, "TableRows");
@@ -64,6 +64,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         } else {
             console.warn("未实现");
         }
+        this.Table.Bounds.Height += height; //需要更新缓存值
     }
 
     // override for find TableCell

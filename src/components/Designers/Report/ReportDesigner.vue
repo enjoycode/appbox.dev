@@ -40,22 +40,6 @@ export default {
             //     _this.$message.error('保存失败: ' + err)
             // })
         },
-        /** 删除选中的元素 */
-        DeleteSelection() {
-            this.designService.DeleteSelection()
-        },
-        MergeCells() {
-            this.designService.TableOperation('MergeCells')
-        },
-        SplitCells() {
-            this.designService.TableOperation('SplitCells')
-        },
-        InsertRow() {
-            this.designService.TableOperation('InsertRow')
-        },
-        InsertColumn() {
-            this.designService.TableOperation('InsertColumn')
-        }
     }
 }
 </script>

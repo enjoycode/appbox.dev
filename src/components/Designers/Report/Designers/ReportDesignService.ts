@@ -170,67 +170,87 @@ export default class ReportDesignService implements IDesignService {
         this._surface.SelectionService.ClearSelection(); //清除选择
     }
 
-    public TableOperation(opt: string): void {
-        // var items = this._surface.SelectionService.SelectedItems;
-        // if (opt == 'SplitCells') {
-        //     if (items.length != 1) {
-        //         return;
-        //     }
-        //     let item = items[0]
-        //     if (item instanceof ReportItemDesigner && item.Parent) {
-        //         if (!item.IsTableCell)
-        //             return;
-        //         if (item.Cell)
-        //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-        //     }
-        //     return;
-        // }
-
-        // if (opt == 'InsertRow') {
-        //     if (items.length != 1) {
-        //         return;
-        //     }
-        //     let item = items[0]
-        //     if (item instanceof ReportItemDesigner && item.Parent) {
-        //         if (!item.IsTableCell)
-        //             return;
-        //         if (item.Cell)
-        //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-        //     }
-        //     return;
-        // }
-        // if (opt == 'InsertColumn') {
-        //     if (items.length != 1) {
-        //         return;
-        //     }
-        //     let item = items[0]
-        //     if (item instanceof ReportItemDesigner && item.Parent) {
-        //         if (!item.IsTableCell)
-        //             return;
-        //         if (item.Cell)
-        //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-        //     }
-        //     return;
-        // }
-        // if (opt == 'MergeCells') {
-        //     if (items.length <= 1)
-        //         return;
-        //     var cells: string = '';
-        //     for (var i = 0; i < items.length; i++) {
-        //         let item = items[i];
-        //         if (item instanceof ReportItemDesigner && item.Parent) {
-        //             if (!item.IsTableCell)
-        //                 return;
-        //             if (item.Cell)
-        //                 cells += item.ID + ';';
-        //         }
-        //     }
-        //     var parent = items[0].Parent;
-        //     if (parent)
-        //         ReportDesignService.ChangeProperty(parent, opt, items.length, cells);
-        //     return;
-        // }
+    /**
+     * 新增表格列
+     * @param before 在当前列之前
+     * @returns 错误信息
+     */
+    public InsertColumn(before: boolean): string | null {
+        let selection = this._surface.SelectionService.SelectedItems;
+        if (selection.length === 0 || !(selection[0] instanceof ReportItemDesigner)
+            || !(selection[0] as ReportItemDesigner).IsTableCell) {
+            return "Please select some TableCell first.";
+        }
+        // 计算出当前列
+        let reportItem = selection[0] as ReportItemDesigner;
+        let row = reportItem.Cell.Row;
+        let colIndex = reportItem.Cell.ColIndex;
+        if (!before) { colIndex++; }
+        row.Owner.Table.InsertColumn(colIndex, 100);
+        row.Owner.Table.Parent.Invalidate(); //需要重画
     }
+
+    // public TableOperation(opt: string): void {
+    // var items = this._surface.SelectionService.SelectedItems;
+    // if (opt == 'SplitCells') {
+    //     if (items.length != 1) {
+    //         return;
+    //     }
+    //     let item = items[0]
+    //     if (item instanceof ReportItemDesigner && item.Parent) {
+    //         if (!item.IsTableCell)
+    //             return;
+    //         if (item.Cell)
+    //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
+    //     }
+    //     return;
+    // }
+
+    // if (opt == 'InsertRow') {
+    //     if (items.length != 1) {
+    //         return;
+    //     }
+    //     let item = items[0]
+    //     if (item instanceof ReportItemDesigner && item.Parent) {
+    //         if (!item.IsTableCell)
+    //             return;
+    //         if (item.Cell)
+    //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
+    //     }
+    //     return;
+    // }
+    // if (opt == 'InsertColumn') {
+    //     if (items.length != 1) {
+    //         return;
+    //     }
+    //     let item = items[0]
+    //     if (item instanceof ReportItemDesigner && item.Parent) {
+    //         if (!item.IsTableCell)
+    //             return;
+    //         if (item.Cell)
+    //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
+    //     }
+    //     return;
+    // }
+    // if (opt == 'MergeCells') {
+    //     if (items.length <= 1)
+    //         return;
+    //     var cells: string = '';
+    //     for (var i = 0; i < items.length; i++) {
+    //         let item = items[i];
+    //         if (item instanceof ReportItemDesigner && item.Parent) {
+    //             if (!item.IsTableCell)
+    //                 return;
+    //             if (item.Cell)
+    //                 cells += item.ID + ';';
+    //         }
+    //     }
+    //     var parent = items[0].Parent;
+    //     if (parent)
+    //         ReportDesignService.ChangeProperty(parent, opt, items.length, cells);
+    //     return;
+    // }
+    // }
 
     public GetShapes(): Array<IShape> { return []; }
     public GetConnections(): Array<IConnection> { return []; }

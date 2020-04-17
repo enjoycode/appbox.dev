@@ -11,6 +11,7 @@ export default class SelectionService {
     private readonly _selectedItems: Array<ItemDesigner>;
     private _moving: boolean = false; //用于标记是否开始移动选择的元素
 
+    /** 当前选中的元素集 */
     public get SelectedItems(): Array<ItemDesigner> {
         return this._selectedItems;
     }
@@ -63,7 +64,7 @@ export default class SelectionService {
             for (const item of this._selectedItems) {
                 //判断是否单元格内选择
                 if (item instanceof ReportItemDesigner && item.IsTableCell) {
-                    let tableDesigner = item.Cell.Row.Owner.Owner;
+                    let tableDesigner = item.Cell.Row.Owner.Table;
                     tableDesigner.MoveCellSelection(deltaX, deltaY);
                     break;
                 }

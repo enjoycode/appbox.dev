@@ -64,11 +64,28 @@ export class TableRow {
         this._cellsNode = XmlUtil.GetOrCreateChildNode(this._node, "TableCells");
     }
 
+    public InsertCell(colIndex: number) {
+        let ci = 0;
+        let pos = 0;
+        for (let i = 0; i < this.Cells.length; i++) {
+            const cell = this.Cells[i];
+            if (ci === colIndex) {
+                break;
+            } else {
+                pos++;
+                ci += cell.ColSpan;
+            }
+        }
+        let cellNode = XmlUtil.CreateChildNode(this._cellsNode, "TableCell");
+        let cell = new TableCell(this, cellNode);
+        this._cells.splice(pos, 0, cell);
+    }
+
     /**
      * 仅用于新建的Row初始化Cells
      */
     public InitCells(): void {
-        for (const col of this.Owner.Owner.Columns) {
+        for (const col of this.Owner.Table.Columns) {
             let cellNode = XmlUtil.CreateChildNode(this._cellsNode, "TableCell");
             let cell = new TableCell(this, cellNode);
             this._cells.push(cell);
@@ -92,6 +109,19 @@ export class TableCell {
     public readonly Row: TableRow;
     private _target: ReportItemDesigner;
     public get Target(): ReportItemDesigner { return this._target; }
+
+    public get ColSpan(): number { return 1; } //TODO: fix
+    /** 计算获取当前单元格所对应的列序号 */
+    public get ColIndex(): number {
+        let colIndex = 0;
+        for (let i = 0; i < this.Row.Cells.length; i++) {
+            const cell = this.Row.Cells[i];
+            if (cell === this) { break; }
+            colIndex += cell.ColSpan;
+        }
+        return colIndex;
+    }
+
     //以下LastXXX用于缓存，防止重复计算相对于Table边框的位置
     private _lastX: number;
     public get LastX(): number { return this._lastX; }
@@ -114,10 +144,10 @@ export class TableCell {
     }
 
     /**
-     * 计算单元格内的ReportItem的Bounds
+     * 计算单元格内的ReportItem的Bounds，由ReportItemDesiginer.Bounds属性读调用
      */
     public CalcTargetBounds(bounds: Rectangle): void {
-        let cols = this.Row.Owner.Owner.Columns;
+        let cols = this.Row.Owner.Table.Columns;
         this._lastWidth = 0;
         for (let i = 0; i < this.Row.Cells.length; i++) {
             if (this.Row.Cells[i] === this) {

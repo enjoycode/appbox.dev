@@ -108,7 +108,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
         let draw: boolean = false;
         for (var i = 0; i < cells.length; i++) {
             const element = cells[i];
-            if (element instanceof ReportItemDesigner && element.Cell.Row.Owner.Owner === this.Target) {
+            if (element instanceof ReportItemDesigner && element.Cell.Row.Owner.Table === this.Target) {
                 //Top
                 draw = true;
                 sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY);
@@ -119,7 +119,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
+                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
                         x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY + comp.Cell.Row.Height);
                         x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
                         if (ey != y) { continue; }
@@ -181,7 +181,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
+                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
                         x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY);
                         x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
                         if (ey != y) { continue; }
@@ -241,7 +241,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
+                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
                         x = Math.ceil(comp.Cell.LastX + comp.Cell.LastWidth); y = Math.ceil(comp.Cell.LastY);
                         x2 = x; y2 = Math.ceil(y + comp.Cell.Row.Height);
                         if (ex != x) { continue; }
@@ -312,7 +312,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Owner === this.Target) {
+                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
                         x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY);
                         x2 = x; y2 = Math.ceil(y + comp.Cell.Row.Height);
                         if (ex != x) { continue; }

@@ -2,6 +2,7 @@
     <div style="height:500px;margin:20px">
         <el-button @click="onAdd('textbox')">Add Textbox</el-button>
         <el-button @click="onAdd('table')">Add Table</el-button>
+        <el-button @click="onAddCol">Add Column</el-button>
         <el-button @click="onDel">Remove</el-button>
         <el-button @click="onSave">Save</el-button>
         <br/><br/>
@@ -38,6 +39,7 @@ export default class TestView extends Vue {
     // public get designView(): any /*DesignView*/ {
     //     return this.$refs.designView
     // }
+
     onAdd(type) {
         (<any>this.$refs.designer).$refs.designView.designSurface.ToolboxService.Toolbox = this.toolbox;
         if (type === 'textbox') {
@@ -54,7 +56,11 @@ export default class TestView extends Vue {
     }
 
     onDel() {
-        (<any>this.$refs.designer).DeleteSelection();
+        (<any>this.$refs.designer).designService.DeleteSelection();
+    }
+
+    onAddCol() {
+        (<any>this.$refs.designer).designService.InsertColumn(false);
     }
 
     onSave() {

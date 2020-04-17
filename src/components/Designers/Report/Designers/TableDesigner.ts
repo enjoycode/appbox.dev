@@ -4,7 +4,7 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
 import XmlUtil from './XmlUtil';
-import { TableColumn } from './TableLayout';
+import { TableColumn, TableCell } from './TableLayout';
 import TableSectionDesigner from './TableSectionDesigner';
 
 export default class TableDesigner extends ReportItemDesigner {
@@ -75,7 +75,7 @@ export default class TableDesigner extends ReportItemDesigner {
         this.SetPropertyRSize("Top", this.Bounds.Y.toString() + pt, true);
         let initWidth = this.Bounds.Width;
         let initHeight = this.Bounds.Height;
-        //this.Bounds.Width = this.Bounds.Height = 0; //reset width & height
+        this.Bounds.Width = this.Bounds.Height = 0; //注意: reset width & height，Insert时重新计算
         let colWidth = Math.round(initWidth / 3);
         for (let i = 0; i < 3; i++) {
             this.InsertColumn(i, colWidth);
@@ -93,14 +93,21 @@ export default class TableDesigner extends ReportItemDesigner {
 
     public InsertColumn(index: number, width: number = 100) {
         let len = this._columnsNode.childNodes.length;
-        if (len === 0 || index >= len) { //添加至尾部
-            let cnode = XmlUtil.CreateChildNode(this._columnsNode, "TableColumn");
-            let col = new TableColumn(this, cnode);
-            col.Width = width;
-            this._columns.push(col);
-        } else {
-            console.warn("未实现");
+        if (index > len) { index = len; }
+        let cnode = XmlUtil.CreateChildNode(this._columnsNode, "TableColumn");
+        let col = new TableColumn(this, cnode);
+        col.Width = width;
+        this._columns.splice(index, 0, col);
+        // 同步添加各行的单元格(如果初始化时调用还没有行)
+        if (this.Items) {
+            for (const item of this.Items) {
+                let sec = item as TableSectionDesigner;
+                for (const row of sec.Rows) {
+                    row.InsertCell(index);
+                }
+            }
         }
+        this.Bounds.Width += width; //更新缓存值
     }
 
     public MoveColumn(fromIndex: number, toIndex: number) {
