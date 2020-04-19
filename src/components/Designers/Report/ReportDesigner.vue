@@ -7,7 +7,7 @@
             </el-radio-group>
             &nbsp;
             <!-- 报表设计相关命令 -->
-            <el-dropdown @command="onTableCommand">
+            <el-dropdown @command="onTableCommand" v-show="activeView==='design'">
                 <el-button size="small" icon="fas fa-table">
                     Insert<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
@@ -18,7 +18,7 @@
                     <el-dropdown-item command="IRB">Row Below</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown @command="onTableCommand">
+            <el-dropdown @command="onTableCommand" v-show="activeView==='design'">
                 <el-button size="small" icon="fas fa-table">
                     Delete<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
@@ -27,7 +27,7 @@
                     <el-dropdown-item command="DR">Row</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown @command="onTableCommand">
+            <el-dropdown @command="onTableCommand" v-show="activeView==='design'">
                 <el-button size="small" icon="fas fa-table">
                     Cells<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
@@ -36,11 +36,14 @@
                     <el-dropdown-item command="CS">Split</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-button @click="onDeleteSelection" size="small" icon="fas fa-times fa-fw">Delete Selection</el-button>
+            <el-button @click="onDeleteSelection" size="small" v-show="activeView==='design'" 
+                icon="fas fa-times fa-fw">Delete Selection</el-button>
         </div>
         <!-- 内容区域 -->
         <div class="content">
-            <design-view ref="designView" @ready="onDesignViewReady" background="lightgray"></design-view>
+            <design-view ref="designView" v-show="activeView==='design'" 
+                @ready="onDesignViewReady" background="lightgray"></design-view>
+            <pdf-viewer :file="'/api/design/report/'+ target.ID" v-if="activeView==='preview'"></pdf-viewer>
         </div>
     </div>
 </template>
