@@ -27,8 +27,8 @@ export default new Router({
         },
         {
             path: '/test',
-            name: 'ApiTest',
-            component: () => import(/* webpackChunkName: "test" */ '@/views/Tests/Test.vue'),
+            name: 'Test',
+            component: () => import(/* webpackChunkName: "test" */ '@/views/Tests/TestPdfViewer.vue'),
         }
     ]
 });

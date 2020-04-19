@@ -364,7 +364,6 @@ export default function (/*bool desktop, bool mobile*/) {
     // ================== 手机端控件mint ui ==============
 
     // ===================以下扩展的===================
-    // ===================RichTextEditor===============
     Vue.component('ExRichEditor', r => require.ensure([], () => {
         require('quill/dist/quill.snow.css')
         // require('quill/dist/quill.bubble.css')
@@ -400,9 +399,8 @@ export default function (/*bool desktop, bool mobile*/) {
     Vue.component('ExTextboxCell', r => require.ensure([], () => {
         r(require('./easeui/TableCells/TextBoxCell.vue'))
     }, 'easeui-cells'))
-
-    // ===================Markdown========================
     Vue.component('ExMarkdown', () => import(/* webpackChunkName: "easeui-markdown" */ './easeui/Markdown/Markdown.js'))
+    Vue.component('PdfViewer', () => import(/* webpackChunkName: "easeui-pdf" */ './easeui/PdfViewer/PdfViewer.vue'))
 
     Vue.use(Loading.directive)
 
