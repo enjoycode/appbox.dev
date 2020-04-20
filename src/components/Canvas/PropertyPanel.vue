@@ -1,5 +1,5 @@
 <template>
-    <div class="ide-property-panel" style="padding:5px">
+    <div class="ide-property-panel">
         <h4 class="propertyPanel-title">{{ownerType}}</h4>
         <el-collapse class="ide-property-collapse" :value="expands">
             <el-collapse-item v-for="catalog in catalogs" :key="catalog.name" :title="catalog.name" :name="catalog.name">

@@ -122,13 +122,12 @@
 <style>
     .ide-property-panel {
         background-color: #f3f3f3;
-        overflow-y: auto;
-        height: 100%;
-        width: 100%;
+        padding: 5px;
+        height: calc(100% - 10px);
     }
 
     .ide-property-panel>.ide-property-collapse {
-        min-width: 300px;
+        min-width: 200px;
         border: none;
         border-top: 1px solid #dfe6ec;
     }
