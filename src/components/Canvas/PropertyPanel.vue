@@ -20,7 +20,8 @@ export default {
             ownerType: '',
             expands: [], // 展开所有分类
             // catalogs: [ { name: '属性', items: [{ title: '属性1', name: 'X' }, { title: '属性2', name: 'Y' }] } ]
-            catalogs: []
+            catalogs: [],
+            DesignService: null //创建DesignService时设置
         }
     },
     methods: {
@@ -32,7 +33,7 @@ export default {
                 for (const cat of cats) {
                     this.expands.push(cat.name)
                     for (const item of cat.items) {
-                        item.editor = owner.Surface.DesignService.GetPropertyEditor(item.editor)
+                        item.editor = this.DesignService.GetPropertyEditor(item.editor)
                     }
                 }
                 this.catalogs = cats

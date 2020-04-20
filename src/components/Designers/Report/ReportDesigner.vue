@@ -51,7 +51,6 @@
 <script>
 import DesignView from '@/components/Canvas/DesignView'
 import ReportDesignService from './Designers/ReportDesignService'
-import ReportToolbox from "./ReportToolbox";
 
 export default {
     components: { DesignView: DesignView },
@@ -67,9 +66,8 @@ export default {
     methods: {
         /** 设计视图已准备好 */
         onDesignViewReady() {
-            // 先初始化DesignSurface.DesignService实例，并设备相应的工具箱
+            // 先初始化DesignSurface.DesignService实例
             this.designService = new ReportDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
-            this.designService.SetToolbox(new ReportToolbox());
 
             if (this.target.ID === 0) { // TODO: 仅测试用
                 let xml = '<Report>'

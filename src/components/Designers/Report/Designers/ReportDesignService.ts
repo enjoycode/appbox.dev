@@ -7,7 +7,9 @@ import ReportItemDesigner from './ReportItemDesigner'
 import ReportRootDesigner from './ReportRootDesigner'
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 import XmlUtil from './XmlUtil'
+
 import { IDesignToolbox } from '@/components/Canvas/Services/ToolboxService'
+import ReportToolbox from "../ReportToolbox";
 
 import TextBoxEditor from "@/components/Canvas/PropertyEditors/TextBoxEditor.vue";
 import CheckBoxEditor from "@/components/Canvas/PropertyEditors/CheckBoxEditor.vue";
@@ -32,10 +34,8 @@ export default class ReportDesignService implements IDesignService {
         this._channel = channel;
         this._modelId = modelId;
         this._surface.DesignService = this;
-    }
-
-    public SetToolbox(toolbox: IDesignToolbox): void {
-        this._surface.ToolboxService.Toolbox = toolbox;
+        this._surface.ToolboxService.Toolbox = new ReportToolbox();
+        (<any>this._surface.PropertyPanel).DesignService = this;
     }
 
     /**
