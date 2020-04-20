@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { getEditor } from './PropertyEditors/PropertyEditorService'
-
 export default {
     data() {
         return {
@@ -34,7 +32,7 @@ export default {
                 for (const cat of cats) {
                     this.expands.push(cat.name)
                     for (const item of cat.items) {
-                        item.editor = getEditor(item.editor)
+                        item.editor = owner.Surface.DesignService.GetPropertyEditor(item.editor)
                     }
                 }
                 this.catalogs = cats

@@ -13,6 +13,7 @@ interface IDesignService {
 
     GetConnections(): Array<IConnection>;
 
+    GetPropertyEditor(type: string): any /* Vue component options */;
 }
 
 export default IDesignService

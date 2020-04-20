@@ -92,6 +92,11 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
                         getter: () => this.GetPropertyRSize("PageHeight", "150mm"),
                         setter: v => { this.SetPropertyRSize("PageHeight", v); this.OnChangePageHeight(v); }
                     },
+                    {
+                        title: "DataSets", readonly: true, editor: "ReportDataSets",
+                        getter: () => this,
+                        setter: v => { /* not supported */ }
+                    },
                 ]
             }
         ];

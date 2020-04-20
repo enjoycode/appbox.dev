@@ -143,4 +143,15 @@ export default class WorkflowDesignService implements IDesignService {
         return list;
     }
 
+    //====Property Editors====
+    // private static readonly _editors = {
+    //     TextBox: TextBoxEditor,
+    //     CheckBox: CheckBoxEditor,
+    //     Select: SelectEditor
+    // }
+
+    public GetPropertyEditor(type: string): any {
+        return null; //return WorkflowDesignService._editors[type];
+    }
+
 }

@@ -9,6 +9,11 @@ import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 import XmlUtil from './XmlUtil'
 import { IDesignToolbox } from '@/components/Canvas/Services/ToolboxService'
 
+import TextBoxEditor from "@/components/Canvas/PropertyEditors/TextBoxEditor.vue";
+import CheckBoxEditor from "@/components/Canvas/PropertyEditors/CheckBoxEditor.vue";
+import SelectEditor from "@/components/Canvas/PropertyEditors/SelectEditor.vue";
+import DataSetsEditor from "../PropertyEditors/DataSetsEditor.vue";
+
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
 }
@@ -184,33 +189,6 @@ export default class ReportDesignService implements IDesignService {
     //     }
     //     return;
     // }
-
-    // if (opt == 'InsertRow') {
-    //     if (items.length != 1) {
-    //         return;
-    //     }
-    //     let item = items[0]
-    //     if (item instanceof ReportItemDesigner && item.Parent) {
-    //         if (!item.IsTableCell)
-    //             return;
-    //         if (item.Cell)
-    //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-    //     }
-    //     return;
-    // }
-    // if (opt == 'InsertColumn') {
-    //     if (items.length != 1) {
-    //         return;
-    //     }
-    //     let item = items[0]
-    //     if (item instanceof ReportItemDesigner && item.Parent) {
-    //         if (!item.IsTableCell)
-    //             return;
-    //         if (item.Cell)
-    //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-    //     }
-    //     return;
-    // }
     // if (opt == 'MergeCells') {
     //     if (items.length <= 1)
     //         return;
@@ -233,5 +211,17 @@ export default class ReportDesignService implements IDesignService {
 
     public GetShapes(): Array<IShape> { return []; }
     public GetConnections(): Array<IConnection> { return []; }
+
+    //====Property Editors====
+    private static readonly _editors = {
+        TextBox: TextBoxEditor,
+        CheckBox: CheckBoxEditor,
+        Select: SelectEditor,
+        ReportDataSets: DataSetsEditor
+    }
+
+    public GetPropertyEditor(type: string): any {
+        return ReportDesignService._editors[type];
+    }
 
 }
