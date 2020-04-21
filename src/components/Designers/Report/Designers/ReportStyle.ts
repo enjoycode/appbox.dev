@@ -21,9 +21,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
     }
 
     private SetStyle(prop: string, value: string) {
-        if (!this._styleNode) {
-            this._styleNode = this._owner.XmlNode.appendChild(this._owner.XmlNode.ownerDocument.createElement("Style"));
-        }
+        this.EnsureStyleNode();
         let pnode = XmlUtil.GetNamedChildNode(this._styleNode, prop);
         if (!pnode) {
             pnode = this._styleNode.appendChild(this._styleNode.ownerDocument.createElement(prop));
@@ -55,6 +53,42 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
     }
     public get VerticalAlign(): VerticalAlignEnum {
         return VerticalAlignEnum[this.GetStyle("VerticalAlign", "Top")];
+    }
+
+    /**
+     * 一次性绑定边框样式
+     * @param to 目标数组
+     */
+    public GetBorderStyles(to: any[]): void {
+        //TODO:
+    }
+    public SetBorderStyle(pos: string, value: string): void {
+        this.EnsureStyleNode();
+        let bsnode = XmlUtil.GetOrCreateChildNode(this._styleNode, "BorderStyle");
+        if (pos === "Default") {
+            //TODO:如果默认值删除所有
+            for (const cnode of bsnode.childNodes) {
+                if (cnode.nodeName !== pos) {
+                    bsnode.removeChild(cnode);
+                }
+            }
+        } else {
+            //TODO:检查所有相同，则删除所有添加Default
+            for (const cnode of bsnode.childNodes) {
+                if (cnode.nodeName === "Default") {
+                    bsnode.removeChild(cnode);
+                    break;
+                }
+            }
+        }
+        let n = XmlUtil.GetOrCreateChildNode(bsnode, pos);
+        n.textContent = value;
+    }
+
+    private EnsureStyleNode() {
+        if (!this._styleNode) {
+            this._styleNode = this._owner.XmlNode.appendChild(this._owner.XmlNode.ownerDocument.createElement("Style"));
+        }
     }
 
     //====用于绘图的辅助方法====
@@ -101,6 +135,11 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                         options: ReportStyle.GetEnumNames(VerticalAlignEnum),
                         getter: () => this.GetStyle("VerticalAlign", "Top"),
                         setter: v => { this.SetStyle("VerticalAlign", v); this._owner.Invalidate(); }
+                    },
+                    {
+                        title: "Borders", readonly: false, editor: "BorderStyle",
+                        getter: () => this,
+                        setter: v => { }
                     }
                 ]
             }

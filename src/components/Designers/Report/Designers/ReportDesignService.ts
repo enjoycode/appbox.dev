@@ -15,6 +15,7 @@ import TextBoxEditor from "@/components/Canvas/PropertyEditors/TextBoxEditor.vue
 import CheckBoxEditor from "@/components/Canvas/PropertyEditors/CheckBoxEditor.vue";
 import SelectEditor from "@/components/Canvas/PropertyEditors/SelectEditor.vue";
 import DataSetsEditor from "../PropertyEditors/DataSetsEditor.vue";
+import BorderStyleEditor from "../PropertyEditors/BorderStyleEditor.vue";
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -217,7 +218,8 @@ export default class ReportDesignService implements IDesignService {
         TextBox: TextBoxEditor,
         CheckBox: CheckBoxEditor,
         Select: SelectEditor,
-        ReportDataSets: DataSetsEditor
+        ReportDataSets: DataSetsEditor,
+        BorderStyle: BorderStyleEditor
     }
 
     public GetPropertyEditor(type: string): any {
