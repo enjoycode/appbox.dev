@@ -60,6 +60,17 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
         }
     }
 
+    /**
+     * 获取所有DataSet的名称集合，用于属性面板绑定
+     */
+    public GetDataSets(): string[] {
+        let res: string[] = [];
+        for (const ds of this._datasets.Items) {
+            res.push(ds.Name);
+        }
+        return res;
+    }
+
     //============IPropertyOwner接口实现=====
     /**
      * 仅由PropertyPanel设置后重新布局并重画

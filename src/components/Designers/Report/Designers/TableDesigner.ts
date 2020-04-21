@@ -7,6 +7,8 @@ import XmlUtil from './XmlUtil';
 import { TableColumn } from './TableLayout';
 import TableSectionDesigner from './TableSectionDesigner';
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
+import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
+import ReportRootDesigner from './ReportRootDesigner'
 
 export default class TableDesigner extends ReportItemDesigner {
 
@@ -190,5 +192,22 @@ export default class TableDesigner extends ReportItemDesigner {
                 this.Surface.SelectionService.SelectItems(cells);
             }
         }
+    }
+
+    //====IPropertyOwner====
+    public getPropertyItems(): IPropertyCatalog[] | null {
+        let cats = super.getPropertyItems();
+        cats.push({
+            name: "Data",
+            items: [
+                {
+                    title: "DataSetName", readonly: false, editor: "Select",
+                    options: (this.Surface.DesignService.RootDesigner as ReportRootDesigner).GetDataSets(),
+                    getter: () => this.GetPropertyString("DataSetName", ""),
+                    setter: v => this.SetPropertyString("DataSetName", v)
+                }
+            ]
+        });
+        return cats;
     }
 }

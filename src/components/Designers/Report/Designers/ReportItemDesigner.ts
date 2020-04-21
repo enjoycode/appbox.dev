@@ -11,6 +11,7 @@ import { IPropertyCatalog, IPropertyItem } from '@/components/Canvas/Interfaces/
 import XmlUtil from './XmlUtil'
 import ReportStyle from './ReportStyle'
 import { TableCell } from './TableLayout'
+import DesignSurface from '@/components/Canvas/DesignSurface'
 
 export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
@@ -23,10 +24,17 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     private _cell: TableCell | null;
     public get Cell(): TableCell | null { return this._cell; }
 
+    public get Surface(): DesignSurface | null {
+        if (this.IsTableCell) {
+            return this._cell.Row.Owner.Table.Surface;
+        } else {
+            return super.Surface;
+        }
+    }
+
     public get SelectionAdorner(): DesignAdorner | null {
         if (this.IsTableCell) {
-            let tableDesigner = this._cell.Row.Owner.Table;
-            return tableDesigner.CellSelectionAdorner;
+            return this._cell.Row.Owner.Table.CellSelectionAdorner;
         } else {
             if (!this._selectionAdorner && this.Surface) {
                 this._selectionAdorner = new SelectionAdorner(this.Surface.Adorners, this);
