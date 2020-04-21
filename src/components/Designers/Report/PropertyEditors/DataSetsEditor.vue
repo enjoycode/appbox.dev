@@ -16,8 +16,8 @@
                 </el-button-group>
                 &emsp;
                 <el-button-group>
-                    <el-button>Add Field</el-button>
-                    <el-button>Remove Field</el-button>
+                    <el-button @click="onAddField">Add Field</el-button>
+                    <el-button @click="onDelField">Remove Field</el-button>
                 </el-button-group>
                 <br/><br/>
                 <el-row style="height:260px">
@@ -85,8 +85,33 @@ export default {
             }
         },
         onDelDS() {
-            if(!this.currentNode || this.currentNode.level !== 1) { return; }
+            if (!this.currentNode || this.currentNode.level !== 1) {
+                this.$message.warning("Please select a DataSet first")
+                return
+            }
             this.value.DataSets.Remove(this.currentNode.data)
+            this.currentNode = null
+            this.$refs.props.setPropertyOwner(null)
+        },
+        onAddField() {
+            if (!this.currentNode || this.currentNode.level !== 1) {
+                this.$message.warning("Please select a DataSet first")
+                return
+            }
+            this.$prompt('DataField Name', 'Input', {
+                confirmButtonText: 'Ok',
+                cancelButtonText: 'Cancel'
+            }).then(({ value }) => {
+                // TODO:验证名称有效性及是否存在
+                this.currentNode.data.AddField(value, value, 'String')
+            }).catch(() => { /* do nothing */ })
+        },
+        onDelField() {
+            if (!this.currentNode || this.currentNode.level !== 2) {
+                this.$message.warning("Please select a Field first")
+                return
+            }
+            this.currentNode.parent.data.RemoveField(this.currentNode.data)
             this.currentNode = null
             this.$refs.props.setPropertyOwner(null)
         },

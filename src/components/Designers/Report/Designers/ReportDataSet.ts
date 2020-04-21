@@ -6,6 +6,7 @@ import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces
 class ReportDataField implements IPropertyOwner {
     private readonly _owner: ReportDataSet;
     private readonly _node: Element;
+    public get Node(): Node { return this._node; }
 
     public get Name(): string { return this._node.getAttribute("Name"); }
     public set Name(value) { this._node.setAttribute("Name", value); }
@@ -102,6 +103,15 @@ export class ReportDataSet implements IPropertyOwner {
         field.DataField = dataField;
         field.TypeName = typeName;
         this._fields.push(field);
+    }
+
+    public RemoveField(field: ReportDataField): void {
+        this._fieldsNode.removeChild(field.Node);
+        this._fields.splice(this._fields.indexOf(field), 1);
+        if (this._fields.length === 0) {
+            this._node.removeChild(this._fieldsNode);
+            this._fieldsNode = null;
+        }
     }
 
     //====IPropertyOwner====
