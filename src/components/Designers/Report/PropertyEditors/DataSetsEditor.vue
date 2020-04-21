@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-button @click="openEditor" style="width:100%">...</el-button>
-        <el-dialog title="Report DataSets" :visible.sync="dlgVisible" width="600px">
+        <el-dialog :before-close="closingEditor" title="Report DataSets" :visible.sync="dlgVisible" width="600px">
             <div>
                 <!-- 新建DataSet的实体选择 -->
                 <el-select v-model="entityModel" value-key="ID" filterable placeholder=" ">
@@ -68,6 +68,10 @@ export default {
         openEditor() {
             this.dlgVisible = true
             this.$set(this, 'datasets', this.value.DataSets.Items)
+        },
+        closingEditor(done) {
+            // TODO:验证DataSet名称及其下各个Field的名称惟一性
+            done()
         },
         onAddDS() {
             // 如果选择了实体模型查询成员，否则简单添加
