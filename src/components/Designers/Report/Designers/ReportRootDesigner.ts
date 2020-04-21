@@ -4,6 +4,7 @@ import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import ReportSectionDesigner from './ReportSectionDesigner';
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 import XmlUtil from './XmlUtil';
+import ReportDataSets from './ReportDataSet';
 
 export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
@@ -13,13 +14,14 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
     }
     public set Bounds(value) { /*do nothing*/ }
 
-    public get IsContainer(): boolean {
-        return true;
-    }
+    public get IsContainer(): boolean { return true; }
+
+    private readonly _datasets: ReportDataSets;
+    public get DataSets(): ReportDataSets { return this._datasets; }
 
     constructor(xmlNode: Node) {
         super(xmlNode);
-
+        this._datasets = new ReportDataSets(this);
         // 开始加载Sections
         let height = 0;
         let pageWidth = XmlUtil.TryGetSize(this.xmlNode, "PageWidth", 400);

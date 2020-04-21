@@ -231,8 +231,9 @@ export default Vue.extend({
          * 取出设计树中的所有Entity并根据application分组
          * result为数组 然后传入
          * 绑定示例参见NewEntityMemberDialog.vue
+         * @param storeId 实体模型存储标识,如果null表示所有,非null表示相同类型的存储
          */
-        getAllEntityNodes(result, storeId /*实体模型存储标识*/) {
+        getAllEntityNodes(result, storeId) {
             result = result || []
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[],
                 DesignNodeType.EntityModelNode, ModelType.Entity, true, storeId)
@@ -256,15 +257,15 @@ export default Vue.extend({
         /** 从树中获取指定类型的模型节点 */
         loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[],
             nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean, storeId/*实体模型存储标识*/) {
-            nodes.forEach(node => {
+            for (const node of nodes) {
                 if (node.Type == DesignNodeType.ApplicationNode) {
                     if (groupByApp) {
                         result.push(this.shallowCloneNode(node));
                     }
                     this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp, storeId);
                 } else if (node.Type == nodeType) {
-                    //暂仅添加相同存储的实体模型节点
-                    if (node.Type != DesignNodeType.EntityModelNode || (node as IEntityModelNode).StoreId == storeId) {
+                    //如果实体模型且指定存储，则仅添加相同存储的实体模型节点
+                    if (!(storeId && node.Type === DesignNodeType.EntityModelNode && (node as IEntityModelNode).StoreId !== storeId)) {
                         if (groupByApp) {
                             let group = result.find(t => t.ID == (node as IModelNode).App);
                             group.Nodes.push(this.shallowCloneNode(node));
@@ -282,7 +283,7 @@ export default Vue.extend({
                 } else if (node.Nodes && node.Nodes.length > 0) { //其他包含下级的节点
                     this.loopGetModelNodes(node.Nodes, result, nodeType, modelType, groupByApp, storeId);
                 }
-            });
+            }
         },
 
         /** 复制节点数据 注意：此复制为浅复制, 子级Nodes不会复制 */
@@ -362,8 +363,8 @@ export default Vue.extend({
         allowDrag(node) { // 用于判断节点是否可拖动
             let nodeType = node.data.Type
             if (nodeType === DesignNodeType.FolderNode) { // FolderNode判断模型根节点是否签出
-                if(node.data.CheckoutBy !== 'Me') { return false }
-            } else if (nodeType >= DesignNodeType.EntityModelNode 
+                if (node.data.CheckoutBy !== 'Me') { return false }
+            } else if (nodeType >= DesignNodeType.EntityModelNode
                 && nodeType <= DesignNodeType.ReportModelNode) { // 模型节点判断当前节点及模型根节点是否签出
                 if (node.data.CheckoutBy !== 'Me') {
                     return false
