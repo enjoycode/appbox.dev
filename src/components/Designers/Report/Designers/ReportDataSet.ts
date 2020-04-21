@@ -3,7 +3,7 @@ import XmlUtil from './XmlUtil';
 import { IEntityMember, EntityMemberType, EntityFieldType } from "@/design/IEntityMember";
 import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 
-class ReportDataField implements IPropertyOwner {
+class Field implements IPropertyOwner {
     private readonly _owner: ReportDataSet;
     private readonly _node: Element;
     public get Node(): Node { return this._node; }
@@ -67,28 +67,49 @@ class ReportDataField implements IPropertyOwner {
     }
 }
 
+class Query {
+    private readonly _node: Node;
+
+    public get CommandText(): string {
+        let n = XmlUtil.GetNamedChildNode(this._node, "CommandText");
+        if (n) { return n.textContent; }
+        return "";
+    }
+    public set CommandText(value) {
+        let n = XmlUtil.GetOrCreateChildNode(this._node, "CommandText");
+        n.textContent = value;
+    }
+
+    constructor(node: Node) {
+        this._node = node;
+    }
+}
+
 export class ReportDataSet implements IPropertyOwner {
     private readonly _owner: ReportDataSets;
     private readonly _node: Element;
     public get Node(): Node { return this._node; }
+
     private _fieldsNode: Node | null;
-    private readonly _fields: ReportDataField[] = [];
-    public get Fields(): ReportDataField[] { return this._fields; }
+    private readonly _fields: Field[] = [];
+    public get Fields(): Field[] { return this._fields; }
+
+    public readonly Query: Query;
 
     public get Name(): string { return this._node.getAttribute("Name"); }
     public set Name(value) { this._node.setAttribute("Name", value); }
 
-    public get QueryCommand(): string { return ""; }
-    public set QueryCommand(value) { }
+    public get QueryCommand(): string { return this.Query.CommandText; }
+    public set QueryCommand(value) { this.Query.CommandText = value; }
 
     constructor(owner: ReportDataSets, node: Node) {
         this._owner = owner;
         this._node = node as Element;
-
+        this.Query = new Query(XmlUtil.GetOrCreateChildNode(this._node, "Query"));
         this._fieldsNode = XmlUtil.GetNamedChildNode(this._node, "Fields");
         if (this._fieldsNode) {
             for (const cnode of this._fieldsNode.childNodes) {
-                this._fields.push(new ReportDataField(this, cnode));
+                this._fields.push(new Field(this, cnode));
             }
         }
     }
@@ -98,14 +119,14 @@ export class ReportDataSet implements IPropertyOwner {
             this._fieldsNode = XmlUtil.CreateChildNode(this._node, "Fields");
         }
         let cnode = XmlUtil.CreateChildNode(this._fieldsNode, "Field");
-        let field = new ReportDataField(this, cnode);
+        let field = new Field(this, cnode);
         field.Name = name;
         field.DataField = dataField;
         field.TypeName = typeName;
         this._fields.push(field);
     }
 
-    public RemoveField(field: ReportDataField): void {
+    public RemoveField(field: Field): void {
         this._fieldsNode.removeChild(field.Node);
         this._fields.splice(this._fields.indexOf(field), 1);
         if (this._fields.length === 0) {
@@ -180,6 +201,7 @@ export default class ReportDataSets {
      * 删除指定的DataSet
      */
     public Remove(ds: ReportDataSet): void {
+        //TODO: 检查是否有引用
         this._node.removeChild(ds.Node);
         this._items.splice(this._items.indexOf(ds), 1);
         if (this._items.length === 0) {
