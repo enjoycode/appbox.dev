@@ -12,7 +12,7 @@
                 </el-select>
                 <el-button-group>
                     <el-button @click="onAddDS">Add</el-button>
-                    <el-button>Remove</el-button>
+                    <el-button @click="onDelDS">Remove</el-button>
                 </el-button-group>
                 &emsp;
                 <el-button-group>
@@ -51,6 +51,7 @@ export default {
             dlgVisible: false,
             allEntities: [], //所有实体，供选择绑定
             entityModel: null, //新建DataSet时指定的实体模型对应的树节点
+            currentNode: null, //当前选择的树节点
             datasets: [],
             treeOpts: {
                 label: 'Name',
@@ -83,7 +84,14 @@ export default {
                 // TODO:简单添加
             }
         },
+        onDelDS() {
+            if(!this.currentNode || this.currentNode.level !== 1) { return; }
+            this.value.DataSets.Remove(this.currentNode.data)
+            this.currentNode = null
+            this.$refs.props.setPropertyOwner(null)
+        },
         onCurrentChange(data, node) {
+            this.currentNode = node //是节点非数据
             if (!this.$refs.props.DesignService) {
                 this.$refs.props.DesignService = this.value.Surface.DesignService
             }

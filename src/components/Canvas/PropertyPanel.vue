@@ -26,6 +26,13 @@ export default {
     },
     methods: {
         setPropertyOwner(owner) {
+            if (!owner) {
+                this.ownerType = ''
+                this.expands = []
+                this.catalogs = []
+                return
+            }
+
             this.ownerType = owner.getPropertyOwnerType()
             var cats = owner.getPropertyItems()
             if (cats) {

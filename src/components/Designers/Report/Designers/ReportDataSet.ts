@@ -69,6 +69,7 @@ class ReportDataField implements IPropertyOwner {
 export class ReportDataSet implements IPropertyOwner {
     private readonly _owner: ReportDataSets;
     private readonly _node: Element;
+    public get Node(): Node { return this._node; }
     private _fieldsNode: Node | null;
     private readonly _fields: ReportDataField[] = [];
     public get Fields(): ReportDataField[] { return this._fields; }
@@ -149,7 +150,7 @@ export default class ReportDataSets {
     /**
      * 根据实体模型的成员添加为DataSet
      */
-    public Add(name: string | null, members: IEntityMember[] | null) {
+    public Add(name: string | null, members: IEntityMember[] | null): void {
         if (!this._node) {
             this._node = XmlUtil.CreateChildNode(this._owner.XmlNode, "DataSets");
         }
@@ -163,6 +164,18 @@ export default class ReportDataSets {
             }
         }
         this._items.push(ds);
+    }
+
+    /**
+     * 删除指定的DataSet
+     */
+    public Remove(ds: ReportDataSet): void {
+        this._node.removeChild(ds.Node);
+        this._items.splice(this._items.indexOf(ds), 1);
+        if (this._items.length === 0) {
+            this._owner.XmlNode.removeChild(this._node);
+            this._node = null;
+        }
     }
 
     private static ToTypeName(fieldType: EntityFieldType): string {
