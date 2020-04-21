@@ -16,6 +16,25 @@ interface IElement {
     HitTest(pt: Point): [boolean, string];
 }
 
+/**
+ * 用于选择整个表格
+ */
+class SelectTableHandle implements IElement {
+    Bounds: Rectangle;
+    Cursor: string;
+
+    HitTest(pt: Point): [boolean, string] {
+        if (this.Bounds.Contains(pt.X, pt.Y)) {
+            return [true, this.Cursor];
+        } else {
+            return [false, ""];
+        }
+    }
+}
+
+/**
+ * 用于Resize column or row
+ */
 class ResizeHandle implements IElement {
     Bounds: Rectangle;
     Cursor: string;
@@ -31,6 +50,9 @@ class ResizeHandle implements IElement {
     }
 }
 
+/**
+ * 用于移动表格位置
+ */
 class MoveTableHandle implements IElement {
     Bounds: Rectangle;
     Cursor: string;
@@ -456,6 +478,11 @@ export default class CellSelectionAdorner extends DesignAdorner {
         moveHandle.Bounds = new Rectangle(0, 0, 15, 15);
         moveHandle.Cursor = "move";
         ls.push(moveHandle);
+        //add select table handle
+        let selectHandle = new SelectTableHandle();
+        selectHandle.Bounds = new Rectangle(-offset, -offset, offset, offset);
+        selectHandle.Cursor = "";
+        ls.push(selectHandle);
 
         return ls;
     }
@@ -506,22 +533,12 @@ export default class CellSelectionAdorner extends DesignAdorner {
     }
 
     public OnMouseUp(e: MouseEventArgs) {
-        if (this._hitTestElement) {
-            if (this._hitTestElement instanceof ResizeHandle) {
-                // let tableDesigner = this.Target as TableDesigner;
-                // let tableLayout = tableDesigner.TableLayout;
-                // if (this._hitTestElement.IsRow) {
-                //     let newSize = tableLayout.Rows[this._hitTestElement.Index].Size;
-                //     ReportDesignService.ChangeProperty(this.Target, "ResizeRow", this._hitTestElement.Index, newSize);
-                // } else {
-                //     //notify server resize column width
-                //     let newSize = tableLayout.Columns[this._hitTestElement.Index].Size;
-                //     ReportDesignService.ChangeProperty(this.Target, "ResizeCol", this._hitTestElement.Index, newSize);
-                // }
-            } else if (this._hitTestElement instanceof MoveTableHandle) {
-                let tableDesigner = this.Target as TableDesigner;
-                tableDesigner.OnEndMove();
-            }
+        if (!this._hitTestElement) { return; }
+        if (this._hitTestElement instanceof MoveTableHandle) {
+            let tableDesigner = this.Target as TableDesigner;
+            tableDesigner.OnEndMove();
+        } else if (this._hitTestElement instanceof SelectTableHandle) {
+            this.Target.Surface.SelectionService.SelectItem(this.Target);
         }
     }
 

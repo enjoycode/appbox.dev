@@ -4,8 +4,9 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
 import XmlUtil from './XmlUtil';
-import { TableColumn, TableCell } from './TableLayout';
+import { TableColumn } from './TableLayout';
 import TableSectionDesigner from './TableSectionDesigner';
+import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 
 export default class TableDesigner extends ReportItemDesigner {
 
@@ -22,10 +23,9 @@ export default class TableDesigner extends ReportItemDesigner {
 
     public get IsContainer(): boolean { return true; }
 
-    // private _tableLayout: ITableLayout;
-    // public get TableLayout(): ITableLayout {
-    //     return this._tableLayout;
-    // }
+    public get Behavior(): DesignBehavior {
+        return this.IsTableCell ? DesignBehavior.None : DesignBehavior.CanMove;
+    }
 
     private _cellSelectionAdorner: CellSelectionAdorner | null;
     public get CellSelectionAdorner(): CellSelectionAdorner {
