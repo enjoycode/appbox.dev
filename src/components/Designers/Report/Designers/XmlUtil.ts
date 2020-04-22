@@ -60,7 +60,7 @@ export default class XmlUtil {
      * 将报表单位转换为像素值
      * @param t eg: 2in or 3mm
      */
-    public static SizeToPixel(t: string): number {
+    public static SizeToPixel(t: string, round: boolean = true): number {
         if (!t || t.length === 0 || t[0] === '=') return 0;
 
         // Size is specified in CSS Length Units
@@ -101,7 +101,11 @@ export default class XmlUtil {
             default: size = d * 2540; break; // Illegal unit
         }
         // return as pixels
-        return Math.round(size / 2540 * XmlUtil.POINTSIZE);
+        if (round) {
+            return Math.round(size / 2540 * XmlUtil.POINTSIZE);
+        } else {
+            return size / 2540 * XmlUtil.POINTSIZE;
+        }
     }
 
     /**

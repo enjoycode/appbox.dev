@@ -79,30 +79,72 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                     }
                 }
             }
-            //TODO:
+            let bw = XmlUtil.GetNamedChildNode(this._styleNode, "BorderWidth");
+            if (bw) {
+                for (const cnode of bw.childNodes) {
+                    let all = cnode.nodeName === "Default";
+                    for (const item of this._borderStyles) {
+                        if (all || item.pos === cnode.nodeName) {
+                            item.width = XmlUtil.SizeToPixel(cnode.textContent, false /* 不需要取整 */);
+                        }
+                    }
+                }
+            }
+            let bc = XmlUtil.GetNamedChildNode(this._styleNode, "BorderColor");
+            if (bc) {
+                for (const cnode of bc.childNodes) {
+                    let all = cnode.nodeName === "Default";
+                    for (const item of this._borderStyles) {
+                        if (all || item.pos === cnode.nodeName) {
+                            item.color = cnode.textContent;
+                        }
+                    }
+                }
+            }
         }
         return this._borderStyles;
     }
 
-    public SetBorderStyle(pos: BorderPosition, value: string): void {
+    public SetBorderStyle(type: BorderStyleType, target: IBorderStyleInfo): void {
         this.EnsureStyleNode();
-        let bs = XmlUtil.GetOrCreateChildNode(this._styleNode, "BorderStyle");
-        let isDefaultValue = value === "None";
-        if (pos === "Default") {
+        let bs = XmlUtil.GetOrCreateChildNode(this._styleNode, type);
+        let isDefaultValue = false;
+        if (type === "BorderStyle") {
+            isDefaultValue = target.style === "None";
+        } else if (type === "BorderWidth") {
+            isDefaultValue = target.width === 1;
+        } else {
+            isDefaultValue = target.color === "#000000";
+        }
+
+        let pos = target.pos;
+        if (target.pos === "Default") {
             // 级联更新非默认节点的缓存值
             for (let i = 1; i < this._borderStyles.length; i++) {
-                this._borderStyles[i].style = this._borderStyles[0].style
+                if (type === "BorderStyle") {
+                    this._borderStyles[i].style = this._borderStyles[0].style;
+                } else if (type === "BorderWidth") {
+                    this._borderStyles[i].width = this._borderStyles[0].width;
+                } else {
+                    this._borderStyles[i].color = this._borderStyles[0].color;
+                }
             }
 
             //TODO:如果跟继承值相同则删除所有
             for (const cnode of bs.childNodes) {
-                if (isDefaultValue || cnode.nodeName !== pos) {
+                if (isDefaultValue || cnode.nodeName !== target.pos) {
                     bs.removeChild(cnode);
                 }
             }
         } else {
             // 级联更新默认节点的缓存值
-            this._borderStyles[0].style = "";
+            if (type === "BorderStyle") {
+                this._borderStyles[0].style = "";
+            } else if (type === "BorderWidth") {
+                this._borderStyles[0].width = 0;
+            } else {
+                this._borderStyles[0].color = "rgba(255,255,255,255)";
+            }
             // 先删除Default子节点(如果存在)
             if (bs.childNodes.length === 1 && bs.childNodes[0].nodeName === "Default") {
                 bs.removeChild(bs.childNodes[0]);
@@ -110,8 +152,8 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
             // 如果4个子节点且值相同，则删除所有添加Default子节点
             if (bs.childNodes.length === 4) {
                 let allValueSame = true;
-                for (const cnode of bs.childNodes) {
-                    if (cnode.textContent != value) {
+                for (let i = 1; i < bs.childNodes.length; i++) {
+                    if (bs.childNodes[i].textContent !== bs.childNodes[0].textContent) {
                         allValueSame = false;
                         break;
                     }
@@ -124,7 +166,13 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
 
         if (!isDefaultValue) {
             let n = XmlUtil.GetOrCreateChildNode(bs, pos);
-            n.textContent = value;
+            if (type === "BorderStyle") {
+                n.textContent = target.style;
+            } else if (type === "BorderWidth") {
+                n.textContent = target.width.toString() + "pt";
+            } else {
+                n.textContent = target.color;
+            }
         } else {
             if (bs.childNodes.length === 0) {
                 bs.parentNode.removeChild(bs);
@@ -239,6 +287,7 @@ export enum VerticalAlignEnum {
     Bottom
 }
 
+export type BorderStyleType = "BorderStyle" | "BorderWidth" | "BorderColor";
 export type BorderStyleEnum = "" | "None" | "Dotted" | "Dashed" | "Solid";
 export type BorderPosition = "Default" | "Left" | "Top" | "Right" | "Bottom";
 export interface IBorderStyleInfo {
