@@ -12,7 +12,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
         this._styleNode = XmlUtil.GetNamedChildNode(owner.XmlNode, "Style");
     }
 
-    private GetStyle(prop: string, defaultValue: string): string | null {
+    public GetStyle(prop: string, defaultValue: string): string | null {
         if (this._styleNode) {
             let node = XmlUtil.GetNamedChildNode(this._styleNode, prop);
             if (node) { return node.textContent; }
@@ -224,6 +224,16 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
             {
                 name: "Style",
                 items: [
+                    {
+                        title: "Color", readonly: false, editor: "Color",
+                        getter: () => this.GetStyle("Color", "#000000"),
+                        setter: v => { this.SetStyle("Color", v); this._owner.Invalidate(); }
+                    },
+                    {
+                        title: "BackgroundColor", readonly: false, editor: "Color",
+                        getter: () => this.GetStyle("BackgroundColor", "#FFFFFF" /* TODO:应为透明 */),
+                        setter: v => { this.SetStyle("BackgroundColor", v); this._owner.Invalidate(); }
+                    },
                     {
                         title: "FontSize", readonly: false, editor: "TextBox",
                         getter: () => this.FontSize,

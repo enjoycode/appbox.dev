@@ -11,7 +11,14 @@ export default class TextboxDesigner extends ReportItemDesigner {
         g.rect(b.X, b.Y, b.Width, b.Height);
         g.clip();
 
-        // 绘制设计时边框
+        // 绘制背景 //TODO:其他样式如渐变等
+        let bgColor = this.Style.GetStyle("BackgroundColor", null);
+        if (bgColor) {
+            g.fillStyle = bgColor;
+            g.fillRect(b.X, b.Y, b.Width, b.Height);
+        }
+
+        // 绘制边框
         g.strokeStyle = "rgb(173,219,241)";
         g.lineWidth = 1;
         g.strokeRect(b.X, b.Y, b.Width, b.Height);
@@ -54,7 +61,7 @@ export default class TextboxDesigner extends ReportItemDesigner {
         let text = this.GetPropertyString("Value", "");
         if (text.length > 0) {
             g.font = this.Style.PaintFont;
-            g.fillStyle = "black";
+            g.fillStyle = this.Style.GetStyle("Color", "black");
 
             let x = 0;
             if (this.Style.TextAlign === TextAlignEnum.Center) {
