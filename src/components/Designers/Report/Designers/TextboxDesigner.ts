@@ -48,7 +48,7 @@ export default class TextboxDesigner extends ReportItemDesigner {
             g.lineTo(b.X + b.Width, b.Y + b.Height);
             g.stroke();
         }
-        if (bs[3].style != "None") {
+        if (bs[4].style != "None") {
             g.beginPath();
             g.strokeStyle = bs[4].color;
             g.lineWidth = bs[4].width;
