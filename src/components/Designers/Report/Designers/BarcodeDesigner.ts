@@ -7,6 +7,8 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
 
     private readonly _typeNode: Node;
     private readonly _valueNode: Node;
+    private _image: HTMLImageElement | null;
+    private _loadFlag: number = 0; //0=not load, 1=loading, 2=done
 
     public get Type(): string { return this._typeNode.textContent; }
     public set Type(value) { this._typeNode.textContent = value; }
@@ -33,6 +35,12 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
         }
     }
 
+    // override for redraw
+    public OnEndResize(): void {
+        this.ResetImageCache();
+        this.Invalidate();
+    }
+
     public Paint(g: CanvasRenderingContext2D): void {
         let b = this.Bounds; // 注意在表格内是计算出来的
         g.save();
@@ -45,10 +53,29 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
         g.lineWidth = 1;
         g.strokeRect(b.X, b.Y, b.Width, b.Height);
 
+        if (this._loadFlag === 0) {
+            this._loadFlag = 1;
+            this._image = new Image();
+            this._image.onload = () => {
+                this._loadFlag = 2;
+                this.Invalidate();
+            };
+            this._image.src = "/api/design/barcode/" +
+                this.Type + "/" + this.Value + "/" +
+                b.Width + "/" + b.Height + "/" + this.Surface.PixelRatio;
+        } else if (this._loadFlag === 2) {
+            g.drawImage(this._image, b.X, b.Y, b.Width, b.Height);
+        }
+
         g.restore();
     }
 
     //============IPropertyOwner接口实现=====
+    private ResetImageCache(): void {
+        this._loadFlag = 0;
+        this._image = null;
+    }
+
     public getPropertyItems(): IPropertyCatalog[] | null {
         let cats: IPropertyCatalog[] = super.getPropertyItems();
         cats.splice(0, 0, {
@@ -58,12 +85,12 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
                     title: "Type", readonly: false, editor: "Select",
                     options: ["BarCode128"],
                     getter: () => this.Type,
-                    setter: v => { this.Type = v; this.Invalidate(); }
+                    setter: v => { this.Type = v; this.ResetImageCache(); this.Invalidate(); }
                 },
                 {
                     title: "Value", readonly: false, editor: "TextBox",
                     getter: () => this.Value,
-                    setter: v => { this.Value = v; this.Invalidate(); }
+                    setter: v => { this.Value = v; this.ResetImageCache(); this.Invalidate(); }
                 }
             ]
         });
