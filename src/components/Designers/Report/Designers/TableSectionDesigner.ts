@@ -7,6 +7,7 @@ import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified';
 import XmlUtil from './XmlUtil';
 import Point from '@/components/Canvas/Drawing/Point';
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner';
+import { IPropertyCatalog, IPropertyItem } from '@/components/Canvas/Interfaces/IPropertyPanel';
 
 export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
@@ -104,4 +105,21 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         g.translate(-b.X, -b.Y - diffY);
     }
 
+    //RepeatOnNewPage
+    //============IPropertyOwner接口实现=====
+    public getPropertyItems(): IPropertyCatalog[] | null {
+        let cats = [];
+        // 在表格内不返回Layout类别
+        if (this.getPropertyOwnerType() !== "Details") {
+            let items: IPropertyItem[] = [
+                {
+                    title: "RepeatOnNewPage", readonly: false, editor: "CheckBox",
+                    getter: () => this.GetPropertyBool("RepeatOnNewPage", false),
+                    setter: v => this.SetPropertyBool("RepeatOnNewPage", v)
+                }
+            ];
+            cats.push({ name: "Common", items: items });
+        }
+        return cats;
+    }
 }

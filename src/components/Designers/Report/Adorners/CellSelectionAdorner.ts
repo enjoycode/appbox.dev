@@ -17,11 +17,12 @@ interface IElement {
 }
 
 /**
- * 用于选择整个表格
+ * 用于选择整个表格 or 表格Section
  */
-class SelectTableHandle implements IElement {
+class SelectHandle implements IElement {
     Bounds: Rectangle;
     Cursor: string;
+    Target: ItemDesigner;
 
     HitTest(pt: Point): [boolean, string] {
         if (this.Bounds.Contains(pt.X, pt.Y)) {
@@ -462,6 +463,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
         }
         //加入行ResizeHandle
         let y = 0;
+        let prey = 0;
         for (const item of table.Items) {
             let sec = item as TableSectionDesigner;
             for (const row of sec.Rows) {
@@ -472,6 +474,13 @@ export default class CellSelectionAdorner extends DesignAdorner {
                 ls.push(resizeHandle);
                 y += row.Height;
             }
+            //add select section handle
+            let selectSec = new SelectHandle();
+            selectSec.Bounds = new Rectangle(-offset, prey, offset, y - prey);
+            selectSec.Cursor = "";
+            selectSec.Target = sec;
+            ls.push(selectSec);
+            prey = y;
         }
         //add move table handle
         let moveHandle = new MoveTableHandle();
@@ -479,10 +488,11 @@ export default class CellSelectionAdorner extends DesignAdorner {
         moveHandle.Cursor = "move";
         ls.push(moveHandle);
         //add select table handle
-        let selectHandle = new SelectTableHandle();
-        selectHandle.Bounds = new Rectangle(-offset, -offset, offset, offset);
-        selectHandle.Cursor = "";
-        ls.push(selectHandle);
+        let selectTable = new SelectHandle();
+        selectTable.Bounds = new Rectangle(-offset, -offset, offset, offset);
+        selectTable.Cursor = "";
+        selectTable.Target = table;
+        ls.push(selectTable);
 
         return ls;
     }
@@ -537,8 +547,8 @@ export default class CellSelectionAdorner extends DesignAdorner {
         if (this._hitTestElement instanceof MoveTableHandle) {
             let tableDesigner = this.Target as TableDesigner;
             tableDesigner.OnEndMove();
-        } else if (this._hitTestElement instanceof SelectTableHandle) {
-            this.Target.Surface.SelectionService.SelectItem(this.Target);
+        } else if (this._hitTestElement instanceof SelectHandle) {
+            this.Target.Surface.SelectionService.SelectItem(this._hitTestElement.Target);
         }
     }
 
