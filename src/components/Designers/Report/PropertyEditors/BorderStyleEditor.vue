@@ -27,12 +27,10 @@
 
 <script>
 export default {
-    props: {
-        target: { type: Object }
-    },
+    props: { target: { type: Object } },
     data() {
         return {
-            value: null, // 与target相同都指向ReportStyle
+            value: null, // ReportStyle
             dlgVisible: false,
             borderStyles: ["None", "Dashed", "Solid"],
             borders: [
@@ -46,12 +44,19 @@ export default {
     },
     watch: {
         target(newTarget) {
-            this.value = newTarget.getter()
+            this.refresh()
         }
     },
     methods: {
         refresh() {
-            this.$set(this, 'value', this.target.getter())
+            this.value = this.target.getter()
+            //注意先初始化为默认值
+            for (const item of this.borders) {
+                item.style = "None"
+                item.width = 1
+                item.color = "#000000"
+            }
+            this.value.GetBorderStyles(this.borders)
         },
         changeStyle(pos) {
             if (pos === 0) {
@@ -61,11 +66,11 @@ export default {
             } else {
                 this.borders[0].style = ""
             }
-            this.value.SetBorderStyle(this.borders[pos].pos, this.borders[pos].style);
+            this.value.SetBorderStyle(this.borders[pos].pos, this.borders[pos].style)
         }
     },
     mounted() {
-        this.value = this.target.getter()
+        this.refresh()
     }
 }
 </script>

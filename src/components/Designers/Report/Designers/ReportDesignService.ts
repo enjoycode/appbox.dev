@@ -7,8 +7,6 @@ import ReportItemDesigner from './ReportItemDesigner'
 import ReportRootDesigner from './ReportRootDesigner'
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 import XmlUtil from './XmlUtil'
-
-import { IDesignToolbox } from '@/components/Canvas/Services/ToolboxService'
 import ReportToolbox from "../ReportToolbox";
 
 import TextBoxEditor from "@/components/Canvas/PropertyEditors/TextBoxEditor.vue";

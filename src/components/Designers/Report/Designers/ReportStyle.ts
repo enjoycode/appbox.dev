@@ -57,37 +57,81 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
 
     /**
      * 一次性绑定边框样式
-     * @param to 目标数组
+     * @param to 目标数组(from BorderStyleEditor), 调用前先初始化为默认值
      */
     public GetBorderStyles(to: any[]): void {
+        let bs = XmlUtil.GetNamedChildNode(this._styleNode, "BorderStyle");
+        if (bs) {
+            for (const cnode of bs.childNodes) {
+                let all = cnode.nodeName === "Default";
+                for (const item of to) {
+                    if (all || item.pos === cnode.nodeName) {
+                        item.style = cnode.textContent;
+                    }
+                }
+            }
+        }
         //TODO:
     }
     public SetBorderStyle(pos: string, value: string): void {
         this.EnsureStyleNode();
-        let bsnode = XmlUtil.GetOrCreateChildNode(this._styleNode, "BorderStyle");
+        let bs = XmlUtil.GetOrCreateChildNode(this._styleNode, "BorderStyle");
+        let isDefaultValue = value === "None";
         if (pos === "Default") {
-            //TODO:如果默认值删除所有
-            for (const cnode of bsnode.childNodes) {
-                if (cnode.nodeName !== pos) {
-                    bsnode.removeChild(cnode);
+            //TODO:如果跟继承值相同则删除所有
+            for (const cnode of bs.childNodes) {
+                if (isDefaultValue || cnode.nodeName !== pos) {
+                    bs.removeChild(cnode);
                 }
             }
         } else {
-            //TODO:检查所有相同，则删除所有添加Default
-            for (const cnode of bsnode.childNodes) {
-                if (cnode.nodeName === "Default") {
-                    bsnode.removeChild(cnode);
-                    break;
+            // 先删除Default子节点(如果存在)
+            if (bs.childNodes.length === 1 && bs.childNodes[0].nodeName === "Default") {
+                bs.removeChild(bs.childNodes[0]);
+            }
+            // 如果4个子节点且值相同，则删除所有添加Default子节点
+            if (bs.childNodes.length === 4) {
+                let allValueSame = true;
+                for (const cnode of bs.childNodes) {
+                    if (cnode.textContent != value) {
+                        allValueSame = false;
+                        break;
+                    }
+                }
+                if (allValueSame) {
+                    pos = "Default"; //所有值相同，改为添加Default子节点
                 }
             }
         }
-        let n = XmlUtil.GetOrCreateChildNode(bsnode, pos);
-        n.textContent = value;
+
+        if (!isDefaultValue) {
+            let n = XmlUtil.GetOrCreateChildNode(bs, pos);
+            n.textContent = value;
+        } else {
+            if (bs.childNodes.length === 0) {
+                bs.parentNode.removeChild(bs);
+            }
+            this.CheckStyleEmpty();
+        }
+        this._owner.Invalidate(); //需要重画
     }
 
+    //====样式节点辅助方法====
+    /**
+     * 确认<Style>节点是否存在，不存在则创建
+     */
     private EnsureStyleNode() {
         if (!this._styleNode) {
             this._styleNode = this._owner.XmlNode.appendChild(this._owner.XmlNode.ownerDocument.createElement("Style"));
+        }
+    }
+
+    /**
+     * 确信<Style>节点下无子节点，是则删除<Style>节点
+     */
+    private CheckStyleEmpty() {
+        if (this._styleNode && this._styleNode.childNodes.length === 0) {
+            this._styleNode.parentNode.removeChild(this._styleNode);
         }
     }
 
@@ -139,7 +183,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                     {
                         title: "Borders", readonly: false, editor: "BorderStyle",
                         getter: () => this,
-                        setter: v => { }
+                        setter: v => { /* 不需要重画，由SetBorderStyle调用Invalidate */ }
                     }
                 ]
             }
