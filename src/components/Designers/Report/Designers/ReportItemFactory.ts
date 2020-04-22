@@ -1,7 +1,9 @@
 import ReportItemDesigner from './ReportItemDesigner';
 import TextboxDesigner from './TextboxDesigner';
 import TableDesigner from './TableDesigner';
+import BarcodeDesigner from "./BarcodeDesigner";
 import { TableCell } from './TableLayout';
+import XmlUtil from './XmlUtil';
 
 export default class ReportItemFactory {
 
@@ -9,6 +11,14 @@ export default class ReportItemFactory {
         switch(node.nodeName) {
             case "Textbox": return new TextboxDesigner(node, cell);
             case "Table": return new TableDesigner(node);
+            case "CustomReportItem":
+                let typeNode = XmlUtil.GetNamedChildNode(node, "Type");
+                if (!typeNode) {
+                    console.warn("Unknown CustomReportItem's Type");
+                    return null;
+                }
+                // TODO:暂简单认为是条码
+                return new BarcodeDesigner(node, cell);
             default: 
                 console.warn("未实现创建: " + node.nodeName);
         }

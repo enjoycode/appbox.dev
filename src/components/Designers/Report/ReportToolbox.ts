@@ -7,6 +7,7 @@ import XmlUtil from './Designers/XmlUtil';
 import DesignStore from "@/design/DesignStore";
 import TextboxDesigner from './Designers/TextboxDesigner';
 import TableDesigner from './Designers/TableDesigner';
+import BarcodeDesigner from "./Designers/BarcodeDesigner";
 
 class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxItem {
     public get IsConnection(): boolean { return false; }
@@ -28,7 +29,8 @@ class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxI
         //parent不可能是DesignSurface
         let p = parent as ReportXmlNodeDesigner;
         let itemsNode = XmlUtil.GetOrCreateChildNode(p.XmlNode, "ReportItems");
-        let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement(this.Name));
+        let nodeName = this.Name === "Barcode" ? "CustomReportItem" : this.Name; //TODO:暂丑陋的判断
+        let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement(nodeName));
         return this.factory(newNode);
     }
 }
@@ -50,6 +52,7 @@ export default class ReportToolbox implements IDesignToolbox {
         return [
             new ReportToolboxItem<TextboxDesigner>(TextboxDesigner, "text-width"),
             new ReportToolboxItem<TableDesigner>(TableDesigner, "table"),
+            new ReportToolboxItem<BarcodeDesigner>(BarcodeDesigner, "barcode"),
         ]
     }
 
