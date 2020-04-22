@@ -11,10 +11,44 @@ export default class TextboxDesigner extends ReportItemDesigner {
         g.rect(b.X, b.Y, b.Width, b.Height);
         g.clip();
 
-        // 绘制边框，TODO:根据Style绘制，如果在表格内还需要参考表格Style
+        // 绘制设计时边框
         g.strokeStyle = "rgb(173,219,241)";
         g.lineWidth = 1;
         g.strokeRect(b.X, b.Y, b.Width, b.Height);
+        // 根据Style绘制边框，TODO:如果在表格内还需要参考表格Style
+        let bs = this.Style.BorderStyles;
+        if (bs[1].style !== "None") {
+            g.beginPath();
+            g.strokeStyle = bs[1].color;
+            g.lineWidth = bs[1].width;
+            g.moveTo(b.X, b.Y);
+            g.lineTo(b.X, b.Y + b.Height);
+            g.stroke();
+        }
+        if (bs[2].style != "None") {
+            g.beginPath();
+            g.strokeStyle = bs[2].color;
+            g.lineWidth = bs[2].width;
+            g.moveTo(b.X, b.Y);
+            g.lineTo(b.X + b.Width, b.Y);
+            g.stroke();
+        }
+        if (bs[3].style != "None") {
+            g.beginPath();
+            g.strokeStyle = bs[3].color;
+            g.lineWidth = bs[3].width;
+            g.moveTo(b.X + b.Width, b.Y);
+            g.lineTo(b.X + b.Width, b.Y + b.Height);
+            g.stroke();
+        }
+        if (bs[3].style != "None") {
+            g.beginPath();
+            g.strokeStyle = bs[4].color;
+            g.lineWidth = bs[4].width;
+            g.moveTo(b.X, b.Y + b.Height);
+            g.lineTo(b.X + b.Width, b.Y + b.Height);
+            g.stroke();
+        }
 
         // 绘制文本, TODO:根据Style绘制，另考虑绑定值不同样式
         let text = this.GetPropertyString("Value", "");

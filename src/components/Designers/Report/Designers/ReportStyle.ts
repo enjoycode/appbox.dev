@@ -55,29 +55,45 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
         return VerticalAlignEnum[this.GetStyle("VerticalAlign", "Top")];
     }
 
-    /**
-     * 一次性绑定边框样式
-     * @param to 目标数组(from BorderStyleEditor), 调用前先初始化为默认值
-     */
-    public GetBorderStyles(to: any[]): void {
-        let bs = XmlUtil.GetNamedChildNode(this._styleNode, "BorderStyle");
-        if (bs) {
-            for (const cnode of bs.childNodes) {
-                let all = cnode.nodeName === "Default";
-                for (const item of to) {
-                    if (all || item.pos === cnode.nodeName) {
-                        item.style = cnode.textContent;
+    //=====边框样式====
+    private _borderStyles: IBorderStyleInfo[] | null; // for cache
+    /** 用于BorderStyleEditor绑定或绘制 */
+    public get BorderStyles(): IBorderStyleInfo[] {
+        if (!this._borderStyles) {
+            this._borderStyles = [
+                { pos: "Default", style: "None", width: 1, color: "#000000" },
+                { pos: "Left", style: "None", width: 1, color: "#000000" },
+                { pos: "Top", style: "None", width: 1, color: "#000000" },
+                { pos: "Right", style: "None", width: 1, color: "#000000" },
+                { pos: "Bottom", style: "None", width: 1, color: "#000000" },
+            ]
+
+            let bs = XmlUtil.GetNamedChildNode(this._styleNode, "BorderStyle");
+            if (bs) {
+                for (const cnode of bs.childNodes) {
+                    let all = cnode.nodeName === "Default";
+                    for (const item of this._borderStyles) {
+                        if (all || item.pos === cnode.nodeName) {
+                            item.style = cnode.textContent as BorderStyleEnum;
+                        }
                     }
                 }
             }
+            //TODO:
         }
-        //TODO:
+        return this._borderStyles;
     }
-    public SetBorderStyle(pos: string, value: string): void {
+
+    public SetBorderStyle(pos: BorderPosition, value: string): void {
         this.EnsureStyleNode();
         let bs = XmlUtil.GetOrCreateChildNode(this._styleNode, "BorderStyle");
         let isDefaultValue = value === "None";
         if (pos === "Default") {
+            // 级联更新非默认节点的缓存值
+            for (let i = 1; i < this._borderStyles.length; i++) {
+                this._borderStyles[i].style = this._borderStyles[0].style
+            }
+
             //TODO:如果跟继承值相同则删除所有
             for (const cnode of bs.childNodes) {
                 if (isDefaultValue || cnode.nodeName !== pos) {
@@ -85,6 +101,8 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                 }
             }
         } else {
+            // 级联更新默认节点的缓存值
+            this._borderStyles[0].style = "";
             // 先删除Default子节点(如果存在)
             if (bs.childNodes.length === 1 && bs.childNodes[0].nodeName === "Default") {
                 bs.removeChild(bs.childNodes[0]);
@@ -113,7 +131,8 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
             }
             this.CheckStyleEmpty();
         }
-        this._owner.Invalidate(); //需要重画
+        //需要重画
+        this._owner.Invalidate();
     }
 
     //====样式节点辅助方法====
@@ -136,7 +155,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
     }
 
     //====用于绘图的辅助方法====
-    private _paintFont: string | null;
+    private _paintFont: string | null; // for cache
     public get PaintFont(): string {
         if (!this._paintFont) {
             this._paintFont = this.FontSize + "px sans-serif";
@@ -218,4 +237,13 @@ export enum VerticalAlignEnum {
     Top,
     Middle,
     Bottom
+}
+
+export type BorderStyleEnum = "" | "None" | "Dotted" | "Dashed" | "Solid";
+export type BorderPosition = "Default" | "Left" | "Top" | "Right" | "Bottom";
+export interface IBorderStyleInfo {
+    pos: BorderPosition;
+    style: BorderStyleEnum;
+    width: number;
+    color: string;
 }

@@ -32,14 +32,8 @@ export default {
         return {
             value: null, // ReportStyle
             dlgVisible: false,
-            borderStyles: ["None", "Dashed", "Solid"],
-            borders: [
-                { pos: "Default", style: "None", width: 1, color: "#000000" },
-                { pos: "Left", style: "None", width: 1, color: "#000000" },
-                { pos: "Top", style: "None", width: 1, color: "#000000" },
-                { pos: "Right", style: "None", width: 1, color: "#000000" },
-                { pos: "Bottom", style: "None", width: 1, color: "#000000" }
-            ]
+            borderStyles: ["None", "Dotted", "Dashed", "Solid"],
+            borders: []
         }
     },
     watch: {
@@ -50,22 +44,9 @@ export default {
     methods: {
         refresh() {
             this.value = this.target.getter()
-            //注意先初始化为默认值
-            for (const item of this.borders) {
-                item.style = "None"
-                item.width = 1
-                item.color = "#000000"
-            }
-            this.value.GetBorderStyles(this.borders)
+            this.$set(this, 'borders', this.value.BorderStyles);
         },
         changeStyle(pos) {
-            if (pos === 0) {
-                for (let i = 1; i < this.borders.length; i++) {
-                    this.borders[i].style = this.borders[0].style
-                }
-            } else {
-                this.borders[0].style = ""
-            }
             this.value.SetBorderStyle(this.borders[pos].pos, this.borders[pos].style)
         }
     },
