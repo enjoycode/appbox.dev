@@ -6,7 +6,7 @@
                <el-row :gutter="5">
                     <el-col :span="8" v-for="img in images" :key="img.Name">
                         <el-card :body-style="{ padding: '0px' }">
-                            <el-image style="height: 120px" :src="img.ImageData" fit="contain">
+                            <el-image style="height: 120px" :src="img.Image" fit="contain">
                             </el-image>
                             <div style="padding: 14px;">
                                 <el-input v-model="img.Name"></el-input>
@@ -67,9 +67,9 @@ export default {
                 var fr = new FileReader();
                 let _this = this;
                 fr.onload = () => {
-                    _this.value.EmbeddedImages.Add(fileName, fr.result);
+                    _this.value.EmbeddedImages.Add(fileName, fr.result)
                 }
-                fr.readAsDataURL(files[0]);
+                fr.readAsDataURL(files[0])
             } else {
                 this.$message.warning("Can't read image file.")
             }

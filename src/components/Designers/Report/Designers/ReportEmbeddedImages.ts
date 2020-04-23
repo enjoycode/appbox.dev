@@ -9,6 +9,16 @@ export class ReportEmbeddedImage {
     public get Name(): string { return this._node.getAttribute("Name"); }
     public set Name(value) { this._node.setAttribute("Name", value); }
 
+    public get MIMEType(): string {
+        let n = XmlUtil.GetNamedChildNode(this._node, "MIMEType");
+        if (!n) { return ""; }
+        return n.textContent;
+    }
+    public set MIMEType(value) {
+        let n = XmlUtil.GetOrCreateChildNode(this._node, "MIMEType");
+        n.textContent = value;
+    }
+
     public get ImageData(): string {
         let n = XmlUtil.GetNamedChildNode(this._node, "ImageData");
         if (!n) { return ""; }
@@ -17,6 +27,10 @@ export class ReportEmbeddedImage {
     public set ImageData(value) {
         let n = XmlUtil.GetOrCreateChildNode(this._node, "ImageData");
         n.textContent = value;
+    }
+
+    public get Image(): string {
+        return "data:" + this.MIMEType + ";base64," + this.ImageData;
     }
 
     constructor(owner: ReportEmbeddedImages, node: Node) {
@@ -45,13 +59,21 @@ export default class ReportEmbeddedImages {
 
     public Add(name: string, data: string): void {
         //TODO: check name exists
+        //注意data是url编码, eg: data:image/png;base64,XXXXXX
+        let mimeStart = data.indexOf(':');
+        let mimeEnd = data.indexOf(';');
+        let mime = data.substring(mimeStart + 1, mimeEnd);
+        let dataStart = data.indexOf(',')
+        let imgData = data.substring(dataStart + 1);
+
         if (!this._node) {
             this._node = XmlUtil.CreateChildNode(this._owner.XmlNode, "EmbeddedImages");
         }
         let cnode = XmlUtil.CreateChildNode(this._node, "EmbeddedImage");
         let ds = new ReportEmbeddedImage(this, cnode);
         ds.Name = name;
-        ds.ImageData = data;
+        ds.MIMEType = mime;
+        ds.ImageData = imgData;
         this._items.push(ds);
     }
 
@@ -63,6 +85,26 @@ export default class ReportEmbeddedImages {
             this._owner.XmlNode.removeChild(this._node);
             this._node = null;
         }
+    }
+
+    /**
+     * 获取所有DataSet的名称集合，用于属性面板绑定
+     */
+    public GetNames(): string[] {
+        let res: string[] = [];
+        for (const ds of this._items) {
+            res.push(ds.Name);
+        }
+        return res;
+    }
+
+    public GetImageData(name: string): string {
+        for (const i of this._items) {
+            if (i.Name === name) {
+                return i.Image;
+            }
+        }
+        return null;
     }
 
 }
