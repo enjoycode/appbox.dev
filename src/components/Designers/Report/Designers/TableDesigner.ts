@@ -202,7 +202,7 @@ export default class TableDesigner extends ReportItemDesigner {
             items: [
                 {
                     title: "DataSetName", readonly: false, editor: "Select",
-                    options: (this.Surface.DesignService.RootDesigner as ReportRootDesigner).GetDataSets(),
+                    options: (this.Surface.DesignService.RootDesigner as ReportRootDesigner).DataSets.GetNames(),
                     getter: () => this.GetPropertyString("DataSetName", ""),
                     setter: v => this.SetPropertyString("DataSetName", v)
                 }

@@ -109,6 +109,7 @@ export class ReportDataSet implements IPropertyOwner {
         this._fieldsNode = XmlUtil.GetNamedChildNode(this._node, "Fields");
         if (this._fieldsNode) {
             for (const cnode of this._fieldsNode.childNodes) {
+                if (cnode.nodeType !== Node.ELEMENT_NODE) { continue; }
                 this._fields.push(new Field(this, cnode));
             }
         }
@@ -173,6 +174,7 @@ export default class ReportDataSets {
         this._node = XmlUtil.GetNamedChildNode(owner.XmlNode, "DataSets");
         if (this._node) {
             for (const cnode of this._node.childNodes) {
+                if (cnode.nodeType !== Node.ELEMENT_NODE) { continue; }
                 this._items.push(new ReportDataSet(this, cnode));
             }
         }
@@ -208,6 +210,17 @@ export default class ReportDataSets {
             this._owner.XmlNode.removeChild(this._node);
             this._node = null;
         }
+    }
+
+    /**
+     * 获取所有DataSet的名称集合，用于属性面板绑定
+     */
+    public GetNames(): string[] {
+        let res: string[] = [];
+        for (const ds of this._items) {
+            res.push(ds.Name);
+        }
+        return res;
     }
 
     private static ToTypeName(fieldType: EntityFieldType): string {

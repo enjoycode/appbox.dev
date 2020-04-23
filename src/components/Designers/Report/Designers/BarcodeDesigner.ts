@@ -61,6 +61,9 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
                 this._loadFlag = 2;
                 this.Invalidate();
             };
+            this._image.onerror = () => {
+                console.warn("Load image error");
+            }
             this._image.src = "/api/design/barcode/" +
                 this.Type + "/" + encodeURIComponent(this.Value) + "/" +
                 b.Width + "/" + b.Height + "/" + this.Surface.PixelRatio;

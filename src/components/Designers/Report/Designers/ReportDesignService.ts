@@ -15,6 +15,7 @@ import SelectEditor from "@/components/Canvas/PropertyEditors/SelectEditor.vue";
 import ColorEditor from "@/components/Canvas/PropertyEditors/ColorEditor.vue";
 import DataSetsEditor from "../PropertyEditors/DataSetsEditor.vue";
 import BorderStyleEditor from "../PropertyEditors/BorderStyleEditor.vue";
+import EmbeddedImagesEditor from "../PropertyEditors/EmbeddedImagesEditor.vue";
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -219,6 +220,7 @@ export default class ReportDesignService implements IDesignService {
         Select: SelectEditor,
         Color: ColorEditor,
         ReportDataSets: DataSetsEditor,
+        ReportEmbeddedImages: EmbeddedImagesEditor,
         BorderStyle: BorderStyleEditor
     }
 

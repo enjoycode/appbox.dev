@@ -5,6 +5,7 @@ import ReportSectionDesigner from './ReportSectionDesigner';
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 import XmlUtil from './XmlUtil';
 import ReportDataSets from './ReportDataSet';
+import ReportEmbeddedImages from './ReportEmbeddedImages';
 
 export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
@@ -18,6 +19,12 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
     private readonly _datasets: ReportDataSets;
     public get DataSets(): ReportDataSets { return this._datasets; }
+
+    private _embeddedImages: ReportEmbeddedImages | null;
+    public get EmbeddedImages(): ReportEmbeddedImages {
+        if (!this._embeddedImages) { this._embeddedImages = new ReportEmbeddedImages(this); }
+        return this._embeddedImages;
+    }
 
     constructor(xmlNode: Node) {
         super(xmlNode);
@@ -60,17 +67,6 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
         }
     }
 
-    /**
-     * 获取所有DataSet的名称集合，用于属性面板绑定
-     */
-    public GetDataSets(): string[] {
-        let res: string[] = [];
-        for (const ds of this._datasets.Items) {
-            res.push(ds.Name);
-        }
-        return res;
-    }
-
     //============IPropertyOwner接口实现=====
     /**
      * 仅由PropertyPanel设置后重新布局并重画
@@ -107,6 +103,11 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
                     },
                     {
                         title: "DataSets", readonly: true, editor: "ReportDataSets",
+                        getter: () => this,
+                        setter: v => { /* not supported */ }
+                    },
+                    {
+                        title: "EmbeddedImages", readonly: true, editor: "ReportEmbeddedImages",
                         getter: () => this,
                         setter: v => { /* not supported */ }
                     },

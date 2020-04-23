@@ -229,6 +229,10 @@ export default function (/*bool desktop, bool mobile*/) {
         require('element-ui/lib/theme-chalk/card.css')
         r(require('element-ui/lib/card').default)
     }, 'easeui-1'))
+    Vue.component('ElImage', r => require.ensure([], () => {
+        require('element-ui/lib/theme-chalk/image.css')
+        r(require('element-ui/lib/image').default)
+    }, 'easeui-1'))
     Vue.component('ElRate', r => require.ensure([], () => {
         require('element-ui/lib/theme-chalk/rate.css')
         r(require('element-ui/lib/rate').default)
