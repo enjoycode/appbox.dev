@@ -5,6 +5,7 @@ import BarcodeDesigner from "./BarcodeDesigner";
 import ImageDesigner from './ImageDesigner';
 import { TableCell } from './TableLayout';
 import XmlUtil from './XmlUtil';
+import RectangleDesigner from './RectangleDesigner';
 
 export default class ReportItemFactory {
 
@@ -13,6 +14,7 @@ export default class ReportItemFactory {
             case "Textbox": return new TextboxDesigner(node, cell);
             case "Table": return new TableDesigner(node);
             case "Image": return new ImageDesigner(node, cell);
+            case "Rectangle": return new RectangleDesigner(node, cell);
             case "CustomReportItem":
                 let typeNode = XmlUtil.GetNamedChildNode(node, "Type");
                 if (!typeNode) {

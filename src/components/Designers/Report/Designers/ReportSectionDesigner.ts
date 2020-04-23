@@ -5,7 +5,6 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
-import TextboxDesigner from "./TextboxDesigner"
 import XmlUtil from './XmlUtil'
 import ReportItemFactory from './ReportItemFactory'
 
