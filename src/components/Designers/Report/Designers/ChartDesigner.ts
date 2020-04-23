@@ -1,6 +1,6 @@
 import ReportItemDesigner from './ReportItemDesigner'
 
-export default class ChartDesigner extends ReportItemDesigner {
+export default class ChartDesigner extends ReportItemDesigner /* ReportXmlNodeDesigner */ {
     private _bitmap?: HTMLImageElement;
 
     // public Fetch(serverItem: IServerReportItem) {
