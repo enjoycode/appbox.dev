@@ -13,6 +13,7 @@ import TextBoxEditor from "@/components/Canvas/PropertyEditors/TextBoxEditor.vue
 import CheckBoxEditor from "@/components/Canvas/PropertyEditors/CheckBoxEditor.vue";
 import SelectEditor from "@/components/Canvas/PropertyEditors/SelectEditor.vue";
 import ColorEditor from "@/components/Canvas/PropertyEditors/ColorEditor.vue";
+import ParametersEditor from "../PropertyEditors/ParametersEditor.vue";
 import DataSetsEditor from "../PropertyEditors/DataSetsEditor.vue";
 import BorderStyleEditor from "../PropertyEditors/BorderStyleEditor.vue";
 import EmbeddedImagesEditor from "../PropertyEditors/EmbeddedImagesEditor.vue";
@@ -219,6 +220,7 @@ export default class ReportDesignService implements IDesignService {
         CheckBox: CheckBoxEditor,
         Select: SelectEditor,
         Color: ColorEditor,
+        ReportParameters: ParametersEditor,
         ReportDataSets: DataSetsEditor,
         ReportEmbeddedImages: EmbeddedImagesEditor,
         BorderStyle: BorderStyleEditor

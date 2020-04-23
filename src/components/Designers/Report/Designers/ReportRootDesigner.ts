@@ -6,6 +6,7 @@ import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 import XmlUtil from './XmlUtil';
 import ReportDataSets from './ReportDataSet';
 import ReportEmbeddedImages from './ReportEmbeddedImages';
+import ReportParameters from './ReportParameters';
 
 export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
@@ -19,6 +20,12 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
 
     private readonly _datasets: ReportDataSets;
     public get DataSets(): ReportDataSets { return this._datasets; }
+
+    private _parameters: ReportParameters | null;
+    public get Parameters(): ReportParameters {
+        if (!this._parameters) { this._parameters = new ReportParameters(this); }
+        return this._parameters;
+    }
 
     private _embeddedImages: ReportEmbeddedImages | null;
     public get EmbeddedImages(): ReportEmbeddedImages {
@@ -100,6 +107,11 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
                         title: "PageHeight", readonly: false, editor: "TextBox",
                         getter: () => this.GetPropertyRSize("PageHeight", "150mm"),
                         setter: v => { this.SetPropertyRSize("PageHeight", v); this.OnChangePageHeight(v); }
+                    },
+                    {
+                        title: "Parameters", readonly: true, editor: "ReportParameters",
+                        getter: () => this,
+                        setter: v => { /* not supported */ }
                     },
                     {
                         title: "DataSets", readonly: true, editor: "ReportDataSets",

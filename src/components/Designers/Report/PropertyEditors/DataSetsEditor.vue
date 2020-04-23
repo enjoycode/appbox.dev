@@ -23,7 +23,8 @@
                 <el-row style="height:260px">
                     <el-col :span="12" style="height:100%">
                         <!-- 结构树 -->
-                        <el-tree @current-change="onCurrentChange" :data="datasets" :props="treeOpts" style="height:100%"></el-tree>
+                        <el-tree @current-change="onCurrentChange" :data="datasets" :props="treeOpts"
+                            highlight-current default-expand-all style="height:100%"></el-tree>
                     </el-col>
                     <el-col :span="12" style="height:100%">
                         <!-- 属性面板 -->
