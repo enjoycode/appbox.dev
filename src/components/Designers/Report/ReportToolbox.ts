@@ -10,6 +10,7 @@ import TableDesigner from './Designers/TableDesigner';
 import BarcodeDesigner from "./Designers/BarcodeDesigner";
 import ImageDesigner from './Designers/ImageDesigner';
 import RectangleDesigner from './Designers/RectangleDesigner';
+import ListDesigner from './Designers/ListDesigner';
 
 class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxItem {
     public get IsConnection(): boolean { return false; }
@@ -54,6 +55,7 @@ export default class ReportToolbox implements IDesignToolbox {
         return [
             new ReportToolboxItem<TextboxDesigner>(TextboxDesigner, "text-width"),
             new ReportToolboxItem<TableDesigner>(TableDesigner, "table"),
+            new ReportToolboxItem<ListDesigner>(ListDesigner, "list"),
             new ReportToolboxItem<ImageDesigner>(ImageDesigner, "image"),
             new ReportToolboxItem<BarcodeDesigner>(BarcodeDesigner, "barcode"),
             new ReportToolboxItem<RectangleDesigner>(RectangleDesigner, "square"),

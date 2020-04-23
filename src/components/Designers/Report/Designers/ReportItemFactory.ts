@@ -6,6 +6,7 @@ import ImageDesigner from './ImageDesigner';
 import { TableCell } from './TableLayout';
 import XmlUtil from './XmlUtil';
 import RectangleDesigner from './RectangleDesigner';
+import ListDesigner from './ListDesigner';
 
 export default class ReportItemFactory {
 
@@ -13,6 +14,7 @@ export default class ReportItemFactory {
         switch (node.nodeName) {
             case "Textbox": return new TextboxDesigner(node, cell);
             case "Table": return new TableDesigner(node);
+            case "List": return new ListDesigner(node, cell);
             case "Image": return new ImageDesigner(node, cell);
             case "Rectangle": return new RectangleDesigner(node, cell);
             case "CustomReportItem":
