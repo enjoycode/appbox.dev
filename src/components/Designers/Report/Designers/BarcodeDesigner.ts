@@ -62,7 +62,7 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
                 this.Invalidate();
             };
             this._image.src = "/api/design/barcode/" +
-                this.Type + "/" + this.Value + "/" +
+                this.Type + "/" + encodeURIComponent(this.Value) + "/" +
                 b.Width + "/" + b.Height + "/" + this.Surface.PixelRatio;
         } else if (this._loadFlag === 2) {
             g.drawImage(this._image, b.X, b.Y, b.Width, b.Height);
