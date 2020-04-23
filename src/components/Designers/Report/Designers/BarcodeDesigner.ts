@@ -37,6 +37,7 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
 
     // override for redraw
     public OnEndResize(): void {
+        super.OnEndResize();
         this.ResetImageCache();
         this.Invalidate();
     }
@@ -83,7 +84,7 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
             items: [
                 {
                     title: "Type", readonly: false, editor: "Select",
-                    options: ["BarCode128"],
+                    options: ["BarCode128", "BarCode39", "QRCode"],
                     getter: () => this.Type,
                     setter: v => { this.Type = v; this.ResetImageCache(); this.Invalidate(); }
                 },
