@@ -476,7 +476,7 @@ export default class CellSelectionAdorner extends DesignAdorner {
             }
             //add select section handle
             let selectSec = new SelectHandle();
-            selectSec.Bounds = new Rectangle(-offset, prey, offset, y - prey);
+            selectSec.Bounds = new Rectangle(-offset, prey + HandleSize / 2, offset, y - prey - HandleSize);
             selectSec.Cursor = "";
             selectSec.Target = sec;
             ls.push(selectSec);
