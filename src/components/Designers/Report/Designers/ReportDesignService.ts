@@ -169,10 +169,13 @@ export default class ReportDesignService implements IDesignService {
         }
         // 计算出当前列
         let reportItem = selection[0] as ReportItemDesigner;
-        let table = reportItem.Cell.Row.Owner.Table;
+        let row = reportItem.Cell.Row;
+        let table = row.Owner.Table;
         if (table.Columns.length === 1) { return "Cann't delete last column."; }
         let colIndex = reportItem.Cell.ColIndex;
+        let selectCellIndex = colIndex === 0 ? 0 : colIndex - 1;
         reportItem.Cell.Row.Owner.Table.DeleteColumn(colIndex);
+        this._surface.SelectionService.SelectItem(row.Cells[selectCellIndex].Target); //重新选择单元格
         table.Parent.Invalidate(); //需要重画
     }
 
