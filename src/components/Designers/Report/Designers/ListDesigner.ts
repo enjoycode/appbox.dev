@@ -1,4 +1,5 @@
 import ReportItemDesigner from './ReportItemDesigner'
+import ReportRootDesigner from './ReportRootDesigner';
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 import XmlUtil from './XmlUtil';
 import ReportItemFactory from './ReportItemFactory';
