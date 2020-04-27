@@ -270,7 +270,7 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         // console.log("New:", this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
         // console.log("Union:", invalidRect);
 
-        this.Surface.Invalidate(invalidRect); //画旧区域与新区域的Union
+        this.Surface.Invalidate(invalidRect); //画旧区域与新区域的Union, TODO: invalidate parent
     }
 
     public abstract Paint(ctx: CanvasRenderingContext2D): void;

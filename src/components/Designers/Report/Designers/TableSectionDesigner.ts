@@ -65,17 +65,16 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         return total;
     }
 
-    public InsertRow(index: number, height: number = 100) {
+    public InsertRow(index: number, height: number = 20) {
         let len = this._rowsNode.childNodes.length;
-        if (len === 0 || index >= len) { //添加至尾部
-            let cnode = XmlUtil.CreateChildNode(this._rowsNode, "TableRow");
-            let row = new TableRow(this, cnode);
-            row.Height = height;
-            this._rows.push(row);
-            row.InitCells();
-        } else {
-            console.warn("未实现");
-        }
+        if (index < 0 || index >= len) { index = len; }
+
+        let cnode = XmlUtil.CreateChildNode(this._rowsNode, "TableRow", index);
+        let row = new TableRow(this, cnode);
+        row.Height = height;
+        this._rows.splice(index, 0, row);
+        row.InitCells();
+
         this.Table.Bounds.Height += height; //需要更新缓存值
     }
 

@@ -7,6 +7,8 @@
                 <el-button-group>
                     <el-button @click="onAdd">Add</el-button>
                     <el-button @click="onDel">Remove</el-button>
+                    <el-button>Move Up</el-button>
+                    <el-button>Move Down</el-button>
                 </el-button-group>
                 &emsp;
                 <br/><br/>

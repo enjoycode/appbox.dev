@@ -422,14 +422,21 @@ export default class CellSelectionAdorner extends DesignAdorner {
             const section = sec as TableSectionDesigner;
             //TODO: 考虑画section边框
             let sectionType = section.getPropertyOwnerType();
-            let sectionTitle = "D";
-            if (sectionType === "Header") { sectionTitle = "H"; }
-            else if (sectionType === "Footer") { sectionType = "F"; }
-            g.textBaseline = "middle";
-
+            let isDetailsRow = sectionType === "Details";
             for (const row of section.Rows) {
-                g.fillStyle = "black";
-                g.fillText(sectionTitle, -offset + 1.5, y + row.Height / 2);
+                if (isDetailsRow) {
+                    g.strokeStyle = "black";
+                    let dx = -offset + 2;
+                    let dy = y + row.Height / 2 - 3;
+                    for (let i = 0; i < 3; i++) {
+                        g.moveTo(dx, dy);
+                        g.lineTo(dx + 7, dy);
+                        g.stroke();
+                        dy += 3;
+                    }
+                    g.strokeStyle = SelectionColor;
+                }
+                // g.fillText(sectionTitle, -offset + 1.5, y + row.Height / 2);
                 g.strokeRect(-offset, y, offset, row.Height);
                 y += row.Height;
             }

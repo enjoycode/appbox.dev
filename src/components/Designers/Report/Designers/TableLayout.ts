@@ -6,6 +6,7 @@ import TextboxDesigner from './TextboxDesigner';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 import ReportItemFactory from './ReportItemFactory';
 import Grouping from './Grouping';
+import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 
 export class TableColumn {
 
@@ -198,7 +199,7 @@ export class TableCell {
     }
 }
 
-export class TableGroup {
+export class TableGroup implements IPropertyOwner {
 
     private readonly _owner: TableGroups;
     public get Owner(): TableGroups { return this._owner; }
@@ -222,8 +223,10 @@ export class TableGroup {
         this.Grouping.Name = value;
     }
 
-    public Header: TableSectionDesigner | null;
-    public Footer: TableSectionDesigner | null;
+    private _header: TableSectionDesigner | null = null;
+    public get Header(): TableSectionDesigner | null { return this._header; }
+    private _footer: TableSectionDesigner | null = null;
+    public get Footer(): TableSectionDesigner | null { return this._footer; }
 
     constructor(owner: TableGroups, node: Node) {
         this._owner = owner;
@@ -234,12 +237,81 @@ export class TableGroup {
         }
         let hnode = XmlUtil.GetNamedChildNode(node, "Header");
         if (hnode) {
-            this.Header = new TableSectionDesigner(this, hnode);
+            this._header = new TableSectionDesigner(this, hnode);
         }
         let fnode = XmlUtil.GetNamedChildNode(node, "Footer");
         if (fnode) {
-            this.Footer = new TableSectionDesigner(this, fnode);
+            this._footer = new TableSectionDesigner(this, fnode);
         }
+    }
+
+    private SetHeader(has: boolean): void {
+        if (has) {
+            if (!this._header) {
+                let hnode = XmlUtil.CreateChildNode(this._node, "Header");
+                this._header = new TableSectionDesigner(this, hnode);
+                this._header.InsertRow(0); //别忘了插一行，已经同步Table高度
+                this.Owner.Table.Parent.Invalidate();
+            }
+        } else {
+            if (this._header) {
+                let hnode = XmlUtil.GetNamedChildNode(this._node, "Header");
+                this._node.removeChild(hnode);
+                this.Owner.Table.Bounds.Height -= this._header.GetRowsHeight();
+                this.Owner.Table.Parent.Invalidate();
+            }
+        }
+    }
+    private SetFooter(has: boolean): void {
+        if (has) {
+            if (!this._footer) {
+                let hnode = XmlUtil.CreateChildNode(this._node, "Footer");
+                this._footer = new TableSectionDesigner(this, hnode);
+                this._footer.InsertRow(0); //别忘了插一行，已经同步Table高度
+                this.Owner.Table.Parent.Invalidate();
+            }
+        } else {
+            if (this._footer) {
+                let hnode = XmlUtil.GetNamedChildNode(this._node, "Footer");
+                this._node.removeChild(hnode);
+                this.Owner.Table.Bounds.Height -= this._footer.GetRowsHeight();
+                this.Owner.Table.Parent.Invalidate();
+            }
+        }
+    }
+
+    //====IPropertyOwner====
+    public getPropertyOwnerType(): string { return "Parameter"; }
+
+    public getPropertyItems(): IPropertyCatalog[] {
+        let cats: IPropertyCatalog[] = [
+            {
+                name: "Common",
+                items: [
+                    {
+                        title: "Name", readonly: false, editor: "TextBox",
+                        getter: () => this.Name,
+                        setter: v => { this.Name = v; }
+                    },
+                    {
+                        title: "Expression", readonly: false, editor: "TextBox",
+                        getter: () => this.Grouping.Expression,
+                        setter: v => { this.Grouping.Expression = v; }
+                    },
+                    {
+                        title: "GroupHeader", readonly: false, editor: "CheckBox",
+                        getter: () => this.Header !== null,
+                        setter: v => { this.SetHeader(v); }
+                    },
+                    {
+                        title: "GroupFooter", readonly: false, editor: "CheckBox",
+                        getter: () => this.Footer !== null,
+                        setter: v => { this.SetFooter(v); }
+                    },
+                ]
+            }
+        ]
+        return cats;
     }
 
 }
@@ -268,7 +340,7 @@ export class TableGroups {
         if (!this._node) {
             this._node = XmlUtil.CreateChildNode(this._table.XmlNode, "TableGroups");
         }
-        let cnode = XmlUtil.CreateChildNode(this._node, "TableGroups");
+        let cnode = XmlUtil.CreateChildNode(this._node, "TableGroup");
         let ds = new TableGroup(this, cnode);
         ds.Name = name;
         this._items.push(ds);
@@ -281,6 +353,10 @@ export class TableGroups {
         if (this._items.length === 0) {
             this._table.XmlNode.removeChild(this._node);
             this._node = null;
+        }
+        //如果有GroupHeader or GroupFooter需要刷新
+        if (item.Header !== null || item.Footer !== null) {
+            this.Table.Parent.Invalidate();
         }
     }
 
