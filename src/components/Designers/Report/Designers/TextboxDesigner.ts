@@ -1,10 +1,11 @@
 import ReportItemDesigner from './ReportItemDesigner'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
 import { TextAlignEnum, VerticalAlignEnum } from './ReportStyle';
+import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
 export default class TextboxDesigner extends ReportItemDesigner {
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         let b = this.Bounds; // 注意在表格内是计算出来的
         g.save();
         g.beginPath();

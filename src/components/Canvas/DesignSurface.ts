@@ -104,6 +104,10 @@ export default class DesignSurface {
     }
 
     //===============刷新与绘制方法===================
+    public GetRenderingContext(): CanvasRenderingContext2D {
+        return this._canvas.getContext("2d") as CanvasRenderingContext2D;
+    }
+
     public Invalidate(clip?: Rectangle): void {
         //先确定更新区域
         var area: Rectangle;

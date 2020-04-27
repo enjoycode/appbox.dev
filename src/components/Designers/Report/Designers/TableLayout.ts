@@ -250,15 +250,14 @@ export class TableGroup implements IPropertyOwner {
             if (!this._header) {
                 let hnode = XmlUtil.CreateChildNode(this._node, "Header");
                 this._header = new TableSectionDesigner(this, hnode);
-                this._header.InsertRow(0); //别忘了插一行，已经同步Table高度
-                this.Owner.Table.Parent.Invalidate();
+                this.Owner.Table.AddGroupSection(this._header);
             }
         } else {
             if (this._header) {
                 let hnode = XmlUtil.GetNamedChildNode(this._node, "Header");
                 this._node.removeChild(hnode);
-                this.Owner.Table.Bounds.Height -= this._header.GetRowsHeight();
-                this.Owner.Table.Parent.Invalidate();
+                this.Owner.Table.RemoveGroupSection(this._header);
+                this._header = null;
             }
         }
     }
@@ -267,15 +266,14 @@ export class TableGroup implements IPropertyOwner {
             if (!this._footer) {
                 let hnode = XmlUtil.CreateChildNode(this._node, "Footer");
                 this._footer = new TableSectionDesigner(this, hnode);
-                this._footer.InsertRow(0); //别忘了插一行，已经同步Table高度
-                this.Owner.Table.Parent.Invalidate();
+                this.Owner.Table.AddGroupSection(this._footer);
             }
         } else {
             if (this._footer) {
                 let hnode = XmlUtil.GetNamedChildNode(this._node, "Footer");
                 this._node.removeChild(hnode);
-                this.Owner.Table.Bounds.Height -= this._footer.GetRowsHeight();
-                this.Owner.Table.Parent.Invalidate();
+                this.Owner.Table.RemoveGroupSection(this._footer);
+                this._footer = null;
             }
         }
     }
@@ -354,9 +352,12 @@ export class TableGroups {
             this._table.XmlNode.removeChild(this._node);
             this._node = null;
         }
-        //如果有GroupHeader or GroupFooter需要刷新
-        if (item.Header !== null || item.Footer !== null) {
-            this.Table.Parent.Invalidate();
+        //如果有GroupHeader or GroupFooter需要通知Table移除相应的Section
+        if (item.Header) {
+            this.Table.RemoveGroupSection(item.Header);
+        }
+        if (item.Footer) {
+            this.Table.RemoveGroupSection(item.Footer);
         }
     }
 

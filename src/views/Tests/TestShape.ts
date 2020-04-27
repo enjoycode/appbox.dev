@@ -22,7 +22,7 @@ export default class TestShape extends ItemDesigner {
         this.InvalidateOnBoundsChanged(oldBounds); // this.Invalidate();
     }
 
-    public Paint(ctx: CanvasRenderingContext2D): void {
+    public Paint(ctx: CanvasRenderingContext2D, clip?: Rectangle): void {
         ctx.fillStyle = "green";
         ctx.fillRect(0, 0, this._bounds.Width, this._bounds.Height);
         ctx.strokeRect(0, 0, this._bounds.Width, this._bounds.Height);

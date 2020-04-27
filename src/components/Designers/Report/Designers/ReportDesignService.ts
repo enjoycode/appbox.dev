@@ -156,10 +156,12 @@ export default class ReportDesignService implements IDesignService {
         // 计算出当前列
         let reportItem = selection[0] as ReportItemDesigner;
         let row = reportItem.Cell.Row;
+        let table = row.Owner.Table;
         let colIndex = reportItem.Cell.ColIndex;
         if (!before) { colIndex++; }
-        row.Owner.Table.InsertColumn(colIndex, 100);
-        row.Owner.Table.Parent.Invalidate(); //需要重画
+        let oldTableBounds = table.Bounds.Clone();
+        table.InsertColumn(colIndex, 100);
+        table.InvalidateOnBoundsChanged(oldTableBounds); //需要重画合并区域
     }
 
     public DeleteColumn(): string | null {
@@ -175,9 +177,10 @@ export default class ReportDesignService implements IDesignService {
         if (table.Columns.length === 1) { return "Cann't delete last column."; }
         let colIndex = reportItem.Cell.ColIndex;
         let selectCellIndex = colIndex === 0 ? 0 : colIndex - 1;
-        reportItem.Cell.Row.Owner.Table.DeleteColumn(colIndex);
+        let oldTableBounds = table.Bounds.Clone();
+        table.DeleteColumn(colIndex);
         this._surface.SelectionService.SelectItem(row.Cells[selectCellIndex].Target); //重新选择单元格
-        table.Parent.Invalidate(); //需要重画
+        table.InvalidateOnBoundsChanged(oldTableBounds); //需要重画合并区域
     }
 
     // public TableOperation(opt: string): void {

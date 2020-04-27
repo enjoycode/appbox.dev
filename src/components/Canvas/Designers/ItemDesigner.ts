@@ -245,35 +245,47 @@ export default abstract class ItemDesigner implements IPropertyOwner {
     public OnRemoveFromSurface(): void { }
 
     //============绘制方法===========
-    public Invalidate(): void {
-        if (this.Surface) {
-            var ptCanvas = this.PointToSurface(new Point(0, 0));
-            var rect = new Rectangle(ptCanvas.X, ptCanvas.Y, this.Bounds.Width, this.Bounds.Height);
-            //rect.Inflate(1,1);
-            // TODO:*** 直接转换坐标后调用Paint重画
-            this.Surface.Invalidate(rect); // Rectangle.Ceiling(rectpf0Lda
-        }
+    /**
+     * 重绘当前组件
+     * @param clip 如果非空只重绘指定区域
+     */
+    public Invalidate(clip: Rectangle | null = null): void {
+        if (!this.Surface) { return; }
+        //直接转换坐标后调用Paint重画，注意需要扣减本身Location，即相对于上级的坐标
+        let b = this.Bounds;
+        let ptCanvas = this.PointToSurface(new Point(0, 0));
+        ptCanvas.X -= b.X;
+        ptCanvas.Y -= b.Y;
+        let g = this.Surface.GetRenderingContext();
+        //TODO:保险的话最好save & restore
+        g.translate(ptCanvas.X, ptCanvas.Y);
+        this.Paint(g, clip);
+        g.translate(-ptCanvas.X, -ptCanvas.Y);
+
+        this.Surface.Adorners.Invalidate(); //需要重绘装饰层
     }
 
     /**
-     * 元素Bounds改变后通知Canvas重新绘制合并区域
+     * 元素Bounds改变后通知Canvas重新绘制新旧合并区域
      */
-    protected InvalidateOnBoundsChanged(oldBounds: Rectangle): void { //TODO: 移除此方法，与Invalidate()合并
+    public InvalidateOnBoundsChanged(oldBounds: Rectangle): void { //TODO: 移除此方法，与Invalidate()合并
         if (!this.Surface) { return; }
 
-        let ptSurface = this.Parent == null ? new Point(0, 0) : this.Parent.PointToSurface(new Point(0, 0));
-        var invalidRect = Rectangle.Union(oldBounds, this.Bounds);
-        invalidRect.X += ptSurface.X;
-        invalidRect.Y += ptSurface.Y;
+        // let ptSurface = this.Parent == null ? new Point(0, 0) : this.Parent.PointToSurface(new Point(0, 0));
+        var invalidRect = Rectangle.Union(oldBounds, this.Bounds); //画旧区域与新区域的Union
+        // invalidRect.X += ptSurface.X;
+        // invalidRect.Y += ptSurface.Y;
         // invalidRect.Inflate(1, 1);
-        // console.log("Old:", oldBounds.X, oldBounds.Y, oldBounds.Width, oldBounds.Height);
-        // console.log("New:", this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
-        // console.log("Union:", invalidRect);
 
-        this.Surface.Invalidate(invalidRect); //画旧区域与新区域的Union, TODO: invalidate parent
+        //this.Surface.Invalidate(invalidRect); //TODO: invalidate parent
+        if (this.Parent) {
+            this.Parent.Invalidate(invalidRect); //TODO: 画指定区域
+        } else {
+            this.Surface.Invalidate(invalidRect);
+        }
     }
 
-    public abstract Paint(ctx: CanvasRenderingContext2D): void;
+    public abstract Paint(ctx: CanvasRenderingContext2D, clip?: Rectangle): void;
 
     //============Mouse相关方法==========
     /**
@@ -331,7 +343,7 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         item.OnAddToSurface(byCreate);
         // if (!byCreate) {
         //非DiagramHostItem需要刷新Canvas
-        this.Invalidate();
+        this.Invalidate(item.Bounds); //仅需重绘子元素区域
         // }
     }
 
@@ -344,7 +356,7 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         let index = this._items.indexOf(item);
         this._items.splice(index, 1);
         //todo: 非DiagramHostItem需要刷新Canvas
-        this.Invalidate();
+        this.Invalidate(item.Bounds); //仅需重绘子元素区域
     }
 
     //============填充服务端数据方法===========

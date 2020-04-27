@@ -4,7 +4,7 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
 import XmlUtil from './XmlUtil';
-import { TableColumn, TableGroups } from './TableLayout';
+import { TableColumn, TableGroups, TableRow } from './TableLayout';
 import TableSectionDesigner from './TableSectionDesigner';
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
@@ -99,7 +99,7 @@ export default class TableDesigner extends ReportItemDesigner {
         this.Bounds.Width = this.Bounds.Height = 0; //注意: reset width & height，Insert时重新计算
         let colWidth = Math.round(initWidth / 3);
         for (let i = 0; i < 3; i++) {
-            this.InsertColumn(i, colWidth);
+            this.InsertColumn(i, colWidth, false);
         }
         let rowHeight = Math.round(initHeight / 2);
         let hnode = XmlUtil.CreateChildNode(this.xmlNode, "Header");
@@ -112,7 +112,25 @@ export default class TableDesigner extends ReportItemDesigner {
         this.AddItem(this._details, true);
     }
 
-    public InsertColumn(index: number, width: number = 100) {
+    public AddGroupSection(gs: TableSectionDesigner) {
+        let oldBounds = this.Bounds.Clone();
+        gs.InsertRow(0); //别忘了插一行，已经同步Table高度
+        this.InvalidateOnBoundsChanged(oldBounds);
+    }
+
+    public RemoveGroupSection(gs: TableSectionDesigner) {
+        let oldBounds = this.Bounds.Clone();
+        this.Bounds.Height -= gs.GetRowsHeight();
+        this.InvalidateOnBoundsChanged(oldBounds);
+    }
+
+    /**
+     * 添加列，并同步表格宽度
+     * @param index 添加列位置
+     * @param width 列宽度
+     * @param needInvalidate 仅新建的表格初始化行列时设为false
+     */
+    public InsertColumn(index: number, width: number = 100, needInvalidate = true) {
         let len = this._columnsNode.childNodes.length;
         if (index > len) { index = len; }
         // 添加Xml节点及列
@@ -132,10 +150,10 @@ export default class TableDesigner extends ReportItemDesigner {
         this.Bounds.Width += width; //更新缓存值
     }
 
-    public MoveColumn(fromIndex: number, toIndex: number) {
-
-    }
-
+    /**
+     * 删除列并同步表格宽度
+     * @param index 列位置
+     */
     public DeleteColumn(index: number) {
         if (this._columns.length === 1) { return; }
         let col = this._columns[index];
@@ -152,7 +170,26 @@ export default class TableDesigner extends ReportItemDesigner {
         this.Bounds.Width -= col.Width; //更新缓存值
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public MoveColumn(fromIndex: number, toIndex: number) {
+        //TODO:
+    }
+
+    public ResizeRow(row: TableRow, delta: number): void {
+        row.Height += delta;
+        //如果Row对应的TableSection.Bounds改为缓存，则这里需要重新计算
+        let oldBounds = this.Bounds.Clone();
+        this.Bounds.Height += delta; //需要更新缓存值
+        this.InvalidateOnBoundsChanged(oldBounds);
+    }
+
+    public ResizeColumn(col: TableColumn, delta: number): void {
+        col.Width += delta;
+        let oldBounds = this.Bounds.Clone();
+        this.Bounds.Width += delta; //需要更新缓存值
+        this.InvalidateOnBoundsChanged(oldBounds);
+    }
+
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         g.translate(this.Bounds.X, this.Bounds.Y);
         for (const item of this.Items) {
             item.Paint(g);
@@ -228,7 +265,7 @@ export default class TableDesigner extends ReportItemDesigner {
                 {
                     title: "Groups", readonly: false, editor: "TableGroups",
                     getter: () => this,
-                    setter: v => {/* do nothing */}
+                    setter: v => {/* do nothing */ }
                 }
             ]
         });

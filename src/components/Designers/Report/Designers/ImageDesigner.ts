@@ -3,6 +3,7 @@ import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
 import ReportRootDesigner from './ReportRootDesigner';
 import { TableCell } from './TableLayout';
 import XmlUtil from './XmlUtil';
+import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
 export default class ImageDesigner extends ReportItemDesigner {
 
@@ -24,7 +25,7 @@ export default class ImageDesigner extends ReportItemDesigner {
         }
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         let b = this.Bounds; // 注意在表格内是计算出来的
         g.save();
         g.beginPath();

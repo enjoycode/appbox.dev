@@ -62,7 +62,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
             return;
         }
 
-        let oldBounds = new Rectangle(this._bounds.X, this._bounds.Y, this._bounds.Width, this._bounds.Height);
+        let oldBounds = this._bounds.Clone();
         //根据specified设置
         if (specified & BoundsSpecified.X) { this._bounds.X = x; }
         if (specified & BoundsSpecified.Y) { this._bounds.Y = y; }
@@ -116,11 +116,11 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     /**
      * override for in TableCell
      */
-    public Invalidate(): void {
+    public Invalidate(clip: Rectangle | null = null): void {
         if (this._cell) {
-            this._cell.Row.Owner.Table.Invalidate();
+            this._cell.Row.Owner.Table.Invalidate(); //TODO:仅画指定单元格区域
         } else {
-            super.Invalidate();
+            super.Invalidate(clip);
         }
     }
 

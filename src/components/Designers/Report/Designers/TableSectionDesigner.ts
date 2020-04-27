@@ -65,6 +65,11 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         return total;
     }
 
+    /**
+     * 插入行并同步表格高度
+     * @param index 插入位置
+     * @param height 行高度
+     */
     public InsertRow(index: number, height: number = 20) {
         let len = this._rowsNode.childNodes.length;
         if (index < 0 || index >= len) { index = len; }
@@ -103,7 +108,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         return cell.Target;
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         let b = this.Bounds;
         g.translate(b.X, b.Y);
         let diffY = 0;

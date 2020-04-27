@@ -1,4 +1,5 @@
 import ReportItemDesigner from './ReportItemDesigner'
+import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
 export default class ChartDesigner extends ReportItemDesigner /* ReportXmlNodeDesigner */ {
     private _bitmap?: HTMLImageElement;
@@ -15,7 +16,7 @@ export default class ChartDesigner extends ReportItemDesigner /* ReportXmlNodeDe
     //     }
     // }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         // 绘制边框
         g.strokeStyle = "rgb(173,219,241)";
         g.lineWidth = 1;

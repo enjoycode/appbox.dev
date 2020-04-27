@@ -174,7 +174,7 @@ export default class ConnectionDesigner extends ItemDesigner implements IConnect
     }
 
     // ====Overrides Methods====
-    public Invalidate(): void {
+    public Invalidate(clip: Rectangle | null = null): void {
         if (this.Surface)
             this.Surface.Invalidate();
     }
@@ -503,7 +503,7 @@ export default class ConnectionDesigner extends ItemDesigner implements IConnect
         //    this.ElementTree.RootElement.Invalidate();
     }
 
-    public Paint(ctx: CanvasRenderingContext2D): void {
+    public Paint(ctx: CanvasRenderingContext2D, clip?: Rectangle): void {
         // if (this.isDirty) {
         //     this.Update(true);
         //     this.isDirty = false;

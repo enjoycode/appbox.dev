@@ -425,16 +425,16 @@ export default class CellSelectionAdorner extends DesignAdorner {
             let isDetailsRow = sectionType === "Details";
             for (const row of section.Rows) {
                 if (isDetailsRow) {
-                    g.strokeStyle = "black";
+                    // g.strokeStyle = "black";
                     let dx = -offset + 2;
                     let dy = y + row.Height / 2 - 3;
                     for (let i = 0; i < 3; i++) {
                         g.moveTo(dx, dy);
-                        g.lineTo(dx + 7, dy);
+                        g.lineTo(dx + 6, dy);
                         g.stroke();
                         dy += 3;
                     }
-                    g.strokeStyle = SelectionColor;
+                    // g.strokeStyle = SelectionColor;
                 }
                 // g.fillText(sectionTitle, -offset + 1.5, y + row.Height / 2);
                 g.strokeRect(-offset, y, offset, row.Height);
@@ -530,21 +530,17 @@ export default class CellSelectionAdorner extends DesignAdorner {
         //TODO: debounce延迟处理
         if (this._hitTestElement) {
             if (this._hitTestElement instanceof ResizeHandle) {
-                let tableDesigner = this.Target as TableDesigner;
+                let table = this.Target as TableDesigner;
                 if (this._hitTestElement.Row) { // resize row height
                     if (e.DeltaY === 0) { return; }
-                    this._hitTestElement.Row.Height += e.DeltaY;
-                    //如果Row对应的TableSection.Bounds改为缓存，则这里需要重新计算
-                    tableDesigner.Bounds.Height += e.DeltaY; //需要更新缓存值
+                    table.ResizeRow(this._hitTestElement.Row, e.DeltaY);
                 } else { // resize column width
                     if (e.DeltaX === 0) { return; }
-                    this._hitTestElement.Column.Width += e.DeltaX;
-                    tableDesigner.Bounds.Width += e.DeltaX; //需要更新缓存值
+                    table.ResizeColumn(this._hitTestElement.Column, e.DeltaX);
                 }
-                tableDesigner.Parent.Invalidate(); // tableDesigner.Invalidate();
             } else if (this._hitTestElement instanceof MoveTableHandle) {
-                let tableDesigner = this.Target as TableDesigner;
-                tableDesigner.Move(e.DeltaX, e.DeltaY);
+                let table = this.Target as TableDesigner;
+                table.Move(e.DeltaX, e.DeltaY);
             }
         }
     }
@@ -552,8 +548,8 @@ export default class CellSelectionAdorner extends DesignAdorner {
     public OnMouseUp(e: MouseEventArgs) {
         if (!this._hitTestElement) { return; }
         if (this._hitTestElement instanceof MoveTableHandle) {
-            let tableDesigner = this.Target as TableDesigner;
-            tableDesigner.OnEndMove();
+            let table = this.Target as TableDesigner;
+            table.OnEndMove();
         } else if (this._hitTestElement instanceof SelectHandle) {
             this.Target.Surface.SelectionService.SelectItem(this._hitTestElement.Target);
         }

@@ -69,7 +69,7 @@ export default class ActivityDesigner extends ShapeDesigner {
         super.OnRemoveFromSurface();
     }
 
-    public Invalidate(): void {
+    public Invalidate(clip: Rectangle | null = null): void {
         /*if (this.Parent != null)
             this.Parent.Invalidate();
         else*/
@@ -150,7 +150,7 @@ export default class ActivityDesigner extends ShapeDesigner {
     //         throw new NotImplementedException();
     //     }
     // }       
-    public Paint(ctx: CanvasRenderingContext2D): void {
+    public Paint(ctx: CanvasRenderingContext2D, clip?: Rectangle): void {
         if (this._painter != null) {
             this._painter.Paint(ctx, this._title);
         } else {

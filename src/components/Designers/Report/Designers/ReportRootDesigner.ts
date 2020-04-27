@@ -65,7 +65,7 @@ export default class ReportRootDesigner extends ReportXmlNodeDesigner {
         // do nothing
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         //不用画也不用转换坐标
         if (this.Items) {
             for (const item of this.Items) {

@@ -2,6 +2,7 @@ import ReportItemDesigner from './ReportItemDesigner';
 import { TableCell } from './TableLayout';
 import XmlUtil from './XmlUtil';
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
+import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
 export default class BarcodeDesigner extends ReportItemDesigner /* extends Rectangle */ {
 
@@ -42,7 +43,7 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
         this.Invalidate();
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         let b = this.Bounds; // 注意在表格内是计算出来的
         g.save();
         g.beginPath();

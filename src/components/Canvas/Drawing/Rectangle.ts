@@ -37,6 +37,10 @@ export default class Rectangle {
             (y >= this.Y) && (y < this.Bottom));
     }
 
+    public Clone(): Rectangle {
+        return new Rectangle(this.X, this.Y, this.Width, this.Height);
+    }
+
     //===============Static Helpers===============
     public static Union(a: Rectangle, b: Rectangle): Rectangle {
         let left = Math.min(a.X, b.X);

@@ -108,6 +108,6 @@ export default class ShapeDesigner extends ItemDesigner implements IShape {
         this._bounds.Y = newY;
     }
 
-    public Paint(ctx: CanvasRenderingContext2D): void { }
+    public Paint(ctx: CanvasRenderingContext2D, clip?: Rectangle): void { }
 
 }

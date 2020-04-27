@@ -66,7 +66,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
             this.Parent.Bounds.Height += diff;
         }
         if (this.Surface) {
-            this.Surface.Invalidate(); //TODO:不需要全部重画，变动以下部分重画即可
+            this.Parent.Invalidate(); //TODO:不需要全部重画，变动以下部分重画即可
         }
     }
 
@@ -81,10 +81,17 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         }
     }
 
-    public Paint(g: CanvasRenderingContext2D): void {
+    public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         g.save();
         g.beginPath();
-        g.rect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
+        if (clip) { //裁剪相交区域
+            g.rect(Math.max(clip.X, this.Bounds.X),
+                Math.max(clip.Y + this.Bounds.Y, this.Bounds.Y),
+                Math.min(clip.Width, this.Bounds.Width - clip.X),
+                Math.min(clip.Height, this.Bounds.Height - clip.Y));
+        } else {
+            g.rect(this.Bounds.X, this.Bounds.Y, this.Bounds.Width, this.Bounds.Height);
+        }
         g.clip();
 
         g.fillStyle = "white";
@@ -97,7 +104,9 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         if (this.Items) {
             g.translate(this.Bounds.X, this.Bounds.Y);
             for (const item of this.Items) {
-                item.Paint(g);
+                if (!clip || clip.IntersectsWith(item.Bounds)) {
+                    item.Paint(g);
+                }
             }
             g.translate(-this.Bounds.X, -this.Bounds.Y);
         }
