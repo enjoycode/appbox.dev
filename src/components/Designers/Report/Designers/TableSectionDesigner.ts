@@ -9,6 +9,9 @@ import Point from '@/components/Canvas/Drawing/Point';
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner';
 import { IPropertyCatalog, IPropertyItem } from '@/components/Canvas/Interfaces/IPropertyPanel';
 
+/**
+ * Table's Header/Details/Footer or TableGroup's Header/Footer
+ */
 export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
     private readonly _rowsNode: Node;
@@ -21,21 +24,17 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
 
     private readonly _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //每次重新计算，这里仅缓存
     public get Bounds(): Rectangle {
-        //暂计算，另暂不考虑TableGroups的高度
-        let name = this.getPropertyOwnerType();
-        this._bounds.Y = 0; //reset it
-        if (name === "Details") {
-            if (this.Table.Header) { this._bounds.Y += this.Table.Header.Bounds.Height; }
-        } else if (name === "Footer") {
-            if (this.Table.Header) { this._bounds.Y += this.Table.Header.Bounds.Height; }
-            if (this.Table.Details) { this._bounds.Y += this.Table.Details.Bounds.Height; }
+        //每次计算所得
+        let offsetY = 0; //相对于表格
+        for (const item of this.Table.Items) {
+            const sec = item as TableSectionDesigner;
+            if (sec === this) { break; }
+            offsetY += sec.GetRowsHeight();
         }
 
-        this._bounds.Height = 0; //reset it
-        for (const row of this._rows) {
-            this._bounds.Height += row.Height;
-        }
         this._bounds.X = 0;
+        this._bounds.Y = offsetY;
+        this._bounds.Height = this.GetRowsHeight();
         this._bounds.Width = this.Table.Bounds.Width;
         return this._bounds;
     }
@@ -52,6 +51,14 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         for (const cnode of this._rowsNode.childNodes) {
             this._rows.push(new TableRow(this, cnode));
         }
+    }
+
+    public GetRowsHeight(): number {
+        let total = 0;
+        for (const row of this._rows) {
+            total += row.Height;
+        }
+        return total;
     }
 
     public InsertRow(index: number, height: number = 100) {

@@ -5,6 +5,7 @@ import ReportItemDesigner from './ReportItemDesigner';
 import TextboxDesigner from './TextboxDesigner';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 import ReportItemFactory from './ReportItemFactory';
+import Grouping from './Grouping';
 
 export class TableColumn {
 
@@ -194,5 +195,92 @@ export class TableCell {
      */
     public ConvertTo(target: ReportItemDesigner): void {
         // TODO:
+    }
+}
+
+export class TableGroup {
+
+    private readonly _owner: TableGroups;
+    private readonly _node: Node;
+    public get Node(): Node { return this._node; }
+    private _grouping: Grouping | null;
+
+    public get Grouping(): Grouping {
+        if (!this._grouping) {
+            let gnode = XmlUtil.CreateChildNode(this._node, "Grouping");
+            this._grouping = new Grouping(gnode);
+        }
+        return this._grouping;
+    }
+
+    public get Name(): string {
+        if (!this._grouping) { return ""; }
+        return this._grouping.Name;
+    }
+    public set Name(value) {
+        this.Grouping.Name = value;
+    }
+
+    public Header: TableSectionDesigner | null;
+    public Footer: TableSectionDesigner | null;
+
+    constructor(owner: TableGroups, node: Node) {
+        this._owner = owner;
+        this._node = node;
+        let gnode = XmlUtil.GetNamedChildNode(node, "Grouping");
+        if (gnode) {
+            this._grouping = new Grouping(gnode);
+        }
+    }
+}
+
+export class TableGroups {
+    private readonly _table: TableDesigner;
+    private _node: Node; // TableGroups node of Report
+
+    private readonly _items: TableGroup[] = [];
+    public get Items(): TableGroup[] { return this._items; }
+
+    constructor(table: TableDesigner) {
+        this._table = table;
+        this._node = XmlUtil.GetNamedChildNode(table.XmlNode, "TableGroups");
+        if (this._node) {
+            for (const cnode of this._node.childNodes) {
+                if (cnode.nodeType !== Node.ELEMENT_NODE) { continue; }
+                this._items.push(new TableGroup(this, cnode));
+            }
+        }
+    }
+
+    public Add(name: string): void {
+        //TODO: check name exists
+        if (!this._node) {
+            this._node = XmlUtil.CreateChildNode(this._table.XmlNode, "TableGroups");
+        }
+        let cnode = XmlUtil.CreateChildNode(this._node, "TableGroups");
+        let ds = new TableGroup(this, cnode);
+        ds.Name = name;
+        this._items.push(ds);
+    }
+
+    public Remove(item: TableGroup): void {
+        //TODO: 检查是否有引用
+        this._node.removeChild(item.Node);
+        this._items.splice(this._items.indexOf(item), 1);
+        if (this._items.length === 0) {
+            this._table.XmlNode.removeChild(this._node);
+            this._node = null;
+        }
+    }
+
+    /**
+     * 获取所有DataSet的名称集合，用于属性面板绑定
+     */
+    public GetNames(): string[] {
+        let res: string[] = [];
+        for (const ds of this._items) {
+            res.push(ds.Name);
+        }
+        return res;
     }
 }

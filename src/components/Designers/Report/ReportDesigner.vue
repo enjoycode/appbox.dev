@@ -101,6 +101,7 @@ export default {
             $runtime.channel.invoke('sys.DesignService.OpenReportModel', [this.target.ID]).then(res => {
                 _this.designService.LoadDesigners(res)
             }).catch(err => {
+                console.warn(err)
                 _this.$message.error('Open Report error:' + err)
             })
         },

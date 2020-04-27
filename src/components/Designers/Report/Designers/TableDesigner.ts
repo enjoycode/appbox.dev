@@ -51,24 +51,25 @@ export default class TableDesigner extends ReportItemDesigner {
             let hnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Header");
             if (hnode) {
                 this._header = new TableSectionDesigner(this, hnode);
-                this.Bounds.Height += this._header.Bounds.Height;
+                this.Bounds.Height += this._header.GetRowsHeight();
                 this.AddItem(this._header);
             }
             let dnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Details");
             if (dnode) {
                 this._details = new TableSectionDesigner(this, dnode);
-                this.Bounds.Height += this._details.Bounds.Height;
+                this.Bounds.Height += this._details.GetRowsHeight();
                 this.AddItem(this._details);
             }
             let fnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Footer");
             if (fnode) {
                 this._footer = new TableSectionDesigner(this, fnode);
-                this.Bounds.Height += this._footer.Bounds.Height;
+                this.Bounds.Height += this._footer.GetRowsHeight();
                 this.AddItem(this._footer);
             }
         }
     }
 
+    // override for create table
     public OnAddToSurface(byCreate: boolean): void {
         if (!byCreate) { return; }
         //注意Table只需要设置Left & Top
@@ -150,7 +151,7 @@ export default class TableDesigner extends ReportItemDesigner {
         this.EndPos = this.PointToClient(new Point(x, y));
     }
 
-    public GetCellsInBound(dragRect: Rectangle): Array<ItemDesigner> | null {
+    private GetCellsInBound(dragRect: Rectangle): Array<ItemDesigner> | null {
         // TODO: 不允许跨Section选择
         var dragCell: Array<ItemDesigner> = new Array<ItemDesigner>();
         // let rowBounds = new Rectangle(0, 0, 0, 0);
