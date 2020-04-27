@@ -79,7 +79,7 @@ export class TableRow {
 
     public InsertCell(colIndex: number) {
         let pos = this.FindCellIndex(colIndex);
-        let cellNode = XmlUtil.CreateChildNode(this._cellsNode, "TableCell");
+        let cellNode = XmlUtil.CreateChildNode(this._cellsNode, "TableCell", colIndex);
         let cell = new TableCell(this, cellNode);
         this._cells.splice(pos, 0, cell);
     }
@@ -201,6 +201,7 @@ export class TableCell {
 export class TableGroup {
 
     private readonly _owner: TableGroups;
+    public get Owner(): TableGroups { return this._owner; }
     private readonly _node: Node;
     public get Node(): Node { return this._node; }
     private _grouping: Grouping | null;
@@ -231,11 +232,21 @@ export class TableGroup {
         if (gnode) {
             this._grouping = new Grouping(gnode);
         }
+        let hnode = XmlUtil.GetNamedChildNode(node, "Header");
+        if (hnode) {
+            this.Header = new TableSectionDesigner(this, hnode);
+        }
+        let fnode = XmlUtil.GetNamedChildNode(node, "Footer");
+        if (fnode) {
+            this.Footer = new TableSectionDesigner(this, fnode);
+        }
     }
+
 }
 
 export class TableGroups {
     private readonly _table: TableDesigner;
+    public get Table(): TableDesigner { return this._table; }
     private _node: Node; // TableGroups node of Report
 
     private readonly _items: TableGroup[] = [];

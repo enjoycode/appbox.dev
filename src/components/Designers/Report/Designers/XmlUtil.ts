@@ -41,8 +41,13 @@ export default class XmlUtil {
         return cnode;
     }
 
-    public static CreateChildNode(parent: Node, name: string): Node {
-        return parent.appendChild(parent.ownerDocument.createElement(name));
+    public static CreateChildNode(parent: Node, name: string, pos: number = -1): Node {
+        let newNode = parent.ownerDocument.createElement(name);
+        if (pos < 0 || pos >= parent.childNodes.length) {
+            return parent.appendChild(newNode);
+        } else {
+            return parent.insertBefore(newNode, parent.childNodes[pos]);
+        }
     }
 
     /**

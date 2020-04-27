@@ -1,9 +1,9 @@
 <template>
     <div>
         <el-button @click="openEditor" style="width:100%">...</el-button>
-        <el-dialog :before-close="closingEditor" title="Report Parameters" :visible.sync="dlgVisible" width="600px">
+        <el-dialog :before-close="closingEditor" title="Table Groups" :visible.sync="dlgVisible" width="600px">
             <div>
-                <el-input v-model="newParameterName" placeholder="New Parameter Name" style="width:180px"></el-input>
+                <el-input v-model="newGroupName" placeholder="New Group Name" style="width:180px"></el-input>
                 <el-button-group>
                     <el-button @click="onAdd">Add</el-button>
                     <el-button @click="onDel">Remove</el-button>
@@ -13,10 +13,10 @@
                 <el-row style="height:260px">
                     <el-col :span="12" style="height:100%">
                         <!-- 列表 -->
-                        <el-table :data="parameters" @current-change="onCurrentChange" 
+                        <el-table :data="groups" @current-change="onCurrentChange" 
                             highlight-current-row border size="mini" empty-text=" " height="100%">
                             <el-table-column prop="Name" label="Name"></el-table-column>
-                            <el-table-column prop="DataType" label="DataType"></el-table-column>
+                            <!-- <el-table-column prop="DataType" label="DataType"></el-table-column> -->
                         </el-table>
                     </el-col>
                     <el-col :span="12" style="height:100%">
@@ -41,11 +41,11 @@ export default {
     props: { target: { type: Object } },
     data() {
         return {
-            value: null,            // ReportRootDesigner
+            value: null,            // TableDesigner
             dlgVisible: false,
-            newParameterName: "",   //新建的名称
-            currentRow: null,      //当前选择的
-            parameters: []
+            newGroupName: "",       //新建的名称
+            currentRow: null,       //当前选择的
+            groups: []
         }
     },
     watch: {
@@ -56,7 +56,7 @@ export default {
     methods: {
         openEditor() {
             this.dlgVisible = true
-            this.$set(this, 'parameters', this.value.Parameters.Items)
+            this.$set(this, 'groups', this.value.Groups.Items)
         },
         closingEditor(done) {
             // TODO:验证名称惟一性
@@ -64,15 +64,15 @@ export default {
         },
         onAdd() {
             // TODO: check exists
-            this.value.Parameters.Add(this.newParameterName);
-            this.newParameterName = ""; //reset it
+            this.value.Groups.Add(this.newGroupName);
+            this.newGroupName = ""; //reset it
         },
         onDel() {
             if (!this.currentRow) {
-                this.$message.warning("Please select a Parameter first")
+                this.$message.warning("Please select a TableGroup first")
                 return
             }
-            this.value.Parameters.Remove(this.currentRow)
+            this.value.Groups.Remove(this.currentRow)
             this.currentRow = null
             this.$refs.props.setPropertyOwner(null)
         },

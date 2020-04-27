@@ -17,6 +17,7 @@ import ParametersEditor from "../PropertyEditors/ParametersEditor.vue";
 import DataSetsEditor from "../PropertyEditors/DataSetsEditor.vue";
 import BorderStyleEditor from "../PropertyEditors/BorderStyleEditor.vue";
 import EmbeddedImagesEditor from "../PropertyEditors/EmbeddedImagesEditor.vue";
+import TableGroupsEditor from "../PropertyEditors/TableGroupsEditor.vue";
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -226,7 +227,8 @@ export default class ReportDesignService implements IDesignService {
         ReportParameters: ParametersEditor,
         ReportDataSets: DataSetsEditor,
         ReportEmbeddedImages: EmbeddedImagesEditor,
-        BorderStyle: BorderStyleEditor
+        BorderStyle: BorderStyleEditor,
+        TableGroups: TableGroupsEditor
     }
 
     public GetPropertyEditor(type: string): any {

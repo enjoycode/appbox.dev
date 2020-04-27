@@ -4,7 +4,7 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
 import XmlUtil from './XmlUtil';
-import { TableColumn } from './TableLayout';
+import { TableColumn, TableGroups } from './TableLayout';
 import TableSectionDesigner from './TableSectionDesigner';
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
@@ -23,6 +23,8 @@ export default class TableDesigner extends ReportItemDesigner {
     private _footer: TableSectionDesigner | null;
     public get Footer(): TableSectionDesigner | null { return this._footer; }
 
+    public readonly Groups: TableGroups;
+
     public get IsContainer(): boolean { return true; }
 
     public get Behavior(): DesignBehavior {
@@ -39,7 +41,7 @@ export default class TableDesigner extends ReportItemDesigner {
 
     constructor(xmlNode: Node) {
         super(xmlNode);
-
+        this.Groups = new TableGroups(this);
         // 先尝试读取列
         this._columnsNode = XmlUtil.GetOrCreateChildNode(this.xmlNode, "TableColumns");
         if (this._columnsNode.childNodes.length > 0) { // 表示非新建的，新建的在OnAddToSurface时初始化
@@ -47,19 +49,35 @@ export default class TableDesigner extends ReportItemDesigner {
                 this._columns.push(new TableColumn(this, this._columnsNode.childNodes[i]));
                 this.Bounds.Width += this._columns[i].Width;
             }
-            // 再尝试读取Header/Details/Footer, TODO:TableGroups处理
+            // 再尝试读取Header/Details/Footer and TableGroups
             let hnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Header");
             if (hnode) {
                 this._header = new TableSectionDesigner(this, hnode);
                 this.Bounds.Height += this._header.GetRowsHeight();
                 this.AddItem(this._header);
             }
+
+            for (const group of this.Groups.Items) {
+                if (group.Header) {
+                    this.Bounds.Height += group.Header.GetRowsHeight();
+                    this.AddItem(group.Header);
+                }
+            }
+
             let dnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Details");
             if (dnode) {
                 this._details = new TableSectionDesigner(this, dnode);
                 this.Bounds.Height += this._details.GetRowsHeight();
                 this.AddItem(this._details);
             }
+
+            for (const group of this.Groups.Items) {
+                if (group.Footer) {
+                    this.Bounds.Height += group.Footer.GetRowsHeight();
+                    this.AddItem(group.Footer);
+                }
+            }
+
             let fnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Footer");
             if (fnode) {
                 this._footer = new TableSectionDesigner(this, fnode);
@@ -98,7 +116,7 @@ export default class TableDesigner extends ReportItemDesigner {
         let len = this._columnsNode.childNodes.length;
         if (index > len) { index = len; }
         // 添加Xml节点及列
-        let cnode = XmlUtil.CreateChildNode(this._columnsNode, "TableColumn");
+        let cnode = XmlUtil.CreateChildNode(this._columnsNode, "TableColumn", index);
         let col = new TableColumn(this, cnode);
         col.Width = width;
         this._columns.splice(index, 0, col);
@@ -206,6 +224,11 @@ export default class TableDesigner extends ReportItemDesigner {
                     options: (this.Surface.DesignService.RootDesigner as ReportRootDesigner).DataSets.GetNames(),
                     getter: () => this.GetPropertyString("DataSetName", ""),
                     setter: v => this.SetPropertyString("DataSetName", v)
+                },
+                {
+                    title: "Groups", readonly: false, editor: "TableGroups",
+                    getter: () => this,
+                    setter: v => {/* do nothing */}
                 }
             ]
         });

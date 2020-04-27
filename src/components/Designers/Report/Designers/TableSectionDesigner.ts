@@ -1,5 +1,5 @@
 import ReportXmlNodeDesigner from './ReportXmlNodeDesigner';
-import { TableRow, TableCell } from './TableLayout';
+import { TableRow, TableCell, TableGroup } from './TableLayout';
 import TableDesigner from './TableDesigner';
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
@@ -42,9 +42,13 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
         console.warn("不允许设置TableSection的Bounds.");
     }
 
-    constructor(owner: TableDesigner, node: Node) {
+    constructor(owner: TableDesigner | TableGroup, node: Node) {
         super(node);
-        this.Table = owner;
+        if (owner instanceof TableDesigner) {
+            this.Table = owner;
+        } else {
+            this.Table = owner.Owner.Table;
+        }
 
         // 开始加载Rows
         this._rowsNode = XmlUtil.GetOrCreateChildNode(this.xmlNode, "TableRows");
