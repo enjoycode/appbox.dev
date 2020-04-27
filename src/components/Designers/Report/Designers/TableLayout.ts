@@ -250,13 +250,13 @@ export class TableGroup implements IPropertyOwner {
             if (!this._header) {
                 let hnode = XmlUtil.CreateChildNode(this._node, "Header");
                 this._header = new TableSectionDesigner(this, hnode);
-                this.Owner.Table.AddGroupSection(this._header);
+                this.Owner.Table.AddGroupSection(this, true);
             }
         } else {
             if (this._header) {
                 let hnode = XmlUtil.GetNamedChildNode(this._node, "Header");
                 this._node.removeChild(hnode);
-                this.Owner.Table.RemoveGroupSection(this._header);
+                this.Owner.Table.RemoveGroupSection(this, true);
                 this._header = null;
             }
         }
@@ -266,13 +266,13 @@ export class TableGroup implements IPropertyOwner {
             if (!this._footer) {
                 let hnode = XmlUtil.CreateChildNode(this._node, "Footer");
                 this._footer = new TableSectionDesigner(this, hnode);
-                this.Owner.Table.AddGroupSection(this._footer);
+                this.Owner.Table.AddGroupSection(this, false);
             }
         } else {
             if (this._footer) {
                 let hnode = XmlUtil.GetNamedChildNode(this._node, "Footer");
                 this._node.removeChild(hnode);
-                this.Owner.Table.RemoveGroupSection(this._footer);
+                this.Owner.Table.RemoveGroupSection(this, false);
                 this._footer = null;
             }
         }
@@ -354,10 +354,10 @@ export class TableGroups {
         }
         //如果有GroupHeader or GroupFooter需要通知Table移除相应的Section
         if (item.Header) {
-            this.Table.RemoveGroupSection(item.Header);
+            this.Table.RemoveGroupSection(item, true);
         }
         if (item.Footer) {
-            this.Table.RemoveGroupSection(item.Footer);
+            this.Table.RemoveGroupSection(item, false);
         }
     }
 

@@ -70,7 +70,7 @@ export default class TableSectionDesigner extends ReportXmlNodeDesigner {
      * @param index 插入位置
      * @param height 行高度
      */
-    public InsertRow(index: number, height: number = 20) {
+    public InsertRow(index: number, height: number = 20): void {
         let len = this._rowsNode.childNodes.length;
         if (index < 0 || index >= len) { index = len; }
 

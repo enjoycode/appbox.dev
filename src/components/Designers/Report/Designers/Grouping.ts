@@ -9,12 +9,12 @@ export default class Grouping {
 
     //TODO: 暂只支持一个表达式
     public get Expression(): string {
-        let expsNode = XmlUtil.GetNamedChildNode(this._node, "GroupExpression");
+        let expsNode = XmlUtil.GetNamedChildNode(this._node, "GroupExpressions");
         if (!expsNode || !expsNode.hasChildNodes()) { return ""; }
         return expsNode.childNodes[0].textContent;
     }
     public set Expression(value) {
-        let expsNode = XmlUtil.GetOrCreateChildNode(this._node, "GroupExpression");
+        let expsNode = XmlUtil.GetOrCreateChildNode(this._node, "GroupExpressions");
         if (!expsNode.hasChildNodes()) {
            XmlUtil.CreateChildNode(expsNode, "GroupExpression")
         } 

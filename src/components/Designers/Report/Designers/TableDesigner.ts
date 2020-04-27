@@ -4,7 +4,7 @@ import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import CellSelectionAdorner from '../Adorners/CellSelectionAdorner'
 import Point from '@/components/Canvas/Drawing/Point'
 import XmlUtil from './XmlUtil';
-import { TableColumn, TableGroups, TableRow } from './TableLayout';
+import { TableColumn, TableGroups, TableRow, TableGroup } from './TableLayout';
 import TableSectionDesigner from './TableSectionDesigner';
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
@@ -112,15 +112,46 @@ export default class TableDesigner extends ReportItemDesigner {
         this.AddItem(this._details, true);
     }
 
-    public AddGroupSection(gs: TableSectionDesigner) {
+    public AddGroupSection(g: TableGroup, isHeader: boolean) {
         let oldBounds = this.Bounds.Clone();
-        gs.InsertRow(0); //别忘了插一行，已经同步Table高度
-        this.InvalidateOnBoundsChanged(oldBounds);
+        let insertPos = 0;
+        if (this.Header) { insertPos++; }
+
+        if (isHeader) {
+            for (const group of this.Groups.Items) {
+                if (group === g) { break; }
+                if (group.Header) { insertPos++; }
+            }
+            g.Header.InsertRow(0); //别忘了插一行，已经同步Table高度
+            this.Items.splice(insertPos, 0, g.Header);
+        } else {
+            for (const group of this.Groups.Items) {
+                if (group.Header) { insertPos++; }
+            }
+            if (this.Details) { insertPos++; }
+            for (const group of this.Groups.Items) {
+                if (group === g) { break; }
+                if (group.Footer) { insertPos++; }
+            }
+            g.Footer.InsertRow(0); //别忘了插一行，已经同步Table高度
+            this.Items.splice(insertPos, 0, g.Footer);
+        }
+
+        this.InvalidateOnBoundsChanged(oldBounds); //TODO:仅重画变动部分
     }
 
-    public RemoveGroupSection(gs: TableSectionDesigner) {
+    public RemoveGroupSection(g: TableGroup, isHeader: boolean) {
         let oldBounds = this.Bounds.Clone();
-        this.Bounds.Height -= gs.GetRowsHeight();
+        let hf = isHeader ? g.Header : g.Footer;
+
+        for (let i = 0; i < this.Items.length; i++) {
+            if (this.Items[i] === hf) {
+                this.Items.splice(i, 1);
+                break;
+            }
+        }
+
+        this.Bounds.Height -= hf.GetRowsHeight();
         this.InvalidateOnBoundsChanged(oldBounds);
     }
 

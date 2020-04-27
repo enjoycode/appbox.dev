@@ -13,10 +13,12 @@ export default class TextboxDesigner extends ReportItemDesigner {
         g.clip();
 
         // 绘制背景 //TODO:其他样式如渐变等
-        let bgColor = this.Style.GetStyle("BackgroundColor", null);
+        let bgColor = this.Style.GetStyle("BackgroundColor", "white"); //TODO:暂使用默认白背景
         if (bgColor) {
             g.fillStyle = bgColor;
             g.fillRect(b.X, b.Y, b.Width, b.Height);
+        } else {
+            //g.clearRect(b.X, b.Y, b.Width, b.Height); TODO:使用继承的背景清除
         }
 
         // 绘制边框
