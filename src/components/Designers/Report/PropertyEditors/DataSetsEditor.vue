@@ -15,15 +15,17 @@
                     <el-button @click="onDelDS">Remove</el-button>
                 </el-button-group>
                 &emsp;
+                Fields:
                 <el-button-group>
-                    <el-button @click="onAddField">Add Field</el-button>
-                    <el-button @click="onDelField">Remove Field</el-button>
+                    <el-button @click="onAddField" icon="fas fa-plus-circle"></el-button>
+                    <el-button @click="onDelField" icon="fas fa-minus-circle"></el-button>
                 </el-button-group>
                 <br/><br/>
                 <el-row style="height:260px">
-                    <el-col :span="12" style="height:100%">
+                    <el-col :span="12" style="height:100%;overflow:auto">
                         <!-- 结构树 -->
                         <el-tree @current-change="onCurrentChange" :data="datasets" :props="treeOpts"
+                            draggable :allow-drag="allowDrag" :allow-drop="allowDrop" @node-drop="onNodeDrop"
                             highlight-current default-expand-all style="height:100%"></el-tree>
                     </el-col>
                     <el-col :span="12" style="height:100%">
@@ -119,6 +121,19 @@ export default {
             this.currentNode.parent.data.RemoveField(this.currentNode.data)
             this.currentNode = null
             this.$refs.props.setPropertyOwner(null)
+        },
+        allowDrag(node) {
+            if (node.level !== 2) return false
+            return true
+        },
+        allowDrop(draggingNode, dropNode, type) {
+            if (type === 'inner') return false
+            if (draggingNode.parent !== dropNode.parent) return false
+            return true
+        },
+        onNodeDrop(draggingNode, dropNode, type) {
+            //同步xml定义的顺序
+            draggingNode.data.DataSet.OnDropField(draggingNode.data, dropNode.data, type)
         },
         onCurrentChange(data, node) {
             this.currentNode = node //是节点非数据

@@ -5,6 +5,7 @@ import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces
 
 class Field implements IPropertyOwner {
     private readonly _owner: ReportDataSet;
+    public get DataSet(): ReportDataSet { return this._owner; }
     private readonly _node: Element;
     public get Node(): Node { return this._node; }
 
@@ -134,6 +135,16 @@ export class ReportDataSet implements IPropertyOwner {
             this._node.removeChild(this._fieldsNode);
             this._fieldsNode = null;
         }
+    }
+
+    /**
+     * 用于界面拖动Field节点顺序后同步xml子节点顺序
+     */
+    public OnDropField(dragField: Field, dropField: Field, type: "before" | "after") {
+        //只需要调整xml节点的顺序
+        this._fieldsNode.removeChild(dragField.Node);
+        let refChild = type === "after" ? dropField.Node.nextSibling : dropField.Node;
+        this._fieldsNode.insertBefore(dragField.Node, refChild);
     }
 
     //====IPropertyOwner====
