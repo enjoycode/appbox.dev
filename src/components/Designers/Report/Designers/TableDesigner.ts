@@ -23,6 +23,8 @@ export default class TableDesigner extends ReportItemDesigner {
     private _footer: TableSectionDesigner | null;
     public get Footer(): TableSectionDesigner | null { return this._footer; }
 
+    public get DataSetName(): string | null { return this.GetPropertyString("DataSetName", null); }
+
     public readonly Groups: TableGroups;
 
     public get IsContainer(): boolean { return true; }
