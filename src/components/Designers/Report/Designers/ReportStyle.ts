@@ -1,42 +1,46 @@
-import XmlUtil from "./XmlUtil";
+import RSizeUtil from "./RSizeUtil";
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
-import ReportXmlNodeDesigner from './ReportXmlNodeDesigner';
+import ReportObjectDesigner from './ReportObjectDesigner';
 
 export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需要处理样式继承
 
-    private readonly _owner: ReportXmlNodeDesigner;
-    private _styleNode: Node | null;
+    private readonly _owner: ReportObjectDesigner;
+    private _styleNode: any;
 
-    constructor(owner: ReportXmlNodeDesigner) {
+    constructor(owner: ReportObjectDesigner) {
         this._owner = owner;
-        this._styleNode = XmlUtil.GetNamedChildNode(owner.XmlNode, "Style");
+        this._styleNode = owner.Node["Style"];
     }
 
     public GetStyle(prop: string, defaultValue: string): string | null {
-        if (this._styleNode) {
-            let node = XmlUtil.GetNamedChildNode(this._styleNode, prop);
-            if (node) { return node.textContent; }
+        if (this._styleNode && this._styleNode[prop]) {
+            return this._styleNode[prop];
         }
         return defaultValue;
     }
 
     private SetStyle(prop: string, value: string) {
         this.EnsureStyleNode();
-        let pnode = XmlUtil.GetNamedChildNode(this._styleNode, prop);
-        if (!pnode) {
-            pnode = this._styleNode.appendChild(this._styleNode.ownerDocument.createElement(prop));
-        }
-        pnode.textContent = value;
+        this._styleNode[prop] = value;
         //TODO:删除子级所有相同的样式，即让子级继承样式
     }
 
     public get FontSize(): number {
-        let v = this.GetStyle("FontSize", null /*注意未找到返回null*/);
-        return v === null ? 10 : XmlUtil.SizeToPixel(v);
+        if (this._styleNode && this._styleNode["Font"]) {
+            let font = this._styleNode["Font"];
+            if (font["Size"]) {
+                return RSizeUtil.SizeToPixel(font["Size"]);
+            }
+        }
+        return 10;
     }
 
     public set FontSize(value) {
-        this.SetStyle("FontSize", value.toString() + "pt");
+        this.EnsureStyleNode();
+        if (!this._styleNode["Font"]) {
+            this._styleNode["Font"] = {};
+        }
+        this._styleNode["Font"]["Size"] = value.toString() + "pt";
         this._paintFont = null;
     }
 
@@ -49,7 +53,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
     }
 
     public get TextAlign(): TextAlignEnum {
-        return TextAlignEnum[this.GetStyle("TextAlign", "General")];
+        return TextAlignEnum[this.GetStyle("TextAlign", "Left")];
     }
     public get VerticalAlign(): VerticalAlignEnum {
         return VerticalAlignEnum[this.GetStyle("VerticalAlign", "Top")];
@@ -68,35 +72,40 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                 { pos: "Bottom", style: "None", width: 1, color: "#000000" },
             ]
 
-            let bs = XmlUtil.GetNamedChildNode(this._styleNode, "BorderStyle");
+            if (!this._styleNode) { return this._borderStyles; }
+
+            let bs = this._styleNode["BorderStyle"];
             if (bs) {
-                for (const cnode of bs.childNodes) {
-                    let all = cnode.nodeName === "Default";
-                    for (const item of this._borderStyles) {
-                        if (all || item.pos === cnode.nodeName) {
-                            item.style = cnode.textContent as BorderStyleEnum;
+                for (const i of this._borderStyles) {
+                    if (bs[i.pos]) {
+                        for (const j of this._borderStyles) {
+                            if (i.pos === "Default" || j.pos === i.pos) {
+                                j.style = bs[i.pos];
+                            }
                         }
                     }
                 }
             }
-            let bw = XmlUtil.GetNamedChildNode(this._styleNode, "BorderWidth");
+            let bw = this._styleNode["BorderWidth"];
             if (bw) {
-                for (const cnode of bw.childNodes) {
-                    let all = cnode.nodeName === "Default";
-                    for (const item of this._borderStyles) {
-                        if (all || item.pos === cnode.nodeName) {
-                            item.width = XmlUtil.SizeToPixel(cnode.textContent, false /* 不需要取整 */);
+                for (const i of this._borderStyles) {
+                    if (bw[i.pos]) {
+                        for (const j of this._borderStyles) {
+                            if (i.pos === "Default" || j.pos === i.pos) {
+                                j.width = RSizeUtil.SizeToPixel(bw[i.pos], false /* 不需要取整 */);
+                            }
                         }
                     }
                 }
             }
-            let bc = XmlUtil.GetNamedChildNode(this._styleNode, "BorderColor");
+            let bc = this._styleNode["BorderColor"];
             if (bc) {
-                for (const cnode of bc.childNodes) {
-                    let all = cnode.nodeName === "Default";
-                    for (const item of this._borderStyles) {
-                        if (all || item.pos === cnode.nodeName) {
-                            item.color = cnode.textContent;
+                for (const i of this._borderStyles) {
+                    if (bc[i.pos]) {
+                        for (const j of this._borderStyles) {
+                            if (i.pos === "Default" || j.pos === i.pos) {
+                                j.color = bc[i.pos];
+                            }
                         }
                     }
                 }
@@ -107,7 +116,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
 
     public SetBorderStyle(type: BorderStyleType, target: IBorderStyleInfo): void {
         this.EnsureStyleNode();
-        let bs = XmlUtil.GetOrCreateChildNode(this._styleNode, type);
+        let bs = this._styleNode[type];
         let isDefaultValue = false;
         if (type === "BorderStyle") {
             isDefaultValue = target.style === "None";
@@ -131,9 +140,9 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
             }
 
             //TODO:如果跟继承值相同则删除所有
-            for (const cnode of bs.childNodes) {
-                if (isDefaultValue || cnode.nodeName !== target.pos) {
-                    bs.removeChild(cnode);
+            for (const i of this._borderStyles) {
+                if (bs && bs[i.pos] && (isDefaultValue || i.pos !== target.pos)) {
+                    delete bs[i.pos];
                 }
             }
         } else {
@@ -146,14 +155,14 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                 this._borderStyles[0].color = "rgba(255,255,255,255)";
             }
             // 先删除Default子节点(如果存在)
-            if (bs.childNodes.length === 1 && bs.childNodes[0].nodeName === "Default") {
-                bs.removeChild(bs.childNodes[0]);
+            if (bs && bs["Default"]) {
+                delete bs["Default"];
             }
             // 如果4个子节点且值相同，则删除所有添加Default子节点
-            if (bs.childNodes.length === 4) {
+            if (bs && Object.keys(bs).length === 4) {
                 let allValueSame = true;
-                for (let i = 1; i < bs.childNodes.length; i++) {
-                    if (bs.childNodes[i].textContent !== bs.childNodes[0].textContent) {
+                for (let i = 1; i < this._borderStyles.length; i++) {
+                    if (bs[this._borderStyles[i].pos] !== bs[this._borderStyles[0].pos]) {
                         allValueSame = false;
                         break;
                     }
@@ -165,17 +174,20 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
         }
 
         if (!isDefaultValue) {
-            let n = XmlUtil.GetOrCreateChildNode(bs, pos);
+            if (!bs) {
+                this._styleNode[type] = {};
+                bs = this._styleNode[type];
+            }
             if (type === "BorderStyle") {
-                n.textContent = target.style;
+                bs[pos] = target.style;
             } else if (type === "BorderWidth") {
-                n.textContent = target.width.toString() + "pt";
+                bs[pos] = target.width.toString() + "pt";
             } else {
-                n.textContent = target.color;
+                bs[pos] = target.color;
             }
         } else {
-            if (bs.childNodes.length === 0) {
-                bs.parentNode.removeChild(bs);
+            if (bs && Object.keys(bs).length === 0) {
+                delete this._styleNode[type];
             }
             this.CheckStyleEmpty();
         }
@@ -185,20 +197,18 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
 
     //====样式节点辅助方法====
     /**
-     * 确认<Style>节点是否存在，不存在则创建
+     * 确认Style节点是否存在，不存在则创建
      */
     private EnsureStyleNode() {
         if (!this._styleNode) {
-            this._styleNode = this._owner.XmlNode.appendChild(this._owner.XmlNode.ownerDocument.createElement("Style"));
+            this._owner.Node["Style"] = {};
+            this._styleNode = this._owner.Node["Style"];
         }
     }
 
-    /**
-     * 确信<Style>节点下无子节点，是则删除<Style>节点
-     */
     private CheckStyleEmpty() {
-        if (this._styleNode && this._styleNode.childNodes.length === 0) {
-            this._styleNode.parentNode.removeChild(this._styleNode);
+        if (this._styleNode && Object.keys(this._styleNode).length === 0) {
+            delete this._owner["Style"];
         }
     }
 
@@ -248,7 +258,7 @@ export default class ReportStyle { //TODO: 目前实现暂直接读xml，另需�
                     {
                         title: "TextAlign", readonly: false, editor: "Select",
                         options: ReportStyle.GetEnumNames(TextAlignEnum),
-                        getter: () => this.GetStyle("TextAlign", "General"),
+                        getter: () => this.GetStyle("TextAlign", "Left"),
                         setter: v => { this.SetStyle("TextAlign", v); this._owner.Invalidate(); }
                     },
                     {
@@ -287,7 +297,6 @@ export enum TextAlignEnum {
     Left,
     Center,
     Right,
-    General,
     Justified
 }
 

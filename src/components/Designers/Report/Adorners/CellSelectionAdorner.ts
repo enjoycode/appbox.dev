@@ -4,9 +4,8 @@ import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import MouseEventArgs from '@/components/Canvas/EventArgs/MouseEventArgs'
 import TableDesigner from '../Designers/TableDesigner'
 import ReportItemDesigner from '../Designers/ReportItemDesigner'
-import TableSectionDesigner from '../Designers/TableSectionDesigner'
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
-import { TableColumn, TableRow } from '../Designers/TableLayout'
+import { Row, Column } from "../Designers/TableLayout";
 
 const offset = 10;
 const HandleSize = 5;
@@ -17,7 +16,7 @@ interface IElement {
 }
 
 /**
- * 用于选择整个表格 or 表格Section
+ * 用于选择整个表格
  */
 class SelectHandle implements IElement {
     Bounds: Rectangle;
@@ -39,8 +38,8 @@ class SelectHandle implements IElement {
 class ResizeHandle implements IElement {
     Bounds: Rectangle;
     Cursor: string;
-    Column: TableColumn | null;
-    Row: TableRow | null;
+    Column: Column | null;
+    Row: Row | null;
 
     HitTest(pt: Point): [boolean, string] {
         if (this.Bounds.Contains(pt.X, pt.Y)) {
@@ -131,20 +130,20 @@ export default class CellSelectionAdorner extends DesignAdorner {
         let draw: boolean = false;
         for (var i = 0; i < cells.length; i++) {
             const element = cells[i];
-            if (element instanceof ReportItemDesigner && element.Cell.Row.Owner.Table === this.Target) {
+            if (element instanceof ReportItemDesigner && element.Parent === this.Target) {
                 //Top
                 draw = true;
-                sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY);
-                ex = Math.ceil(element.Cell.LastX + element.Cell.LastWidth); ey = sy;
+                sx = Math.ceil(element.Bounds.X); sy = Math.ceil(element.Bounds.Y);
+                ex = Math.ceil(element.Bounds.X + element.Bounds.Width); ey = sy;
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
-                        x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY + comp.Cell.Row.Height);
-                        x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
+                    if (comp instanceof ReportItemDesigner && comp.Parent === this.Target) {
+                        x = Math.ceil(comp.Bounds.X); y = Math.ceil(comp.Bounds.Y + comp.Bounds.Height);
+                        x2 = Math.ceil(x + comp.Bounds.Width); y2 = y;
                         if (ey != y) { continue; }
 
                         if (sx >= x && ex <= x2 && sx2 == ex2) {
@@ -196,17 +195,17 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
                 //Bottom
                 draw = true;
-                sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY + element.Cell.Row.Height);
-                ex = Math.ceil(element.Cell.LastX + element.Cell.LastWidth); ey = sy;
+                sx = Math.ceil(element.Bounds.X); sy = Math.ceil(element.Bounds.Y + element.Bounds.Height);
+                ex = Math.ceil(element.Bounds.X + element.Bounds.Width); ey = sy;
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
-                        x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY);
-                        x2 = Math.ceil(x + comp.Cell.LastWidth); y2 = y;
+                    if (comp instanceof ReportItemDesigner && comp.Parent === this.Target) {
+                        x = Math.ceil(comp.Bounds.X); y = Math.ceil(comp.Bounds.Y);
+                        x2 = Math.ceil(x + comp.Bounds.Width); y2 = y;
                         if (ey != y) { continue; }
 
                         if (sx >= x && ex <= x2 && sx2 == ex2) {
@@ -256,17 +255,17 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
                 //Left
                 draw = true;
-                sx = Math.ceil(element.Cell.LastX); sy = Math.ceil(element.Cell.LastY);
-                ex = sx; ey = Math.ceil(sy + element.Cell.Row.Height);
+                sx = Math.ceil(element.Bounds.X); sy = Math.ceil(element.Bounds.Y);
+                ex = sx; ey = Math.ceil(sy + element.Bounds.Height);
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
-                        x = Math.ceil(comp.Cell.LastX + comp.Cell.LastWidth); y = Math.ceil(comp.Cell.LastY);
-                        x2 = x; y2 = Math.ceil(y + comp.Cell.Row.Height);
+                    if (comp instanceof ReportItemDesigner && comp.Parent === this.Target) {
+                        x = Math.ceil(comp.Bounds.X + comp.Bounds.Width); y = Math.ceil(comp.Bounds.Y);
+                        x2 = x; y2 = Math.ceil(y + comp.Bounds.Height);
                         if (ex != x) { continue; }
 
                         if (sy >= y && ey <= y2 && sy2 == ey2) {
@@ -327,17 +326,17 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
                 //Right
                 draw = true;
-                sx = Math.ceil(element.Cell.LastX + element.Cell.LastWidth); sy = Math.ceil(element.Cell.LastY);
-                ex = sx; ey = Math.ceil(sy + element.Cell.Row.Height);
+                sx = Math.ceil(element.Bounds.X + element.Bounds.Width); sy = Math.ceil(element.Bounds.Y);
+                ex = sx; ey = Math.ceil(sy + element.Bounds.Height);
                 sx2 = 0; sy2 = 0; ex2 = 0; ey2 = 0;
                 var x: number, y: number, x2: number, y2: number;
                 for (var j = 0; j < cells.length; j++) {
                     if (i == j) { continue; }
 
                     var comp = cells[j];
-                    if (comp instanceof ReportItemDesigner && comp.Cell.Row.Owner.Table === this.Target) {
-                        x = Math.ceil(comp.Cell.LastX); y = Math.ceil(comp.Cell.LastY);
-                        x2 = x; y2 = Math.ceil(y + comp.Cell.Row.Height);
+                    if (comp instanceof ReportItemDesigner && comp.Parent === this.Target) {
+                        x = Math.ceil(comp.Bounds.X); y = Math.ceil(comp.Bounds.Y);
+                        x2 = x; y2 = Math.ceil(y + comp.Bounds.Height);
                         if (ex != x) { continue; }
 
                         if (sy >= y && ey <= y2 && sy2 == ey2) {
@@ -411,35 +410,29 @@ export default class CellSelectionAdorner extends DesignAdorner {
         let x = 0;
         g.strokeStyle = SelectionColor;
         g.lineWidth = 1;
-        for (const column of table.Columns) {
-            g.strokeRect(x, -offset, column.Width, offset);
-            x += column.Width;
+        for (const column of table.TableLayout.Columns) {
+            g.strokeRect(x, -offset, column.Size, offset);
+            x += column.Size;
         }
 
         //画左侧行边框
         let y = 0;
-        for (const sec of table.Items) {
-            const section = sec as TableSectionDesigner;
-            //TODO: 考虑画section边框
-            let sectionType = section.getPropertyOwnerType();
-            let isDetailsRow = sectionType === "Details";
-            for (const row of section.Rows) {
-                if (isDetailsRow) {
-                    // g.strokeStyle = "black";
-                    let dx = -offset + 2;
-                    let dy = y + row.Height / 2 - 3;
-                    for (let i = 0; i < 3; i++) {
-                        g.moveTo(dx, dy);
-                        g.lineTo(dx + 6, dy);
-                        g.stroke();
-                        dy += 3;
-                    }
-                    // g.strokeStyle = SelectionColor;
+        for (const row of table.TableLayout.Rows) {
+            let rowGroup = row.Cells[0].RowGroup;
+            if (rowGroup && rowGroup.IsDetail) {
+                // g.strokeStyle = "black";
+                let dx = -offset + 2;
+                let dy = y + row.Size / 2 - 3;
+                for (let i = 0; i < 3; i++) {
+                    g.moveTo(dx, dy);
+                    g.lineTo(dx + 6, dy);
+                    g.stroke();
+                    dy += 3;
                 }
-                // g.fillText(sectionTitle, -offset + 1.5, y + row.Height / 2);
-                g.strokeRect(-offset, y, offset, row.Height);
-                y += row.Height;
+                // g.strokeStyle = SelectionColor;
             }
+            g.strokeRect(-offset, y, offset, row.Size);
+            y += row.Size;
         }
 
         //画左上边框
@@ -460,35 +453,25 @@ export default class CellSelectionAdorner extends DesignAdorner {
 
         //加入列ResizeHandle
         let x = 0;
-        for (const column of table.Columns) {
+        for (const column of table.TableLayout.Columns) {
             let resizeHandle = new ResizeHandle();
-            resizeHandle.Bounds = new Rectangle(x + column.Width - HandleSize / 2, -offset, HandleSize, offset);
+            resizeHandle.Bounds = new Rectangle(x + column.Size - HandleSize / 2, -offset, HandleSize, offset);
             resizeHandle.Cursor = "ew-resize";
             resizeHandle.Column = column;
             ls.push(resizeHandle);
-            x += column.Width;
+            x += column.Size;
         }
         //加入行ResizeHandle
         let y = 0;
-        let prey = 0;
-        for (const item of table.Items) {
-            let sec = item as TableSectionDesigner;
-            for (const row of sec.Rows) {
-                let resizeHandle = new ResizeHandle();
-                resizeHandle.Bounds = new Rectangle(-offset, y + row.Height - HandleSize / 2, offset, HandleSize);
-                resizeHandle.Cursor = "ns-resize";
-                resizeHandle.Row = row;
-                ls.push(resizeHandle);
-                y += row.Height;
-            }
-            //add select section handle
-            let selectSec = new SelectHandle();
-            selectSec.Bounds = new Rectangle(-offset, prey + HandleSize / 2, offset, y - prey - HandleSize);
-            selectSec.Cursor = "";
-            selectSec.Target = sec;
-            ls.push(selectSec);
-            prey = y;
+        for (const row of table.TableLayout.Rows) {
+            let resizeHandle = new ResizeHandle();
+            resizeHandle.Bounds = new Rectangle(-offset, y + row.Size - HandleSize / 2, offset, HandleSize);
+            resizeHandle.Cursor = "ns-resize";
+            resizeHandle.Row = row;
+            ls.push(resizeHandle);
+            y += row.Size;
         }
+
         //add move table handle
         let moveHandle = new MoveTableHandle();
         moveHandle.Bounds = new Rectangle(0, 0, 15, 15);

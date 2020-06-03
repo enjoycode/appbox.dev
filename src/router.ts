@@ -25,10 +25,10 @@ export default new Router({
             name: 'Preview',
             component: () => import(/* webpackChunkName: "preview" */ '@/components/Designers/View/Previewer.vue'),
         },
-        {
-            path: '/test',
-            name: 'Test',
-            component: () => import(/* webpackChunkName: "test" */ '@/views/Tests/TestPdfViewer.vue'),
-        }
+        // {
+        //     path: '/test',
+        //     name: 'Test',
+        //     component: () => import(/* webpackChunkName: "test" */ '@/views/Tests/TestPdfViewer.vue'),
+        // }
     ]
 });

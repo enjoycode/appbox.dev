@@ -1,7 +1,7 @@
 import ReportItemDesigner from './ReportItemDesigner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
-export default class ChartDesigner extends ReportItemDesigner /* ReportXmlNodeDesigner */ {
+export default class ChartDesigner extends ReportItemDesigner {
     private _bitmap?: HTMLImageElement;
 
     // public Fetch(serverItem: IServerReportItem) {

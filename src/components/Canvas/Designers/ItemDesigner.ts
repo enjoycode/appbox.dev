@@ -257,10 +257,22 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         ptCanvas.X -= b.X;
         ptCanvas.Y -= b.Y;
         let g = this.Surface.GetRenderingContext();
-        //TODO:保险的话最好save & restore
+
+        if (this.Parent) {
+            let pb = this.Parent.Bounds;
+            g.save();
+            g.beginPath();
+            g.rect(pb.X, pb.Y, pb.Width, pb.Height);
+            g.clip();
+        }
+
         g.translate(ptCanvas.X, ptCanvas.Y);
         this.Paint(g, clip);
         g.translate(-ptCanvas.X, -ptCanvas.Y);
+
+        if (this.Parent) {
+            g.restore();
+        }
 
         this.Surface.Adorners.Invalidate(); //需要重绘装饰层
     }
@@ -275,9 +287,8 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         var invalidRect = Rectangle.Union(oldBounds, this.Bounds); //画旧区域与新区域的Union
         // invalidRect.X += ptSurface.X;
         // invalidRect.Y += ptSurface.Y;
-        // invalidRect.Inflate(1, 1);
+        invalidRect.Inflate(1, 1);
 
-        //this.Surface.Invalidate(invalidRect); //TODO: invalidate parent
         if (this.Parent) {
             this.Parent.Invalidate(invalidRect); //TODO: 画指定区域
         } else {
@@ -341,10 +352,6 @@ export default abstract class ItemDesigner implements IPropertyOwner {
             this._items = new Array<ItemDesigner>();
         this._items.push(item);
         item.OnAddToSurface(byCreate);
-        // if (!byCreate) {
-        //非DiagramHostItem需要刷新Canvas
-        this.Invalidate(item.Bounds); //仅需重绘子元素区域
-        // }
     }
 
     public RemoveItem(item: ItemDesigner): void {
@@ -355,8 +362,6 @@ export default abstract class ItemDesigner implements IPropertyOwner {
         item.Parent = null;
         let index = this._items.indexOf(item);
         this._items.splice(index, 1);
-        //todo: 非DiagramHostItem需要刷新Canvas
-        this.Invalidate(item.Bounds); //仅需重绘子元素区域
     }
 
     //============填充服务端数据方法===========

@@ -18,13 +18,14 @@ import TestShape from './TestShape'
 import TestConDesigner from './TestConDesigner'
 import ReportDesigner from "@/components/Designers/Report/ReportDesigner.vue";
 import ItemDesigner from "@/components/Canvas/Designers/ItemDesigner";
-import TextboxDesigner from "@/components/Designers/Report/Designers/TextboxDesigner";
-import TableDesigner from "@/components/Designers/Report/Designers/TableDesigner";
+import TextBoxDesigner from "@/components/Designers/Report/Designers/TextBoxDesigner";
+// import TableDesigner from "@/components/Designers/Report/Designers/TableDesigner";
 import { IDesignToolbox, IDesignToolboxItem } from "@/components/Canvas/Services/ToolboxService";
 import DesignSurface from '@/components/Canvas/DesignSurface';
-import ReportXmlNodeDesigner from '@/components/Designers/Report/Designers/ReportXmlNodeDesigner';
-import XmlUtil from '@/components/Designers/Report/Designers/XmlUtil';
+// import ReportXmlNodeDesigner from '@/components/Designers/Report/Designers/ReportXmlNodeDesigner';
+import RSizeUtil from '@/components/Designers/Report/Designers/RSizeUtil';
 import ReportItemDesigner from '@/components/Designers/Report/Designers/ReportItemDesigner';
+import ReportObjectDesigner from '@/components/Designers/Report/Designers/ReportObjectDesigner';
 
 @Component({
     components: { /*DesignView: DesignView*/ ReportDesigner: ReportDesigner }
@@ -44,10 +45,10 @@ export default class TestView extends Vue {
         (<any>this.$refs.designer).$refs.designView.designSurface.ToolboxService.Toolbox = this.toolbox;
         if (type === 'textbox') {
             console.log("Begin Create Report Textbox")
-            this.toolbox.SelectedItem = new ReportToolboxItem<TextboxDesigner>(TextboxDesigner);
+            this.toolbox.SelectedItem = new ReportToolboxItem<TextBoxDesigner>(TextBoxDesigner);
         } else if (type === 'table') {
             console.log("Begin Create Report Table")
-            this.toolbox.SelectedItem = new ReportToolboxItem<TableDesigner>(TableDesigner);
+            // this.toolbox.SelectedItem = new ReportToolboxItem<TableDesigner>(TableDesigner);
         }
 
         // var shape = new TestShape()
@@ -74,47 +75,7 @@ export default class TestView extends Vue {
     //     this.designView.designSurface.AddItem(connection.Conn2)
     //     this.designView.designSurface.Invalidate()
     // }
-
-    loadXMLDoc(dname) {
-        try //Internet Explorer
-        {
-            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-        }
-        catch (e) {
-            try //Firefox, Mozilla, Opera, etc.
-            {
-                xmlDoc = document.implementation.createDocument("", "", null);
-            }
-            catch (e) { alert(e.message) }
-        }
-        try {
-            xmlDoc.async = false;
-            xmlDoc.load(dname);
-            return (xmlDoc);
-        }
-        catch (e) { alert(e.message) }
-        return (null);
-    }
-
-    loadXMLString(txt): XMLDocument {
-        try //Internet Explorer
-        {
-            var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-            xmlDoc.async = "false";
-            xmlDoc.loadXML(txt);
-            return (xmlDoc);
-        }
-        catch (e) {
-            try //Firefox, Mozilla, Opera, etc.
-            {
-                var parser = new DOMParser();
-                xmlDoc = parser.parseFromString(txt, "text/xml");
-                return (xmlDoc);
-            }
-            catch (e) { alert(e.message) }
-        }
-        return (null);
-    }
+    
 }
 
 /** 测试用工具箱 */
@@ -131,10 +92,10 @@ class MockToolbox implements IDesignToolbox {
 
 class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxItem {
     public get IsConnection(): boolean { return false; }
-    private readonly factory: (node: Node) => T;
+    private readonly factory: (node: any) => T;
     private readonly type: string;
 
-    constructor(ctor: { new(node: Node): T }) {
+    constructor(ctor: { new(node: any): T }) {
         this.factory = (n) => new ctor(n);
 
         let funcNameRegex = /function (.{1,})\(/;
@@ -145,10 +106,9 @@ class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxI
 
     public Create(parent: DesignSurface | ItemDesigner): ItemDesigner {
         //parent不可能是DesignSurface
-        let p = parent as ReportXmlNodeDesigner;
-        let itemsNode = XmlUtil.GetOrCreateChildNode(p.XmlNode, "ReportItems");
-        let newNode = itemsNode.appendChild(p.XmlNode.ownerDocument.createElement(this.type));
-        return this.factory(newNode);
+        let p = parent as ReportObjectDesigner;
+        let ro = {$T: this.type};
+        return this.factory(ro);
     }
 }
 </script>

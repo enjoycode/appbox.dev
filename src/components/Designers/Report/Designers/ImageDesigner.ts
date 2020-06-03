@@ -1,8 +1,5 @@
 import ReportItemDesigner from './ReportItemDesigner'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel';
-import ReportRootDesigner from './ReportRootDesigner';
-import { TableCell } from './TableLayout';
-import XmlUtil from './XmlUtil';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
 export default class ImageDesigner extends ReportItemDesigner {
@@ -10,23 +7,12 @@ export default class ImageDesigner extends ReportItemDesigner {
     private _image: HTMLImageElement | null;
     private _loadFlag: number = 0; //0=not load, 1=loading, 2=done
 
-    constructor(xmlNode: Node, cell: TableCell | null = null) {
-        super(xmlNode, cell);
-
-        let snode = XmlUtil.GetNamedChildNode(this.xmlNode, "Source");
-        if (!snode) {
-            snode = XmlUtil.CreateChildNode(this.xmlNode, "Source");
-            snode.textContent = "Embedded"; // TODO:暂只支持Embedded
-        }
-        let fnode = XmlUtil.GetNamedChildNode(this.xmlNode, "Sizing");
-        if (!fnode) {
-            fnode = XmlUtil.CreateChildNode(this.xmlNode, "Sizing");
-            fnode.textContent = "Fit"; // TODO: 暂默认
-        }
+    constructor(node: any) {
+        super(node);
     }
 
     public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
-        let b = this.Bounds; // 注意在表格内是计算出来的
+        let b = this.Bounds;
         g.save();
         g.beginPath();
         g.rect(b.X, b.Y, b.Width, b.Height);
@@ -39,8 +25,8 @@ export default class ImageDesigner extends ReportItemDesigner {
 
         // 画图像
         if (this._loadFlag === 0) {
-            let embeddedImageName = this.GetPropertyString("Value", null);
-            if (embeddedImageName) {
+            let imgData = this.GetPropertyString("Value", null);
+            if (imgData) {
                 this._loadFlag = 1;
                 this._image = new Image();
                 this._image.onload = () => {
@@ -50,8 +36,7 @@ export default class ImageDesigner extends ReportItemDesigner {
                 this._image.onerror = () => {
                     console.warn("Load image error");
                 }
-                let rootDesigner = this.Surface.DesignService.RootDesigner as ReportRootDesigner;
-                this._image.src = rootDesigner.EmbeddedImages.GetImageData(embeddedImageName);
+                this._image.src = "data:" + this.GetPropertyString("MimeType", "image/png") + ";base64," + imgData;
             }
         } else if (this._loadFlag === 2) {
             // TODO:根据模式调整宽高比
@@ -68,16 +53,34 @@ export default class ImageDesigner extends ReportItemDesigner {
     }
 
     public getPropertyItems(): IPropertyCatalog[] | null {
-        //TODO: 暂简单实现，应根据ImageSource来处理
         let cats: IPropertyCatalog[] = super.getPropertyItems();
         cats.splice(0, 0, {
             name: "Common",
             items: [
                 {
-                    title: "Value", readonly: false, editor: "Select",
-                    options: (this.Surface.DesignService.RootDesigner as ReportRootDesigner).EmbeddedImages.GetNames(),
+                    title: "Value", readonly: false, editor: "Image",
                     getter: () => this.GetPropertyString("Value", ""),
-                    setter: v => { this.SetPropertyString("Value", v); this.ResetImageCache(); this.Invalidate(); }
+                    setter: v => {
+                        //注意v是url编码, eg: data:image/png;base64,XXXXXX
+                        let mimeStart = v.indexOf(':');
+                        let mimeEnd = v.indexOf(';');
+                        let mime = v.substring(mimeStart + 1, mimeEnd);
+                        let dataStart = v.indexOf(',')
+                        let imgData = v.substring(dataStart + 1);
+                        this.SetPropertyString("Value", imgData);
+                        this.SetPropertyString("MimeType", mime);
+                        this.ResetImageCache();
+                        this.Invalidate();
+                    }
+                },
+                {
+                    title: "Sizing", readonly: false, editor: "Select",
+                    options: ["AutoSize", "Center", "Normal", "Stretch", "ScaleProportional"],
+                    getter: () => this.GetPropertyString("Sizing", "AutoSize"),
+                    setter: v => {
+                        this.SetPropertyString("Sizing", v);
+                        this.Invalidate();
+                    }
                 }
             ]
         });

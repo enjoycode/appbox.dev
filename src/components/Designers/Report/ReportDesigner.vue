@@ -9,35 +9,22 @@
             <!-- 报表设计相关命令 -->
             <el-dropdown @command="onTableCommand" v-show="activeView==='design'">
                 <el-button size="small" icon="fas fa-table">
-                    Insert<i class="el-icon-arrow-down el-icon--right"></i>
+                    Table<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="ICL">Column Left</el-dropdown-item>
-                    <el-dropdown-item command="ICR">Column Right</el-dropdown-item>
-                    <el-dropdown-item command="IRA" divided>Row Above</el-dropdown-item>
-                    <el-dropdown-item command="IRB">Row Below</el-dropdown-item>
+                    <el-dropdown-item command="ICL">Insert Column Left</el-dropdown-item>
+                    <el-dropdown-item command="ICR">Insert Column Right</el-dropdown-item>
+                    <el-dropdown-item command="IRA" divided>Insert Row Above</el-dropdown-item>
+                    <el-dropdown-item command="IRB">Insert Row Below</el-dropdown-item>
+                     <el-dropdown-item command="DC" divided>Delete Column</el-dropdown-item>
+                    <el-dropdown-item command="DR">Delete Row</el-dropdown-item>
+                    <el-dropdown-item command="MC" divided>Merge Cells</el-dropdown-item>
+                    <el-dropdown-item command="SC">Split Cells</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown @command="onTableCommand" v-show="activeView==='design'">
-                <el-button size="small" icon="fas fa-table">
-                    Delete<i class="el-icon-arrow-down el-icon--right"></i>
-                </el-button>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="DC">Column</el-dropdown-item>
-                    <el-dropdown-item command="DR">Row</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
-            <el-dropdown @command="onTableCommand" v-show="activeView==='design'">
-                <el-button size="small" icon="fas fa-table">
-                    Cells<i class="el-icon-arrow-down el-icon--right"></i>
-                </el-button>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="CM">Merge</el-dropdown-item>
-                    <el-dropdown-item command="CS">Split</el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
+            
             <el-button @click="onDeleteSelection" size="small" v-show="activeView==='design'" 
-                icon="fas fa-times fa-fw">Delete Selection</el-button>
+                icon="fas fa-times fa-fw">Delete</el-button>
         </div>
         <!-- 内容区域 -->
         <div class="content">
@@ -70,29 +57,8 @@ export default {
             this.designService = new ReportDesignService(this.$refs.designView.designSurface, $runtime.channel, this.target.ID)
 
             if (this.target.ID === 0) { // TODO: 仅测试用
-                let xml = '<Report>'
-                xml += '<PageWidth>200mm</PageWidth>'
-                xml += '<PageHeight>140mm</PageHeight>'
-                xml += '<PageHeader>'
-                xml += '<Height>20mm</Height>'
-                xml += '<ReportItems>'
-                xml += '<Textbox Name="Textbox1">'
-                xml += '<Left>50pt</Left>'
-                xml += '<Top>10pt</Top>'
-                xml += '<Width>100pt</Width>'
-                xml += '<Height>30pt</Height>'
-                xml += '<Value>测试报表 Hello Future! 1234567890</Value>'
-                xml += '</Textbox>'
-                xml += '</ReportItems>'
-                xml += '</PageHeader>'
-                xml += '<Body>'
-                xml += '<Height>40mm</Height>'
-                xml += '</Body>'
-                xml += '<PageFooter>'
-                xml += '<Height>15mm</Height>'
-                xml += '</PageFooter>'
-                xml += "</Report>";
-                this.designService.LoadDesigners(xml)
+                let json = '{"Width":"20cm","Items":[{"$T":"Details","Height":"8cm"}]}'
+                this.designService.LoadDesigners(json)
                 return
             }
 
@@ -109,9 +75,14 @@ export default {
         onTableCommand(cmd) {
             let error = null
             switch (cmd) {
-                case "ICL": error = this.designService.InsertColumn(true); break;
-                case "ICR": error = this.designService.InsertColumn(false); break;
-                case "DC": error = this.designService.DeleteColumn(); break;
+                case "ICL": error = this.designService.InsertRowOrColumn(true, false); break;
+                case "ICR": error = this.designService.InsertRowOrColumn(false, false); break;
+                case "IRA": error = this.designService.InsertRowOrColumn(true, true); break;
+                case "IRB": error = this.designService.InsertRowOrColumn(false, true); break;
+                case "DR": error = this.designService.DeleteRowOrColumn(true); break;
+                case "DC": error = this.designService.DeleteRowOrColumn(false); break;
+                case "MC": error = this.designService.MergeSelectedCells(); break;
+                case "SC": error = this.designService.SplitSelectedCells(); break;
                 default: break;
             }
             if (error) { this.$message.error(error) }
@@ -121,9 +92,9 @@ export default {
         },
 
         save() {
-            console.log(this.designService.RootDesigner.XmlNode.ownerDocument) //TODO: for debug
+            console.log(JSON.stringify(this.designService.RootDesigner.Node, null, 2)) //TODO: for debug
             let node = this.target
-            let args = [node.Type, node.ID, this.designService.GetXmlString()]
+            let args = [node.Type, node.ID, JSON.stringify(this.designService.RootDesigner.Node)]
             let _this = this
             $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
                 _this.$message.success('Save Report succeed.')
