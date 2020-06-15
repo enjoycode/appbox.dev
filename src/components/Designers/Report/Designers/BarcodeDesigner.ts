@@ -28,6 +28,11 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
         this.Invalidate();
     }
 
+    private ResetImageCache(): void {
+        this._loadFlag = 0;
+        this._image = null;
+    }
+
     public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
         let b = this.Bounds;
         g.save();
@@ -61,11 +66,6 @@ export default class BarcodeDesigner extends ReportItemDesigner /* extends Recta
     }
 
     //============IPropertyOwner接口实现=====
-    private ResetImageCache(): void {
-        this._loadFlag = 0;
-        this._image = null;
-    }
-
     public getPropertyItems(): IPropertyCatalog[] | null {
         let cats: IPropertyCatalog[] = super.getPropertyItems();
         cats.splice(0, 0, {

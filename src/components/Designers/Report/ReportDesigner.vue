@@ -93,14 +93,14 @@ export default {
 
         save() {
             console.log(JSON.stringify(this.designService.RootDesigner.Node, null, 2)) //TODO: for debug
-            let node = this.target
-            let args = [node.Type, node.ID, JSON.stringify(this.designService.RootDesigner.Node)]
-            let _this = this
-            $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
-                _this.$message.success('Save Report succeed.')
-            }).catch(err => {
-                _this.$message.error('Save error: ' + err)
-            })
+            // let node = this.target
+            // let args = [node.Type, node.ID, JSON.stringify(this.designService.RootDesigner.Node)]
+            // let _this = this
+            // $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
+            //     _this.$message.success('Save Report succeed.')
+            // }).catch(err => {
+            //     _this.$message.error('Save error: ' + err)
+            // })
         },
     }
 }
