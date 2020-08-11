@@ -58,7 +58,12 @@ export default {
 
                 var node = store.tree.currentNode
                 var _this = this
-                var args = [node.Type, node.ID, this.model.Name]
+                var args = []
+                if (this.dlgProps === 'Application') {
+                    args = [this.model.Name]
+                } else {
+                    args = [node.Type, node.ID, this.model.Name]
+                }
                 // 获取实体属性
                 $runtime.channel.invoke(this.service, args).then(res => {
                     // 根据返回结果添加新节点
