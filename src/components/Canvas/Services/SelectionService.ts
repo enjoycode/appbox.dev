@@ -64,7 +64,7 @@ export default class SelectionService {
             for (const item of this._selectedItems) {
                 //判断是否单元格内选择
                 if (item instanceof ReportItemDesigner && item.IsTableCell) {
-                    let tableDesigner = item.Cell.Row.Owner.Table;
+                    let tableDesigner = item.Parent as TableDesigner;
                     tableDesigner.MoveCellSelection(deltaX, deltaY);
                     break;
                 }

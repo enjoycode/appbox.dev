@@ -63,8 +63,8 @@ export default class ToolboxService {
                 newItem.Bounds = this._surface.Adorners.CreationRectangle;
             }
             this._surface.AddItem(newItem, true);
-            //选择新建的
             this._surface.SelectionService.SelectItem(newItem);
+            // this._surface.Invalidate(newItem.Bounds);
         } else { //存在上级容器，需要转换坐标
             let newItem = this.SelectedItem.Create(this._currentContainer);
             let ptCanvas = this._currentContainer.PointToSurface(new Point(0, 0));
@@ -80,8 +80,8 @@ export default class ToolboxService {
                 newItem.Bounds = newRect;
             }
             this._currentContainer.AddItem(newItem, true);
-            //选择新建的
             this._surface.SelectionService.SelectItem(newItem);
+            this._currentContainer.Invalidate(newItem.Bounds);
         }
 
         this._surface.Adorners.Canvas.style.cursor = "";

@@ -1,3 +1,4 @@
+import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import IDesignService from '@/components/Canvas/Services/IDesignService'
 import IShape from '@/components/Canvas/Interfaces/IShape'
 import IConnection from '@/components/Canvas/Interfaces/IConnection'
@@ -5,8 +6,6 @@ import DesignSurface from '@/components/Canvas/DesignSurface'
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner'
 import ReportItemDesigner from './ReportItemDesigner'
 import ReportRootDesigner from './ReportRootDesigner'
-import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
-import XmlUtil from './XmlUtil'
 import ReportToolbox from "../ReportToolbox";
 
 import TextBoxEditor from "@/components/Canvas/PropertyEditors/TextBoxEditor.vue";
@@ -14,10 +13,12 @@ import CheckBoxEditor from "@/components/Canvas/PropertyEditors/CheckBoxEditor.v
 import SelectEditor from "@/components/Canvas/PropertyEditors/SelectEditor.vue";
 import ColorEditor from "@/components/Canvas/PropertyEditors/ColorEditor.vue";
 import ParametersEditor from "../PropertyEditors/ParametersEditor.vue";
-import DataSetsEditor from "../PropertyEditors/DataSetsEditor.vue";
+import DataSourcesEditor from "../PropertyEditors/DataSourcesEditor.vue";
 import BorderStyleEditor from "../PropertyEditors/BorderStyleEditor.vue";
-import EmbeddedImagesEditor from "../PropertyEditors/EmbeddedImagesEditor.vue";
+import ImageEditor from "../PropertyEditors/ImageEditor.vue";
 import TableGroupsEditor from "../PropertyEditors/TableGroupsEditor.vue";
+
+import { SelectionMode, InsertPosition, GroupPosition, Cell, TableLayout } from './TableLayout'
 
 interface IChannel {
     invoke(service: string, args: Array<any>): Promise<any>;
@@ -42,23 +43,11 @@ export default class ReportDesignService implements IDesignService {
     }
 
     /**
-     * 获取当前报表定义的xml文本
-     */
-    public GetXmlString(): string {
-        let xmlDoc = (this._rootDesigner as ReportXmlNodeDesigner).XmlNode.ownerDocument;
-        return (new XMLSerializer()).serializeToString(xmlDoc); // TODO:IE不支持 XMLSerializer对象。它通过Node对象的xml属性
-    }
-
-    /**
      * 解析并加载报表至设计界面内
-     * @param xml 报表定义Xml
+     * @param json 报表定义json
      */
-    public LoadDesigners(xml: string): void {
-        let xmlDoc = XmlUtil.LoadXMLString(xml);
-        var reportNode = xmlDoc.getElementsByTagName("Report")[0]
-
-        var rootDesigner = new ReportRootDesigner(reportNode);
-        //ReportDesignService.LoopLoadChildren(rootDesigner, root);
+    public LoadDesigners(json: string): void {
+        var rootDesigner = new ReportRootDesigner(JSON.parse(json));
         this._rootDesigner = rootDesigner;
         this._surface.AddItem(this._rootDesigner);
 
@@ -70,58 +59,6 @@ export default class ReportDesignService implements IDesignService {
 
     public ChangeProperty(item: ItemDesigner, name: string, tag: any, value: any): void {
         console.log("ReportDesignService.ChangeProperty: " + name, value)
-        // this._channel.invoke("sys.DesignService.ChangeReportItemProperty", [this._modelId, item.ID, name, tag, value]).then(res => {
-        //     if (res) {
-        //         let item = (res as IServerReportItem[])[0]; //todo:暂只返回一个
-        //         // 先根据ID找到对应的设计器
-        //         let designer = ReportDesignService.LoopFindByID(this._rootDesigner, item.ID);
-        //         if (designer) {
-        //             designer.Fetch(item);
-        //             if (item.Items) {
-        //                 for (var i = 0; i < item.Items.length; i++) {
-        //                     var element = item.Items[i];
-        //                     var subDesigner = ReportDesignService.LoopFindByID(designer, element.ID);
-        //                     if (subDesigner) {
-        //                         subDesigner.Fetch(element);
-        //                     } else {
-        //                         //添加新增
-        //                         var newSubDesigner = ReportDesignService.CreateDesigner(element.ItemType);
-        //                         newSubDesigner.Fetch(element);
-        //                         ReportDesignService.LoopLoadChildren(newSubDesigner, element);
-        //                         designer.AddItem(newSubDesigner);
-        //                     }
-        //                 }
-        //                 if (designer.Items.length != item.Items.length) {
-        //                     //删除节点
-        //                     var found: ItemDesigner | null ;
-        //                     for (var i = 0; i < designer.Items.length; i++) {
-        //                         found = designer.Items[i];
-        //                         for (var j = 0; j < item.Items.length; j++) {
-        //                             if (designer.Items[i].ID == item.Items[j].ID) {
-        //                                 found = null;
-        //                                 break;
-        //                             }
-        //                         }
-        //                         if (found) {
-        //                             //删除节点
-        //                             designer.RemoveItem(found);
-        //                         }
-        //                     }
-        //                 }
-        //                 //重新绘制
-        //                 if (designer instanceof ReportRootDesigner) { //todo: 暂ReportRootDesigner重绘Surface
-        //                     if (this._rootDesigner.Surface) {
-        //                         this._rootDesigner.Surface.Invalidate();
-        //                     }
-        //                 } else {
-        //                     designer.Invalidate();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }).catch(err => {
-        //     console.log("ChangeProperty Error:", err);
-        // })
     }
 
     /**
@@ -130,9 +67,14 @@ export default class ReportDesignService implements IDesignService {
     public DeleteSelection(): void {
         let selection = this._surface.SelectionService.SelectedItems;
         if (!selection || selection.length === 0) { return; }
+
+        let needInvalidates: ItemDesigner[] = []; //需要重画的上级列表
+        let areas: Rectangle[] = []; //需要重画的区域
         for (const item of selection) {
             if (item instanceof ReportItemDesigner && !item.IsTableCell) { //仅ReportItemDesigner可以删除
                 if (item.Parent) {
+                    needInvalidates.push(item.Parent);
+                    areas.push(item.Bounds); //Noneed clone
                     item.Parent.RemoveItem(item);
                 } else {
                     console.warn("待删除的元素无上级");
@@ -140,83 +82,111 @@ export default class ReportDesignService implements IDesignService {
             }
         }
         this._surface.SelectionService.ClearSelection(); //清除选择
+
+        //TODO:合并重绘区域
+        for (let i = 0; i < needInvalidates.length; i++) {
+            const item = needInvalidates[i];
+            item.Invalidate(areas[i]);
+        }
     }
 
     /**
-     * 新增表格列
-     * @param before 在当前列之前
+     * 新增表格行或列
      * @returns 错误信息
      */
-    public InsertColumn(before: boolean): string | null {
+    public InsertRowOrColumn(before: boolean, isRow: boolean): string | null {
         let selection = this._surface.SelectionService.SelectedItems;
         if (selection.length === 0 || !(selection[0] instanceof ReportItemDesigner)
             || !(selection[0] as ReportItemDesigner).IsTableCell) {
             return "Please select some TableCell first.";
         }
-        // 计算出当前列
+
         let reportItem = selection[0] as ReportItemDesigner;
-        let row = reportItem.Cell.Row;
-        let table = row.Owner.Table;
-        let colIndex = reportItem.Cell.ColIndex;
-        if (!before) { colIndex++; }
-        let oldTableBounds = table.Bounds.Clone();
-        table.InsertColumn(colIndex, 100);
-        table.InvalidateOnBoundsChanged(oldTableBounds); //需要重画合并区域
+        let layoutCell = reportItem.Cell;
+        let tableLayout = layoutCell.TableLayout;
+        tableLayout.SelectSingleCell(layoutCell.RowIndex, layoutCell.ColIndex, SelectionMode.Replace);
+
+        if (isRow) {
+            tableLayout.InsertRow(before ? InsertPosition.Before : InsertPosition.After, GroupPosition.Inside);
+        } else {
+            tableLayout.InsertColumn(before ? InsertPosition.Before : InsertPosition.After, GroupPosition.Inside);
+        }
+
+        reportItem.Parent.Invalidate();
     }
 
-    public DeleteColumn(): string | null {
+    /**
+     * 删除表格行或列
+     * @returns 错误信息
+     */
+    public DeleteRowOrColumn(isRow: boolean): string | null {
         let selection = this._surface.SelectionService.SelectedItems;
         if (selection.length === 0 || !(selection[0] instanceof ReportItemDesigner)
             || !(selection[0] as ReportItemDesigner).IsTableCell) {
             return "Please select some TableCell first.";
         }
-        // 计算出当前列
+
         let reportItem = selection[0] as ReportItemDesigner;
-        let row = reportItem.Cell.Row;
-        let table = row.Owner.Table;
-        if (table.Columns.length === 1) { return "Cann't delete last column."; }
-        let colIndex = reportItem.Cell.ColIndex;
-        let selectCellIndex = colIndex === 0 ? 0 : colIndex - 1;
-        let oldTableBounds = table.Bounds.Clone();
-        table.DeleteColumn(colIndex);
-        this._surface.SelectionService.SelectItem(row.Cells[selectCellIndex].Target); //重新选择单元格
-        table.InvalidateOnBoundsChanged(oldTableBounds); //需要重画合并区域
+        let layoutCell = reportItem.Cell;
+        let tableLayout = layoutCell.TableLayout;
+        tableLayout.SelectSingleCell(layoutCell.RowIndex, layoutCell.ColIndex, SelectionMode.Replace);
+
+        let oldTableBounds = tableLayout.Owner.Bounds.Clone();
+        if (isRow) {
+            tableLayout.DeleteRows(true);
+        } else {
+            tableLayout.DeleteColumns(true);
+        }
+        //TODO:暂简单重新选择第一个单元格
+        this._surface.SelectionService.SelectItem(tableLayout.Owner.Items[0]);
+        tableLayout.Owner.InvalidateOnBoundsChanged(oldTableBounds);
     }
 
-    // public TableOperation(opt: string): void {
-    // var items = this._surface.SelectionService.SelectedItems;
-    // if (opt == 'SplitCells') {
-    //     if (items.length != 1) {
-    //         return;
-    //     }
-    //     let item = items[0]
-    //     if (item instanceof ReportItemDesigner && item.Parent) {
-    //         if (!item.IsTableCell)
-    //             return;
-    //         if (item.Cell)
-    //             ReportDesignService.ChangeProperty(item.Parent, opt, item.Cell.RI, item.Cell.CI);
-    //     }
-    //     return;
-    // }
-    // if (opt == 'MergeCells') {
-    //     if (items.length <= 1)
-    //         return;
-    //     var cells: string = '';
-    //     for (var i = 0; i < items.length; i++) {
-    //         let item = items[i];
-    //         if (item instanceof ReportItemDesigner && item.Parent) {
-    //             if (!item.IsTableCell)
-    //                 return;
-    //             if (item.Cell)
-    //                 cells += item.ID + ';';
-    //         }
-    //     }
-    //     var parent = items[0].Parent;
-    //     if (parent)
-    //         ReportDesignService.ChangeProperty(parent, opt, items.length, cells);
-    //     return;
-    // }
-    // }
+    public MergeSelectedCells(): string | null {
+        let selection = this._surface.SelectionService.SelectedItems;
+        if (selection.length === 0 || !(selection[0] instanceof ReportItemDesigner)
+            || !(selection[0] as ReportItemDesigner).IsTableCell) {
+            return "Please select some TableCell first.";
+        }
+        let firstItem = (selection[0] as ReportItemDesigner);
+        let tableLayout = firstItem.Cell.TableLayout;
+        this.SetSelectedCells(selection, tableLayout);
+
+        tableLayout.MergeSelectedCells();
+        //TODO:暂简单重新选择第一个单元格
+        this._surface.SelectionService.SelectItem(tableLayout.Owner.Items[0]);
+        tableLayout.Owner.Invalidate();
+    }
+
+    public SplitSelectedCells(): string | null {
+        let selection = this._surface.SelectionService.SelectedItems;
+        if (selection.length === 0 || !(selection[0] instanceof ReportItemDesigner)
+            || !(selection[0] as ReportItemDesigner).IsTableCell) {
+            return "Please select some TableCell first.";
+        }
+        let firstItem = (selection[0] as ReportItemDesigner);
+        let tableLayout = firstItem.Cell.TableLayout;
+        this.SetSelectedCells(selection, tableLayout);
+
+        tableLayout.SplitSelectedCells();
+        //TODO:暂简单重新选择第一个单元格
+        this._surface.SelectionService.SelectItem(tableLayout.Owner.Items[0]);
+        tableLayout.Owner.Invalidate();
+    }
+
+    private SetSelectedCells(selection: ItemDesigner[], tableLayout: TableLayout) {
+        let firstItem = (selection[0] as ReportItemDesigner);
+        let selectedCells: Cell[] = [];
+        selectedCells.push(firstItem.Cell);
+        for (let i = 1; i < selection.length; i++) {
+            const item = selection[i];
+            if (item.Parent === firstItem.Parent) {
+                selectedCells.push((item as ReportItemDesigner).Cell);
+            }
+        }
+
+        tableLayout.SetSelectedCells(selectedCells);
+    }
 
     public GetShapes(): Array<IShape> { return []; }
     public GetConnections(): Array<IConnection> { return []; }
@@ -228,8 +198,8 @@ export default class ReportDesignService implements IDesignService {
         Select: SelectEditor,
         Color: ColorEditor,
         ReportParameters: ParametersEditor,
-        ReportDataSets: DataSetsEditor,
-        ReportEmbeddedImages: EmbeddedImagesEditor,
+        ReportDataSources: DataSourcesEditor,
+        Image: ImageEditor,
         BorderStyle: BorderStyleEditor,
         TableGroups: TableGroupsEditor
     }

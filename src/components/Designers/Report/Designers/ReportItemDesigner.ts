@@ -2,39 +2,35 @@ import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import SelectionAdorner from '@/components/Canvas/Adorners/SelectionAdorner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
-import TableDesigner from './TableDesigner'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import MouseEventArgs from '@/components/Canvas/EventArgs/MouseEventArgs'
 import MouseButtons from '@/components/Canvas/Enums/MouseButtons'
-import ReportXmlNodeDesigner from './ReportXmlNodeDesigner'
 import { IPropertyCatalog, IPropertyItem } from '@/components/Canvas/Interfaces/IPropertyPanel'
-import XmlUtil from './XmlUtil'
+import ReportObjectDesigner from './ReportObjectDesigner'
 import ReportStyle from './ReportStyle'
-import { TableCell } from './TableLayout'
-import DesignSurface from '@/components/Canvas/DesignSurface'
+import TableDesigner from './TableDesigner'
+import { Cell } from './TableLayout'
+import { IReportItem } from './IReportObject'
 
-export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
+export default abstract class ReportItemDesigner extends ReportObjectDesigner {
 
     /**
      * 是否在表格的单元格内
      * 注意：不要使用 this.Parent instance of TableDesigner https://github.com/webpack/webpack/issues/4520
      */
-    public get IsTableCell(): boolean { return this._cell != null; }
+    public get IsTableCell(): boolean {
+        return this.Parent && this.Parent.getPropertyOwnerType() === "Table";
+    }
 
-    private _cell: TableCell | null;
-    public get Cell(): TableCell | null { return this._cell; }
-
-    public get Surface(): DesignSurface | null {
-        if (this.IsTableCell) {
-            return this._cell.Row.Owner.Table.Surface;
-        } else {
-            return super.Surface;
-        }
+    public get Cell(): Cell | undefined {
+        if (!this.IsTableCell) { return undefined; }
+        let tabelDesigner = this.Parent as TableDesigner;
+        return tabelDesigner.TableLayout.GetCell(this.node as IReportItem);
     }
 
     public get SelectionAdorner(): DesignAdorner | null {
         if (this.IsTableCell) {
-            return this._cell.Row.Owner.Table.CellSelectionAdorner;
+            return (this.Parent as TableDesigner).CellSelectionAdorner;
         } else {
             if (!this._selectionAdorner && this.Surface) {
                 this._selectionAdorner = new SelectionAdorner(this.Surface.Adorners, this);
@@ -49,8 +45,8 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
 
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
     public get Bounds(): Rectangle {
-        if (this._cell) { this._cell.CalcTargetBounds(this._bounds); } // 如果在单元格内每次计算获取
-        return this._bounds;
+        // 注意: 如果在单元格内获取Cell.Bounds
+        return this.IsTableCell ? this.Cell.Bounds : this._bounds;
     }
     public set Bounds(value) {
         this.SetBounds(value.X, value.Y, value.Width, value.Height, BoundsSpecified.All);
@@ -74,25 +70,21 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     private readonly _style: ReportStyle;
     public get Style(): ReportStyle { return this._style; }
 
-    constructor(xmlNode: Node, cell: TableCell | null = null) {
-        super(xmlNode);
+    constructor(node: any) {
+        super(node);
         this._style = new ReportStyle(this);
-        this._cell = cell;
 
-        if (!cell) { // 不在表格内则转换单位    
-            this._bounds.X = XmlUtil.TryGetSize(this.xmlNode, "Left", 0);
-            this._bounds.Y = XmlUtil.TryGetSize(this.xmlNode, "Top", 0);
-            if (this.getPropertyOwnerType() !== "Table") { // 需要排除Table
-                this._bounds.Width = XmlUtil.TryGetSize(this.xmlNode, "Width", 200);
-                this._bounds.Height = XmlUtil.TryGetSize(this.xmlNode, "Height", 100);
-            }
+        this._bounds.X = this.GetSize("Left", 0);
+        this._bounds.Y = this.GetSize("Top", 0);
+        if (this.getPropertyOwnerType() !== "Table") { // 需要排除Table
+            this._bounds.Width = this.GetSize("Width", 200);
+            this._bounds.Height = this.GetSize("Height", 200);
         }
     }
 
     //====添加/删除方法====
     public OnAddToSurface(byCreate: boolean): void {
         // console.log("OnAddToSurface: ", this.getPropertyOwnerType());
-        // super.OnAddToSurface(byCreate);
         if (byCreate) { //仅处理新建的元素
             let pt = "pt";
             this.SetPropertyRSize("Left", this.Bounds.X.toString() + pt, true);
@@ -103,13 +95,12 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     }
 
     public OnRemoveFromSurface(): void {
-        // super.OnRemoveFromSurface();
-        let parentNode = this.xmlNode.parentNode;
-        if (!parentNode) { console.warn("删除元素无法找到上级节点的ReportItems节点"); }
-        parentNode.removeChild(this.xmlNode);
-        // TODO:暂简单判断上级是否ReportItems
-        if (parentNode.nodeName === "ReportItems" && parentNode.childNodes.length === 0) {
-            parentNode.parentNode.removeChild(parentNode);
+        let parent = this.Parent as ReportObjectDesigner;
+        let childs = parent.Node["Items"];
+        let index = childs.indexOf(this.node);
+        childs.splice(index, 1);
+        if (childs.length === 0) {
+            delete parent.Node["Items"];
         }
     }
 
@@ -117,8 +108,8 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
      * override for in TableCell
      */
     public Invalidate(clip: Rectangle | null = null): void {
-        if (this._cell) {
-            this._cell.Row.Owner.Table.Invalidate(); //TODO:仅画指定单元格区域
+        if (this.IsTableCell) {
+            this.Parent.Invalidate(); //TODO:仅画指定单元格区域
         } else {
             super.Invalidate(clip);
         }
@@ -155,8 +146,7 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
     public PreviewMouseDown(e: MouseEventArgs): boolean {
         if (e.Button == MouseButtons.Left && this.IsTableCell) {
             //在表格内则开始单元格选取
-
-            let tableDesigner = this.Cell.Row.Owner.Table;
+            let tableDesigner = this.Parent as TableDesigner;
             if (tableDesigner) {
                 tableDesigner.BeginCellSelection(e.X, e.Y);
             }
@@ -172,24 +162,24 @@ export default abstract class ReportItemDesigner extends ReportXmlNodeDesigner {
             let items: IPropertyItem[] = [
                 {
                     title: "Left", readonly: false, editor: "TextBox",
-                    getter: () => this.GetPropertyRSize("Left", "0mm"),
+                    getter: () => this.GetPropertyString("Left", "0mm"),
                     setter: v => this.SetPropertyRSize("Left", v)
                 },
                 {
                     title: "Top", readonly: false, editor: "TextBox",
-                    getter: () => this.GetPropertyRSize("Top", "0mm"),
+                    getter: () => this.GetPropertyString("Top", "0mm"),
                     setter: v => this.SetPropertyRSize("Top", v)
                 }
             ];
             if (this.getPropertyOwnerType() !== "Table") {
                 items.push({
                     title: "Width", readonly: false, editor: "TextBox",
-                    getter: () => this.GetPropertyRSize("Width", "20mm"),
+                    getter: () => this.GetPropertyString("Width", "20mm"),
                     setter: v => this.SetPropertyRSize("Width", v)
                 });
                 items.push({
                     title: "Height", readonly: false, editor: "TextBox",
-                    getter: () => this.GetPropertyRSize("Height", "10mm"),
+                    getter: () => this.GetPropertyString("Height", "10mm"),
                     setter: v => this.SetPropertyRSize("Height", v)
                 });
             }

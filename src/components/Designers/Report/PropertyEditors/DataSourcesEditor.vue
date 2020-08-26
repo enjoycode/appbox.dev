@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-button @click="openEditor" style="width:100%">...</el-button>
-        <el-dialog :before-close="closingEditor" title="Report DataSets" :visible.sync="dlgVisible" width="600px">
+        <el-dialog :before-close="closingEditor" title="Report DataSources" :visible.sync="dlgVisible" width="600px">
             <div>
                 <!-- 新建DataSet的实体选择 -->
                 <el-select v-model="entityModel" value-key="ID" filterable placeholder=" ">
@@ -24,7 +24,7 @@
                 <el-row style="height:260px">
                     <el-col :span="12" style="height:100%;overflow:auto">
                         <!-- 结构树 -->
-                        <el-tree @current-change="onCurrentChange" :data="datasets" :props="treeOpts"
+                        <el-tree @current-change="onCurrentChange" :data="datasources" :props="treeOpts"
                             draggable :allow-drag="allowDrag" :allow-drop="allowDrop" @node-drop="onNodeDrop"
                             highlight-current default-expand-all style="height:100%"></el-tree>
                     </el-col>
@@ -55,7 +55,7 @@ export default {
             allEntities: [], //所有实体，供选择绑定
             entityModel: null, //新建DataSet时指定的实体模型对应的树节点
             currentNode: null, //当前选择的树节点
-            datasets: [],
+            datasources: [],
             treeOpts: {
                 label: 'Name',
                 children: 'Fields'
@@ -70,7 +70,7 @@ export default {
     methods: {
         openEditor() {
             this.dlgVisible = true
-            this.$set(this, 'datasets', this.value.DataSets.Items)
+            this.$set(this, 'datasources', this.value.DataSources.Items)
         },
         closingEditor(done) {
             // TODO:验证DataSet名称及其下各个Field的名称惟一性
@@ -82,7 +82,7 @@ export default {
             if (this.entityModel) {
                 // TODO:暂重用GetEntityModel获取成员列表
                 $runtime.channel.invoke('sys.DesignService.GetEntityModel', [this.entityModel.ID]).then(res => {
-                    _this.value.DataSets.Add(this.entityModel.Name, res.Members)
+                    _this.value.DataSources.Add(this.entityModel.Name, res.Members)
                 }).catch(err => {
                     console.warn(err)
                     // _this.$message.error(err)
@@ -93,16 +93,16 @@ export default {
         },
         onDelDS() {
             if (!this.currentNode || this.currentNode.level !== 1) {
-                this.$message.warning("Please select a DataSet first")
+                this.$message.warning("Please select a DataSource first")
                 return
             }
-            this.value.DataSets.Remove(this.currentNode.data)
+            this.value.DataSources.Remove(this.currentNode.data)
             this.currentNode = null
             this.$refs.props.setPropertyOwner(null)
         },
         onAddField() {
             if (!this.currentNode || this.currentNode.level !== 1) {
-                this.$message.warning("Please select a DataSet first")
+                this.$message.warning("Please select a DataSource first")
                 return
             }
             this.$prompt('DataField Name', 'Input', {
@@ -132,8 +132,7 @@ export default {
             return true
         },
         onNodeDrop(draggingNode, dropNode, type) {
-            //同步xml定义的顺序
-            draggingNode.data.DataSet.OnDropField(draggingNode.data, dropNode.data, type)
+            draggingNode.data.DataSource.OnDropField(draggingNode.data, dropNode.data, type)
         },
         onCurrentChange(data, node) {
             this.currentNode = node //是节点非数据

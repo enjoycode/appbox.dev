@@ -406,6 +406,13 @@ export default function (/*bool desktop, bool mobile*/) {
     Vue.component('ExMarkdown', () => import(/* webpackChunkName: "easeui-markdown" */ './easeui/Markdown/Markdown.js'))
     Vue.component('PdfViewer', () => import(/* webpackChunkName: "easeui-pdf" */ './easeui/PdfViewer/PdfViewer.vue'))
 
+    Vue.component('GridLayout', r => require.ensure([], () => {
+        r(require('vue-grid-layout').GridLayout)
+    }, 'grid-layout'))
+    Vue.component('GridItem', r => require.ensure([], () => {
+        r(require('vue-grid-layout').GridItem)
+    }, 'grid-layout'))
+
     Vue.use(Loading.directive)
 
     Vue.prototype.$loading = Loading.service

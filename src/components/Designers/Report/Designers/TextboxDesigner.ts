@@ -3,10 +3,10 @@ import { IPropertyCatalog, IPropertyItem } from '@/components/Canvas/Interfaces/
 import { TextAlignEnum, VerticalAlignEnum } from './ReportStyle';
 import Rectangle from '@/components/Canvas/Drawing/Rectangle';
 
-export default class TextboxDesigner extends ReportItemDesigner {
+export default class TextBoxDesigner extends ReportItemDesigner {
 
     public Paint(g: CanvasRenderingContext2D, clip?: Rectangle): void {
-        let b = this.Bounds; // 注意在表格内是计算出来的
+        let b = this.Bounds;
         g.save();
         g.beginPath();
         g.rect(b.X, b.Y, b.Width, b.Height);
@@ -105,31 +105,31 @@ export default class TextboxDesigner extends ReportItemDesigner {
                 getter: () => this.GetPropertyString("Value", ""),
                 setter: v => this.SetPropertyString("Value", v, true)
             },
-            {
-                title: "CanGrow", readonly: false, editor: "CheckBox",
-                getter: () => this.GetPropertyBool("CanGrow", false),
-                setter: v => this.SetPropertyBool("CanGrow", v)
-            },
-            {
-                title: "CanShrink", readonly: false, editor: "CheckBox",
-                getter: () => this.GetPropertyBool("CanShrink", false),
-                setter: v => this.SetPropertyBool("CanShrink", v)
-            },
+            // {
+            //     title: "CanGrow", readonly: false, editor: "CheckBox",
+            //     getter: () => this.GetPropertyBool("CanGrow", false),
+            //     setter: v => this.SetPropertyBool("CanGrow", v)
+            // },
+            // {
+            //     title: "CanShrink", readonly: false, editor: "CheckBox",
+            //     getter: () => this.GetPropertyBool("CanShrink", false),
+            //     setter: v => this.SetPropertyBool("CanShrink", v)
+            // },
         ];
-        if (this.Cell) {
-            let table = this.Cell.Row.Owner.Table;
-            if (table.DataSetName) {
-                let groups = table.Groups.GetNames();
-                groups.splice(0, 0, table.DataSetName);
-                groups.splice(0, 0, "");
-                items.push({
-                    title: "HideDuplicates", readonly: false, editor: "Select",
-                    options: groups,
-                    getter: () => this.GetPropertyString("HideDuplicates", ""),
-                    setter: v => this.SetPropertyString("HideDuplicates", v)
-                });
-            }
-        }
+        // if (this.Cell) {
+        //     let table = this.Cell.Row.Owner.Table;
+        //     if (table.DataSetName) {
+        //         let groups = table.Groups.GetNames();
+        //         groups.splice(0, 0, table.DataSetName);
+        //         groups.splice(0, 0, "");
+        //         items.push({
+        //             title: "HideDuplicates", readonly: false, editor: "Select",
+        //             options: groups,
+        //             getter: () => this.GetPropertyString("HideDuplicates", ""),
+        //             setter: v => this.SetPropertyString("HideDuplicates", v)
+        //         });
+        //     }
+        // }
 
         cats.splice(0, 0, {
             name: "Common",

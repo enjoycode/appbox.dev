@@ -1,14 +1,12 @@
-import ReportXmlNodeDesigner from "./ReportXmlNodeDesigner"
 import DesignAdorner from '@/components/Canvas/Adorners/DesignAdorner'
 import SectionSelectionAdorner from '../Adorners/SectionSelectionAdorner'
 import Rectangle from '@/components/Canvas/Drawing/Rectangle'
 import BoundsSpecified from '@/components/Canvas/Enums/BoundsSpecified'
 import DesignBehavior from '@/components/Canvas/Enums/DesignBehavior'
 import { IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
-import XmlUtil from './XmlUtil'
-import ReportItemFactory from './ReportItemFactory'
+import ReportObjectDesigner from './ReportObjectDesigner'
 
-export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
+export default class ReportSectionDesigner extends ReportObjectDesigner {
     private _bounds: Rectangle = new Rectangle(0, 0, 0, 0); //only for cache
     public get Bounds(): Rectangle { return this._bounds; }
     public set Bounds(value) {
@@ -25,22 +23,13 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
         return this._selectionAdorner;
     }
 
-    constructor(xmlNode: Node, pageWidth: number, top: number) {
-        super(xmlNode);
+    constructor(node: any, pageWidth: number, top: number) {
+        super(node);
 
-        let height = XmlUtil.TryGetSize(this.xmlNode, "Height", 200);
+        let height = this.GetSize("Height", 200);
         this._bounds = new Rectangle(0, top, pageWidth, height);
-
         // 开始加载报表元素
-        let itemsNode = XmlUtil.GetNamedChildNode(this.xmlNode, "ReportItems");
-        if (itemsNode) {
-            for (const cnode of itemsNode.childNodes) {
-                if (cnode.nodeType === Node.ELEMENT_NODE) {
-                    let child = ReportItemFactory.Make(cnode, null);
-                    if (child) { this.AddItem(child); }
-                }
-            }
-        }
+        this.LoadChildDesigners();
     }
 
     protected SetBounds(x: number, y: number, width: number, height: number, specified: BoundsSpecified): void {
@@ -66,7 +55,8 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
             this.Parent.Bounds.Height += diff;
         }
         if (this.Surface) {
-            this.Parent.Invalidate(); //TODO:不需要全部重画，变动以下部分重画即可
+            //this.Parent.Invalidate(); //TODO:不需要全部重画，变动以下部分重画即可
+            this.Surface.Invalidate();
         }
     }
 
@@ -74,7 +64,7 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
      * override for change height by canvas
      */
     public OnEndResize(): void {
-        this.SetPropertyRSize("Height", this.Bounds.Height/*, PaintRegion.None*/);
+        this.SetPropertyRSize("Height", this.Bounds.Height);
         // 通知属性面板刷新相应的值
         if (this.Surface) {
             this.Surface.PropertyPanel.refreshProperty("Height");
@@ -122,24 +112,24 @@ export default class ReportSectionDesigner extends ReportXmlNodeDesigner {
                 items: [
                     {
                         title: "Height", readonly: false, editor: "TextBox",
-                        getter: () => this.GetPropertyRSize("Height", "0mm"),
+                        getter: () => this.GetPropertyString("Height", "0mm"),
                         setter: v => this.SetPropertyRSize("Height", v)
                     },
                 ]
             }
         ]
-        if (this.getPropertyOwnerType() !== "Body") {
-            cats[0].items.push({
-                title: "PrintOnFirstPage", readonly: false, editor: "CheckBox",
-                getter: () => this.GetPropertyBool("PrintOnFirstPage", true),
-                setter: v => this.SetPropertyBool("PrintOnFirstPage", v)
-            });
-            cats[0].items.push({
-                title: "PrintOnLastPage", readonly: false, editor: "CheckBox",
-                getter: () => this.GetPropertyBool("PrintOnLastPage", true),
-                setter: v => this.SetPropertyBool("PrintOnLastPage", v)
-            });
-        }
+        // if (this.getPropertyOwnerType() !== "Body") {
+        //     cats[0].items.push({
+        //         title: "PrintOnFirstPage", readonly: false, editor: "CheckBox",
+        //         getter: () => this.GetPropertyBool("PrintOnFirstPage", true),
+        //         setter: v => this.SetPropertyBool("PrintOnFirstPage", v)
+        //     });
+        //     cats[0].items.push({
+        //         title: "PrintOnLastPage", readonly: false, editor: "CheckBox",
+        //         getter: () => this.GetPropertyBool("PrintOnLastPage", true),
+        //         setter: v => this.SetPropertyBool("PrintOnLastPage", v)
+        //     });
+        // }
 
         return cats;
     }
