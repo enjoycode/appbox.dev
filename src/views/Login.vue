@@ -14,38 +14,43 @@
 </template>
 
 <script>
-    export default {
-        name: 'login',
-        data() {
-            return {
-                user: '',
-                pwd: '',
-                loading: false
-            }
-        },
+export default {
+    name: 'login',
+    data() {
+        return {
+            user: '',
+            pwd: '',
+            loading: false
+        }
+    },
 
-        methods: {
-            onLoginClick() {
-                var _this = this
-                _this.loading = true
-                $runtime.channel.login(this.user, this.pwd).then(res => {
-                    _this.$router.replace('IDE')
-                }).catch(err => {
-                    _this.loading = false
-                    _this.$message.error('Login failed: ' + err)
-                })
-            }
+    methods: {
+        onLoginClick() {
+            var _this = this
+            // _this.loading = true
+            // $runtime.channel.login(this.user, this.pwd).then(res => {
+            //     _this.$router.replace('IDE')
+            // }).catch(err => {
+            //     _this.loading = false
+            //     _this.$message.error('Login failed: ' + err)
+            // })
+            $runtime.channel.invoke("sys.OrderService.Hello", []).then(res => {
+                console.log(res);
+            }).catch(err => {
+                _this.$message.error(err);
+            })
         }
     }
+}
 
 </script>
 
 <style scoped>
-    .align-center {
-        position: fixed;
-        left: 40%;
-        top: 20%;
-        margin-left: width/2;
-        margin-top: height/2;
-    }
+.align-center {
+    position: fixed;
+    left: 40%;
+    top: 20%;
+    margin-left: width/2;
+    margin-top: height/2;
+}
 </style>
