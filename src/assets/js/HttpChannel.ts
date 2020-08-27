@@ -9,8 +9,20 @@ const POST_CONFIG: AxiosRequestConfig = {
 
 export default class HttpChannel implements IChannel {
 
-    login(user: string, pass: string, external: any): void {
-        throw new Error("Method not implemented.");
+    login(user: string, pwd: string, external: any): Promise<any> {
+        let promise = new Promise((resolve, reject) => {
+            axios.post('/login', { u: user, p: pwd, e: external }, {}).then(res => {
+                console.log('登录结果:', res);
+                // if (response.data.succeed) {
+                // 	resolve(response.data.userInfo)
+                // } else {
+                // 	reject(response.data.error)
+                // }
+            }).catch(err => {
+                reject(err)
+            })
+        })
+        return promise;
     }
 
     logout(): void {
@@ -18,10 +30,10 @@ export default class HttpChannel implements IChannel {
     }
 
     invoke(service: string, args: []): Promise<any> {
-        var promise = new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             //序列化请求
-            var ws = new BytesOutputStream();
-            var bs = new BinSerializer(ws);
+            let ws = new BytesOutputStream();
+            let bs = new BinSerializer(ws);
             bs.WriteString(service);
             bs.WriteVariant(args.length);
             for (const arg of args) {

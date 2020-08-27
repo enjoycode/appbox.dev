@@ -8,9 +8,9 @@ interface IChannel {
      * 用户登录
      * @param user 
      * @param pass 
-     * @param external 外部用户模型标识
+     * @param external 外部用户
      */
-    login(user: string, pass: string, external: any): void;
+    login(user: string, pwd: string, external: any): Promise<any>;
 
     logout(): void;
 

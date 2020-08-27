@@ -26,6 +26,10 @@ module.exports = {
     },
     devServer: {
         proxy: {
+            '/login': {
+                target: 'http://10.211.55.8:8000/',
+                secure: false
+            },
             '/api': {
                 target: 'http://10.211.55.8:8000/',
                 secure: false
@@ -34,7 +38,7 @@ module.exports = {
                 target: 'http://10.211.55.8:8000/',
                 secure: false
             },
-            '/wsapi': {
+            '/ws': {
                 target: 'ws://10.211.55.8:8000/',
                 secure: false,
                 ws: true
