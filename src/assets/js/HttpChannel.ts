@@ -13,6 +13,7 @@ export default class HttpChannel implements IChannel {
         let promise = new Promise((resolve, reject) => {
             axios.post('/login', { u: user, p: pwd, e: external }, {}).then(res => {
                 console.log('登录结果:', res);
+                resolve(res);
                 // if (response.data.succeed) {
                 // 	resolve(response.data.userInfo)
                 // } else {

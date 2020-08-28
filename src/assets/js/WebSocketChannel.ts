@@ -4,6 +4,8 @@ import { Message } from 'element-ui'
 import BytesOutputStream from './serialization/BytesOutputStream';
 import BinSerializer from './serialization/BinSerializer';
 
+const MESSAGE_INVOKE_REQUEST = 10;
+
 export default class WebSocketChannel implements IChannel {
     private socket: WebSocket;
     private msgIdIndex = 0; // 当前消息流水计数器
@@ -74,13 +76,20 @@ export default class WebSocketChannel implements IChannel {
     private sendRequire(service: string, args: [], callback) {
         // 先加入等待者列表
         this.msgIdIndex++;
-        this.waitHandles.push({ Id: this.msgIdIndex, Cb: callback });
+        if (this.msgIdIndex > 0x7FFFFFFF) {
+            this.msgIdIndex = 0;
+        }
+        let msgId = this.msgIdIndex;
+        this.waitHandles.push({ Id: msgId, Cb: callback });
         // console.log('加入请求等待者, 还余: ' + waitHandles.length)
 
         //序列化请求
         let ws = new BytesOutputStream();
         let bs = new BinSerializer(ws);
-        //TODO: write srcId
+        //写入消息头
+        bs.WriteByte(MESSAGE_INVOKE_REQUEST); //MessageType.InvokeRequest
+        bs.WriteInt32(msgId);   //请求消息标识
+        //写入消息体(InvokeRequest)
         bs.WriteString(service);
         bs.WriteVariant(args.length);
         for (const arg of args) {
@@ -92,13 +101,13 @@ export default class WebSocketChannel implements IChannel {
             this.socket.send(ws.Bytes);
         } catch (error) {
             console.log('WebSocket发送数据错误: ' + error.message)
-            // onResult({ I: require.msgIdIndex, E: '发送请求失败:' + error.message })
+            // onResult({ I: msgId, E: '发送请求失败:' + error.message })
             return false
         }
 
         // 启动超时定时器
         // setTimeout(function () {
-        //     onResult({ I: require.msgIdIndex, E: '请求超时' })
+        //     onResult({ I: msgId, E: '请求超时' })
         // }, 10000)
         return true
     }

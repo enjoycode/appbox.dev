@@ -41,4 +41,10 @@ export default class BytesOutputStream implements IOutputStream {
         this.pos++;
     }
 
+    public WriteInt32(v: number): void {
+        this.ensureSizeToWrite(4);
+        this.view.setInt32(this.pos, v, true);
+        this.pos += 4;
+    }
+
 }

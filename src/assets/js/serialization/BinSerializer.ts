@@ -9,7 +9,15 @@ export default class BinSerializer {
     }
 
     public Serialize(obj: any) {
-        
+
+    }
+
+    public WriteByte(v: number) {
+        this.stream.WriteByte(v);
+    }
+
+    public WriteInt32(v: number) {
+        this.stream.WriteInt32(v);
     }
 
     public WriteString(v?: string): void {
