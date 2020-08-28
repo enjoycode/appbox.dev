@@ -10,6 +10,13 @@ export default class BytesInputStream implements IInputStream {
         this.view = new DataView(buffer);
     }
 
+    /**
+     * 剩余字节数
+     */
+    public get Remaining(): number {
+        return this.view.byteLength - this.pos;
+    }
+
     private ensureRemaining(size: number) {
         if (this.view.byteLength - this.pos < size) {
             throw new RangeError("Has no data.");
@@ -20,6 +27,13 @@ export default class BytesInputStream implements IInputStream {
         this.ensureRemaining(1);
         const value = this.view.getUint8(this.pos);
         this.pos++;
+        return value;
+    }
+
+    public ReadInt32(): number {
+        this.ensureRemaining(4);
+        const value = this.view.getInt32(this.pos, true);
+        this.pos += 4;
         return value;
     }
 

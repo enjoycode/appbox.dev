@@ -1,4 +1,5 @@
 import IOutputStream from './IOutputStream';
+import { Utf8Encode } from "./Utf8";
 
 export default class BinSerializer {
 
@@ -26,7 +27,7 @@ export default class BinSerializer {
         } else {
             this.WriteVariant(v.length);
             if (v.length > 0) {
-                this.WriteUtf8(v);
+                Utf8Encode(v, this.stream);
             }
         }
     }
@@ -49,23 +50,6 @@ export default class BinSerializer {
                 break;
             }
         } while (true);
-    }
-
-    private WriteUtf8(v: string): void {
-        let code = 0;
-        for (let i = 0; i < v.length; i++) {
-            code = v.charCodeAt(i);
-            if (0x00 <= code && code <= 0x7f) {
-                this.stream.WriteByte(code & 0xff);
-            } else if (0x80 <= code && code <= 0x7ff) {
-                this.stream.WriteByte((192 | (31 & (code >> 6))) & 0xff);
-                this.stream.WriteByte((128 | (63 & code)) & 0xff);
-            } else if ((0x800 <= code && code <= 0xd7ff) || (0xe000 <= code && code <= 0xffff)) {
-                this.stream.WriteByte((224 | (15 & (code >> 12))) & 0xff);
-                this.stream.WriteByte((128 | (63 & (code >> 6))) & 0xff);
-                this.stream.WriteByte((128 | (63 & code)) & 0xff);
-            }
-        }
     }
 
 }

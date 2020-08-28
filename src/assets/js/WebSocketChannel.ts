@@ -3,8 +3,10 @@ import axios from 'axios';
 import { Message } from 'element-ui'
 import BytesOutputStream from './serialization/BytesOutputStream';
 import BinSerializer from './serialization/BinSerializer';
-
-const MESSAGE_INVOKE_REQUEST = 10;
+import BytesInputStream from './serialization/BytesInputStream';
+import BinDeserializer from './serialization/BinDeserializer';
+import MessageType from "./MessageType";
+import InvokeErrorCode from "./InvokeErrorCode";
 
 export default class WebSocketChannel implements IChannel {
     private socket: WebSocket;
@@ -50,6 +52,7 @@ export default class WebSocketChannel implements IChannel {
     }
 
     private onerror(event: Event) {
+        //TODO:清除所有待发送以及已发送待响应的所有请求
         Message.error('连接异常，请重新登录')
         // store.router.replace('/')
     }
@@ -59,8 +62,47 @@ export default class WebSocketChannel implements IChannel {
      */
     private onmessage(event: MessageEvent) {
         console.log("收到WebSocket消息:", event.data);
-        // const res = JSON.parse(event.data) // 注意：这里不做循环引用Json处理，由调用者根据需要处理
-        // onResult(res)
+
+        if (event.data instanceof ArrayBuffer) {
+            let rs = new BytesInputStream(event.data);
+            let msgType = rs.ReadByte(); //先读消息类型
+            if (msgType == MessageType.InvokeResponse) {
+                let reqMsgId = rs.ReadInt32();
+                let errorCode: InvokeErrorCode = rs.ReadByte();
+                let result: any;
+                if (rs.Remaining > 0) { //因有些错误可能不包含数据，只有错误码
+                    let bs = new BinDeserializer(rs);
+                    try {
+                        result = bs.Deserialize();
+                    } catch (error) {
+                        // console.error("DeserializeResponse error:", error);
+                        errorCode = InvokeErrorCode.DeserializeResponseFail;
+                        result = error;
+                    }
+                }
+                this.onInvokeResponse(reqMsgId, errorCode, result);
+            } else {
+                console.warn("Receive unknown message type:", msgType);
+            }
+        } else {
+            console.warn("Receive none binary message: ", event.data);
+        }
+    }
+
+    private onInvokeResponse(reqId: number, error: InvokeErrorCode, result: any) {
+        for (var i = 0; i < this.waitHandles.length; i++) {
+            if (this.waitHandles[i].Id === reqId) {
+                let cb = this.waitHandles[i].Cb;
+                this.waitHandles.splice(i, 1)
+                // console.log('移除请求等待者, 还余: ' + waitHandles.length)
+                if (error != InvokeErrorCode.None) {
+                    cb(error.toString() + ":" + result, null);
+                } else {
+                    cb(null, result);
+                }
+                return;
+            }
+        }
     }
 
     /**
@@ -87,7 +129,7 @@ export default class WebSocketChannel implements IChannel {
         let ws = new BytesOutputStream();
         let bs = new BinSerializer(ws);
         //写入消息头
-        bs.WriteByte(MESSAGE_INVOKE_REQUEST); //MessageType.InvokeRequest
+        bs.WriteByte(MessageType.InvokeRequest);
         bs.WriteInt32(msgId);   //请求消息标识
         //写入消息体(InvokeRequest)
         bs.WriteString(service);
@@ -101,7 +143,7 @@ export default class WebSocketChannel implements IChannel {
             this.socket.send(ws.Bytes);
         } catch (error) {
             console.log('WebSocket发送数据错误: ' + error.message)
-            // onResult({ I: msgId, E: '发送请求失败:' + error.message })
+            this.onInvokeResponse(msgId, InvokeErrorCode.SendRequestFail, error);
             return false
         }
 
@@ -111,7 +153,6 @@ export default class WebSocketChannel implements IChannel {
         // }, 10000)
         return true
     }
-
 
     login(user: string, pwd: string, external: any): Promise<any> {
         let promise = new Promise((resolve, reject) => {
@@ -141,7 +182,7 @@ export default class WebSocketChannel implements IChannel {
                     this.connect();
                 }
                 // TODO:考虑挂起的列表超过阀值直接reject
-                this.addRequire(service, args, function (err, res) {
+                this.addRequire(service, args, (err, res) => {
                     if (err) {
                         reject(err)
                     } else {
@@ -149,7 +190,7 @@ export default class WebSocketChannel implements IChannel {
                     }
                 });
             } else {
-                this.sendRequire(service, args, function (err, res) {
+                this.sendRequire(service, args, (err, res) => {
                     if (err) {
                         reject(err)
                     } else {
