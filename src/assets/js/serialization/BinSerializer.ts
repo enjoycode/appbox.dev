@@ -1,5 +1,6 @@
 import IOutputStream from './IOutputStream';
 import { Utf8Encode } from "./Utf8";
+import PayloadType from './PayloadType';
 
 export default class BinSerializer {
 
@@ -10,7 +11,21 @@ export default class BinSerializer {
     }
 
     public Serialize(obj: any) {
-
+        if (obj == null || obj == undefined) {
+            this.stream.WriteByte(PayloadType.Null);
+            return;
+        } else if (typeof obj === "boolean") {
+            this.stream.WriteByte(obj === false ? PayloadType.BooleanFalse : PayloadType.BooleanTrue);
+        } else if (typeof obj === "number") {
+            throw new Error("未实现");
+        } else if (typeof obj === "string") {
+            this.stream.WriteByte(PayloadType.String);
+            this.WriteString(obj);
+        } else if (Array.isArray(obj)) {
+            throw new Error("未实现");
+        } else {
+            throw new Error("未实现");
+        }
     }
 
     public WriteByte(v: number) {

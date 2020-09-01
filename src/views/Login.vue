@@ -35,13 +35,12 @@ export default {
             //     _this.$message.error('Login failed: ' + err)
             // })
             $runtime.channel.login(this.user, this.pwd, false).then(res => {
-                console.log("登录结果:", res);
-                $runtime.channel.invoke("sys.LoginService.Login", []).then(res => {
-                    console.log("调用结果:", res);
-                }).catch(err => {
-                    _this.$message("调用错误: " + err);
-                });
-
+                console.log("登录结果: ", res);
+                // $runtime.channel.invoke("sys.OrderService.Hello", []).then(res => {
+                //     console.log("调用结果:", res);
+                // }).catch(err => {
+                //     _this.$message("调用错误: " + err);
+                // });
             }).catch(err => {
                 _this.$message.error(err);
             })

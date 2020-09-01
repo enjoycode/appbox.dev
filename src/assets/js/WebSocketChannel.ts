@@ -156,14 +156,16 @@ export default class WebSocketChannel implements IChannel {
 
     login(user: string, pwd: string, external: any): Promise<any> {
         let promise = new Promise((resolve, reject) => {
-            axios.post('/login', { u: user, p: pwd, e: external }, {}).then(res => {
-                console.log('登录结果:', res);
-                resolve(res.data);
-                // if (response.data.succeed) {
-                // 	resolve(response.data.userInfo)
-                // } else {
-                // 	reject(response.data.error)
-                // }
+            axios.post('/login', { u: user, p: pwd, e: external }, { responseType: "arraybuffer" }).then(res => {
+                let rs = new BytesInputStream(res.data);
+                let errorCode = rs.ReadByte();
+                let bs = new BinDeserializer(rs);
+                let result = bs.Deserialize();
+                if (errorCode == 0) {
+                    resolve(result);
+                } else {
+                    reject(result);
+                }
             }).catch(err => {
                 reject(err)
             })

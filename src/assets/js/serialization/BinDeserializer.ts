@@ -28,6 +28,9 @@ export default class BinDeserializer {
             return false;
         } else if (payloadType == PayloadType.ObjectRef) {
             throw new Error("Not implemented.");
+        } else if (payloadType == PayloadType.UnknownType) { //对应服务端的JsonResult
+            let jsonString = Utf8Decode(this.stream, -1);
+            return JSON.parse(jsonString); //TODO: 优化直接从Stream转换
         }
 
         let deserializer = knownTypes.get(payloadType);
