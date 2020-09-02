@@ -101,7 +101,7 @@ export function Utf8Decode(input: IInputStream, charLength: number): string {
                 break;
             }
         } else {
-            if (count + units.length < charLength) {
+            if (count + units.length >= charLength) {
                 break;
             }
         }
