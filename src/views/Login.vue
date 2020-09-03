@@ -27,22 +27,12 @@ export default {
     methods: {
         onLoginClick() {
             var _this = this
-            // _this.loading = true
-            // $runtime.channel.login(this.user, this.pwd).then(res => {
-            //     _this.$router.replace('IDE')
-            // }).catch(err => {
-            //     _this.loading = false
-            //     _this.$message.error('Login failed: ' + err)
-            // })
+            _this.loading = true
             $runtime.channel.login(this.user, this.pwd, false).then(res => {
-                console.log("登录结果: ", res);
-                // $runtime.channel.invoke("sys.OrderService.Hello", []).then(res => {
-                //     console.log("调用结果:", res);
-                // }).catch(err => {
-                //     _this.$message("调用错误: " + err);
-                // });
+                _this.$router.replace('IDE')
             }).catch(err => {
-                _this.$message.error(err);
+                _this.loading = false
+                _this.$message.error('Login failed: ' + err)
             })
         }
     }

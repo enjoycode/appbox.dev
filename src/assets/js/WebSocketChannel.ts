@@ -61,7 +61,7 @@ export default class WebSocketChannel implements IChannel {
      * 接收到服务端消息，格式参照说明
      */
     private onmessage(event: MessageEvent) {
-        console.log("收到WebSocket消息:", event.data);
+        // console.log("收到WebSocket消息:", event.data);
 
         if (event.data instanceof ArrayBuffer) {
             let rs = new BytesInputStream(event.data);
@@ -90,6 +90,8 @@ export default class WebSocketChannel implements IChannel {
     }
 
     private onInvokeResponse(reqId: number, error: InvokeErrorCode, result: any) {
+        console.log("收到调用回复: ", error, result);
+
         for (var i = 0; i < this.waitHandles.length; i++) {
             if (this.waitHandles[i].Id === reqId) {
                 let cb = this.waitHandles[i].Cb;
