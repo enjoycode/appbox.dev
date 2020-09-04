@@ -65,10 +65,10 @@ export default class WebSocketChannel implements IChannel {
 
         if (event.data instanceof ArrayBuffer) {
             let rs = new BytesInputStream(event.data);
-            let msgType = rs.ReadByte(); //先读消息类型
+            let msgType = rs.ReadUInt8(); //先读消息类型
             if (msgType == MessageType.InvokeResponse) {
                 let reqMsgId = rs.ReadInt32();
-                let errorCode: InvokeErrorCode = rs.ReadByte();
+                let errorCode: InvokeErrorCode = rs.ReadUInt8();
                 let result: any;
                 if (rs.Remaining > 0) { //因有些错误可能不包含数据，只有错误码
                     let bs = new BinDeserializer(rs);
@@ -160,7 +160,7 @@ export default class WebSocketChannel implements IChannel {
         let promise = new Promise((resolve, reject) => {
             axios.post('/login', { u: user, p: pwd, e: external }, { responseType: "arraybuffer" }).then(res => {
                 let rs = new BytesInputStream(res.data);
-                let errorCode = rs.ReadByte();
+                let errorCode = rs.ReadUInt8();
                 let bs = new BinDeserializer(rs);
                 let result = bs.Deserialize();
                 if (errorCode == 0) {

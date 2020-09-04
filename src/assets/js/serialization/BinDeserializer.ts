@@ -19,7 +19,7 @@ export default class BinDeserializer {
     }
 
     public Deserialize(): any {
-        let payloadType = this.stream.ReadByte();
+        let payloadType = this.stream.ReadUInt8();
         if (payloadType == PayloadType.Null) {
             return null;
         } else if (payloadType == PayloadType.BooleanTrue) {
@@ -41,7 +41,7 @@ export default class BinDeserializer {
     }
 
     public ReadByte(): number {
-        return this.stream.ReadByte();
+        return this.stream.ReadUInt8();
     }
 
     public ReadInt32(): number {
@@ -54,27 +54,27 @@ export default class BinDeserializer {
     }
 
     private ReadNativeVariant(): number {
-        let data = this.stream.ReadByte();
+        let data = this.stream.ReadUInt8();
         if ((data & 0x80) == 0) {
             return data;
         }
         data &= 0x7F;
-        let num2 = this.stream.ReadByte();
+        let num2 = this.stream.ReadUInt8();
         data |= (num2 & 0x7F) << 7;
         if ((num2 & 0x80) == 0) {
             return data;
         }
-        num2 = this.stream.ReadByte();
+        num2 = this.stream.ReadUInt8();
         data |= (num2 & 0x7F) << 14;
         if ((num2 & 0x80) == 0) {
             return data;
         }
-        num2 = this.stream.ReadByte();
+        num2 = this.stream.ReadUInt8();
         data |= (num2 & 0x7F) << 0x15;
         if ((num2 & 0x80) == 0) {
             return data;
         }
-        num2 = this.stream.ReadByte();
+        num2 = this.stream.ReadUInt8();
         data |= num2 << 0x1C;
         if ((num2 & 240) != 0) {
             throw new Error("out of range");

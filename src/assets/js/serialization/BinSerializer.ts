@@ -12,14 +12,14 @@ export default class BinSerializer {
 
     public Serialize(obj: any) {
         if (obj == null || obj == undefined) {
-            this.stream.WriteByte(PayloadType.Null);
+            this.stream.WriteUInt8(PayloadType.Null);
             return;
         } else if (typeof obj === "boolean") {
-            this.stream.WriteByte(obj === false ? PayloadType.BooleanFalse : PayloadType.BooleanTrue);
+            this.stream.WriteUInt8(obj === false ? PayloadType.BooleanFalse : PayloadType.BooleanTrue);
         } else if (typeof obj === "number") {
-            throw new Error("未实现");
+            this.SerializeNumber(obj);
         } else if (typeof obj === "string") {
-            this.stream.WriteByte(PayloadType.String);
+            this.stream.WriteUInt8(PayloadType.String);
             this.WriteString(obj);
         } else if (Array.isArray(obj)) {
             throw new Error("未实现");
@@ -28,8 +28,24 @@ export default class BinSerializer {
         }
     }
 
+    private SerializeNumber(num: number) {
+        if (Number.isSafeInteger(num)) {
+            //TODO: 暂全部按有符号处理以适应Java, 且暂只分int32, int64
+            if (num >= -2147483648 && num <= 2147483647) {
+                this.stream.WriteUInt8(PayloadType.Int32);
+                this.stream.WriteInt32(num);
+            } else {
+                this.stream.WriteUInt8(PayloadType.Int64);
+                this.stream.WriteInt64(num);
+            }
+        } else {
+            //TODO: 暂按Double处理
+            this.stream.WriteInt64(num);
+        }
+    }
+
     public WriteByte(v: number) {
-        this.stream.WriteByte(v);
+        this.stream.WriteUInt8(v);
     }
 
     public WriteInt32(v: number) {
@@ -58,10 +74,10 @@ export default class BinSerializer {
         do {
             temp = (v & 0x7F) | 0x80;
             if ((v >>= 7) != 0) {
-                this.stream.WriteByte(temp);
+                this.stream.WriteUInt8(temp);
             } else {
                 temp = temp & 0x7F;
-                this.stream.WriteByte(temp);
+                this.stream.WriteUInt8(temp);
                 break;
             }
         } while (true);

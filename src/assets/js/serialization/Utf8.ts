@@ -54,11 +54,11 @@ export function Utf8Encode(str: string, output: IOutputStream): void {
 
         if ((value & 0xffffff80) === 0) {
             // 1-byte
-            output.WriteByte(value);
+            output.WriteUInt8(value);
             continue;
         } else if ((value & 0xfffff800) === 0) {
             // 2-bytes
-            output.WriteByte(((value >> 6) & 0x1f) | 0xc0);
+            output.WriteUInt8(((value >> 6) & 0x1f) | 0xc0);
         } else {
             // handle surrogate pair
             if (value >= 0xd800 && value <= 0xdbff) {
@@ -74,17 +74,17 @@ export function Utf8Encode(str: string, output: IOutputStream): void {
 
             if ((value & 0xffff0000) === 0) {
                 // 3-byte
-                output.WriteByte(((value >> 12) & 0x0f) | 0xe0);
-                output.WriteByte(((value >> 6) & 0x3f) | 0x80);
+                output.WriteUInt8(((value >> 12) & 0x0f) | 0xe0);
+                output.WriteUInt8(((value >> 6) & 0x3f) | 0x80);
             } else {
                 // 4-byte
-                output.WriteByte(((value >> 18) & 0x07) | 0xf0);
-                output.WriteByte(((value >> 12) & 0x3f) | 0x80);
-                output.WriteByte(((value >> 6) & 0x3f) | 0x80);
+                output.WriteUInt8(((value >> 18) & 0x07) | 0xf0);
+                output.WriteUInt8(((value >> 12) & 0x3f) | 0x80);
+                output.WriteUInt8(((value >> 6) & 0x3f) | 0x80);
             }
         }
 
-        output.WriteByte((value & 0x3f) | 0x80);
+        output.WriteUInt8((value & 0x3f) | 0x80);
     }
 }
 
@@ -106,24 +106,24 @@ export function Utf8Decode(input: IInputStream, charLength: number): string {
             }
         }
 
-        const byte1 = input.ReadByte();
+        const byte1 = input.ReadUInt8();
         if ((byte1 & 0x80) === 0) {
             // 1 byte
             units.push(byte1);
         } else if ((byte1 & 0xe0) === 0xc0) {
             // 2 bytes
-            const byte2 = input.ReadByte() & 0x3f;
+            const byte2 = input.ReadUInt8() & 0x3f;
             units.push(((byte1 & 0x1f) << 6) | byte2);
         } else if ((byte1 & 0xf0) === 0xe0) {
             // 3 bytes
-            const byte2 = input.ReadByte() & 0x3f;
-            const byte3 = input.ReadByte() & 0x3f;
+            const byte2 = input.ReadUInt8() & 0x3f;
+            const byte3 = input.ReadUInt8() & 0x3f;
             units.push(((byte1 & 0x1f) << 12) | (byte2 << 6) | byte3);
         } else if ((byte1 & 0xf8) === 0xf0) {
             // 4 bytes
-            const byte2 = input.ReadByte() & 0x3f;
-            const byte3 = input.ReadByte() & 0x3f;
-            const byte4 = input.ReadByte() & 0x3f;
+            const byte2 = input.ReadUInt8() & 0x3f;
+            const byte3 = input.ReadUInt8() & 0x3f;
+            const byte4 = input.ReadUInt8() & 0x3f;
             let unit = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
             if (unit > 0xffff) {
                 unit -= 0x10000;

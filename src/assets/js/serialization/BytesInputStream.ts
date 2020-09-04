@@ -23,7 +23,7 @@ export default class BytesInputStream implements IInputStream {
         }
     }
 
-    public ReadByte(): number {
+    public ReadUInt8(): number {
         this.ensureRemaining(1);
         const value = this.view.getUint8(this.pos);
         this.pos++;

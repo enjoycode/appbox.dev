@@ -1,5 +1,5 @@
 interface IInputStream {
-    ReadByte(): number;
+    ReadUInt8(): number;
 
     ReadInt32(): number;
 
