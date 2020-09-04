@@ -90,7 +90,7 @@ export default class WebSocketChannel implements IChannel {
     }
 
     private onInvokeResponse(reqId: number, error: InvokeErrorCode, result: any) {
-        console.log("收到调用回复: ", error, result);
+        // console.log("收到调用回复: ", error, result);
 
         for (var i = 0; i < this.waitHandles.length; i++) {
             if (this.waitHandles[i].Id === reqId) {

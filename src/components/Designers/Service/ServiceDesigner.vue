@@ -11,7 +11,7 @@
                 <el-button :disabled="debugState == 0" size="mini" icon="fas fa-stop"> Stop</el-button>
             </el-button-group>
         </div>
-        <code-editor height="100%" ref="editor" language="csharp" theme="tm" :fileName="fileName" 
+        <code-editor height="100%" ref="editor" :language="language" theme="tm" :fileName="fileName" 
             @mounted="onEditorMounted" :options="{readOnly: true}">
         </code-editor>
     </div> 
@@ -45,8 +45,12 @@ export default {
         }
     },
     computed: {
+        language() {
+            return this.target.Language == 1 ? 'java' : "csharp";
+        },
         fileName() {
-            return this.target.App + '.Services.' + this.target.Text + '.cs'
+            let ext = this.target.Language == 1 ? '.java' : '.cs';
+            return this.target.App + '.Services.' + this.target.Text + ext
         }
     },
     watch: {
@@ -132,11 +136,11 @@ export default {
                     var errs = []
                     for (var i = 0; i < res.length; i++) {
                         var element = res[i]
-                        errs.push({ Model: this.target.App + '.' + this.target.Name, Location: '(' + element.Line + ',' + element.Column + ')', Info: element.Text })
+                        errs.push({ Model: this.target.App + '.' + this.target.Text, Location: '(' + element.Line + ',' + element.Column + ')', Info: element.Text })
                     }
-                    DesignStore.errors.update(this.target.App + '.' + this.target.Name, errs)
+                    DesignStore.errors.update(this.target.App + '.' + this.target.Text, errs)
                 } else {
-                    DesignStore.errors.clear(this.target.App + '.' + this.target.Name)
+                    DesignStore.errors.clear(this.target.App + '.' + this.target.Text)
                 }
             }).catch(err => {
                 _this.$message.warning('检查代码错误: ' + err)
@@ -181,7 +185,7 @@ export default {
                     method.Args[i].Value = ''
                 }
                 var dlg = Vue.component('InvokeDialog', InvokeDialog)
-                DesignStore.ide.showDialog(dlg, { Service: _this.target.App + '.' + _this.target.Name, Method: method })
+                DesignStore.ide.showDialog(dlg, { Service: _this.target.App + '.' + _this.target.Text, Method: method })
             }).catch(() => {
                 _this.$message.error('Cannot find target method')
             })
@@ -202,7 +206,7 @@ export default {
                 // 显示输入参数对话框
                 var dlg = Vue.component('DebugArgsDialog', DebugArgsDialog)
                 DesignStore.ide.showDialog(dlg, {
-                    ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Name,
+                    ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Text,
                     Method: method,
                     Breakpoints: breakpoints,
                     Designer: _this                })

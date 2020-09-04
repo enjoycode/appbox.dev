@@ -4,10 +4,9 @@ import ModelType from './ModelType'
 export interface IDesignNode {
     readonly ID: string;
     readonly Type: DesignNodeType;
-    readonly Text: string; // TODO: remove
-    readonly Name: string;
+    readonly Text: string;
     CheckoutBy: string;
-    readonly Nodes?: undefined | null | IDesignNode[];
+    readonly Nodes: undefined | null | IDesignNode[];
 }
 
 export interface IModelNode extends IDesignNode {

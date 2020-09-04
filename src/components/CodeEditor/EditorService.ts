@@ -12,8 +12,9 @@ import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languag
 import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
 import { Docomment } from './CSharpFeatures/Docomment/Docomment'
 import TextMateTheme from './TextMateTheme'
-import { conf } from './CSharpFeatures/LanguageConfiguration'
+import { CSharpLanguageConfig } from './CSharpFeatures/LanguageConfiguration'
 import CSharpFeatures from './CSharpFeatures'
+import { JavaLanguageConfig } from "./JavaFeatures/LanguageConfiguration";
 import TypeScriptFeatures from './TypeScriptFeatures'
 import { IModelNode, IDesignNode } from '@/design/IDesignNode'
 import store from '@/design/DesignStore'
@@ -34,18 +35,29 @@ async function init() {
     }
     const registry = new Registry({
         getGrammarDefinition: async (scopeName) => {
-            return {
-                format: 'json',
-                content: await (await fetch('/dev/csharp.tmLanguage.json')).text()
+            if (scopeName == 'source.java') {
+                return {
+                    format: 'json',
+                    content: await (await fetch('/dev/java.tmLanguage.json')).text()
+                }
+            } else {
+                return {
+                    format: 'json',
+                    content: await (await fetch('/dev/csharp.tmLanguage.json')).text()
+                }
             }
         }
     });
-    // 先注册csharp language，因为自定义monaco webpack plugin没有加载默认csharp
+    // 先注册language，因为自定义monaco webpack plugin没有加载默认csharp
     monaco.languages.register({ id: 'csharp' });
-    monaco.languages.setLanguageConfiguration('csharp', conf);
+    monaco.languages.setLanguageConfiguration('csharp', CSharpLanguageConfig);
+    monaco.languages.register({ id: "java" });
+    monaco.languages.setLanguageConfiguration('java', JavaLanguageConfig);
+
     // map of monaco "language id's" to TextMate scopeNames
     const grammars = new Map();
     grammars.set('csharp', 'source.cs');
+    grammars.set('java', 'source.java');
     await wireTmGrammars(registry, grammars);
 
     // Docomment hook
@@ -119,7 +131,7 @@ interface ModelDeclare {
 }
 
 interface IModelLibs {
-    [path: string] : monaco.IDisposable; //path: eg: sys.Services.HelloService
+    [path: string]: monaco.IDisposable; //path: eg: sys.Services.HelloService
 }
 
 class ModelLibManager {
@@ -175,8 +187,8 @@ class ModelLibManager {
     addView(viewNode: IModelNode) {
         // TODO:考虑ViewDesigner编译生成,然后保存至ViewModel
         let ls = monaco.languages.typescript.javascriptDefaults;
-        let name = `${viewNode.App}.Views.${viewNode.Name}`;
-        let declare = `declare namespace ${viewNode.App}.Views{const ${viewNode.Name}:Promise<Component>;}`;
+        let name = `${viewNode.App}.Views.${viewNode.Text}`;
+        let declare = `declare namespace ${viewNode.App}.Views{const ${viewNode.Text}:Promise<Component>;}`;
         this.libs[name] = ls.addExtraLib(declare, `${name}.d.ts`);
     }
 

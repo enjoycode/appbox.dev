@@ -120,7 +120,7 @@ export default {
     },
     computed: {
         fileName() {
-            return this.target.App + '.Views.' + this.target.Name + '.vue'
+            return this.target.App + '.Views.' + this.target.Text + '.vue'
         },
         previewUrl() {
             return document.location.href.replace('/IDE', '/preview')
@@ -267,7 +267,7 @@ export default {
             var scopedStyle = ''
 
             // 先转换编译模版及脚本
-            const compiledCode = compiler(ts, template, script, this.hashID, this.target.App + '.' + this.target.Name)
+            const compiledCode = compiler(ts, template, script, this.hashID, this.target.App + '.' + this.target.Text)
             if (compiledCode.error) {
                 console.log('编译错误: ' + compiledCode.error.message)
                 return

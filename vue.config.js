@@ -20,7 +20,8 @@ module.exports = {
             }),
             new CopyWebpackPlugin([
                 { from: './node_modules/onigasm/lib/onigasm.wasm' },
-                { from: './src/components/CodeEditor/CSharpFeatures/csharp.tmLanguage.json'}
+                { from: './src/components/CodeEditor/CSharpFeatures/csharp.tmLanguage.json'},
+                { from: './src/components/CodeEditor/JavaFeatures/java.tmLanguage.json'}
             ])
         ]
     },

@@ -80,7 +80,7 @@ export default {
             }
             // 没有则新建tab
             var tab = {
-                title: node.App + '.' + node.Name,
+                title: node.App + '.' + node.Text,
                 name: key,
                 target: node,
                 designer: null,

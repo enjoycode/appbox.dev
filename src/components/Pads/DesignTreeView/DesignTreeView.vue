@@ -138,7 +138,7 @@ export default Vue.extend({
             let loopFind = function (nodes) {
                 for (var i = 0; i < nodes.length; i++) {
                     var element = nodes[i]
-                    if (element.ModelType && element.ModelType === type && element.Name === modelName) {
+                    if (element.ModelType && element.ModelType === type && element.Text === modelName) {
                         return element
                     }
                     if (element.Nodes && element.Nodes.length > 0) {
@@ -194,11 +194,11 @@ export default Vue.extend({
         onDeleteNode(node, /* String */ rootNodeID) {
             // 移除前端声明 TODO:向上查找获取路径
             if (node.Type === DesignNodeType.ServiceModelNode) {
-                modelLibs.remove(node.App + '.Services.' + node.Name)
+                modelLibs.remove(node.App + '.Services.' + node.Text)
             } else if (node.Type === DesignNodeType.ViewModelNode) {
-                modelLibs.remove(node.App + '.Views.' + node.Name)
+                modelLibs.remove(node.App + '.Views.' + node.Text)
             } else if (node.Type === DesignNodeType.EntityModelNode) {
-                modelLibs.remove(node.App + '.Entities.' + node.Name)
+                modelLibs.remove(node.App + '.Entities.' + node.Text)
             }
             // 如果自动签出了模型根节点，则刷新根节点
             if (rootNodeID) {
