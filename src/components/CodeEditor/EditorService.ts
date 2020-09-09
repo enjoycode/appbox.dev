@@ -15,6 +15,7 @@ import TextMateTheme from './TextMateTheme'
 import { CSharpLanguageConfig } from './CSharpFeatures/LanguageConfiguration'
 import CSharpFeatures from './CSharpFeatures'
 import { JavaLanguageConfig } from "./JavaFeatures/LanguageConfiguration";
+import JavaFeatures from "./JavaFeatures"
 import TypeScriptFeatures from './TypeScriptFeatures'
 import { IModelNode, IDesignNode } from '@/design/IDesignNode'
 import store from '@/design/DesignStore'
@@ -66,9 +67,9 @@ async function init() {
     });
     // 注册Theme
     TextMateTheme(monaco);
-    // 初始化CS功能
+    // 初始化代码编辑功能
     CSharpFeatures(monaco);
-    // 初始化TS功能
+    JavaFeatures(monaco);
     TypeScriptFeatures(monaco);
 }
 
