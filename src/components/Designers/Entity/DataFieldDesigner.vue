@@ -12,9 +12,9 @@
                 </el-option>
             </el-select>
         </el-form-item>
-        <el-form-item prop="EnumModelID" v-if="member.DataType===8" :required="true" label="EnumModelID">
-            <el-select v-model="member.EnumModelID" @change="changeProp('EnumModelId')" placeholder="Enums">
-                <el-option v-for="item in enums" :key="item.ID" :label="item.ID" :value="item.ID">
+        <el-form-item prop="EnumModelId" v-if="member.DataType===14" :required="true" label="EnumModelId">
+            <el-select v-model="member.EnumModelId" @change="changeProp('EnumModelId')" placeholder="Enums">
+                <el-option v-for="item in enums" :key="item.ID" :label="item.Name" :value="item.ID">
                 </el-option>
             </el-select>
         </el-form-item>
@@ -82,9 +82,9 @@ export default {
             if (this.suspendChanges) {
                 return
             }
-            var _that = this
-            // 传入服务更改
-            let args = [this.owner.ID, this.member.Name, name, this.member[name]]
+			var _that = this
+			// 传入服务更改
+            let args = [this.owner.ID, this.member.Name, name, this.member[name] + '']
             $runtime.channel.invoke('sys.DesignService.ChangeEntityMember', args).catch(err => {
                 _that.$message.error(err)
             })
