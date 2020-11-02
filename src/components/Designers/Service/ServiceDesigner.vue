@@ -163,7 +163,7 @@ export default {
 
         onCheckout(needUpdate) {
             if (needUpdate) {
-                this.loadModel(true)
+                this.loadModel(true) //签出时已变更，需要重新加载
             } else {
                 this.readOnly = false
             }

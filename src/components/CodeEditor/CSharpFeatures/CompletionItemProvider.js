@@ -13,7 +13,8 @@ export default {
             $runtime.channel.invoke('sys.DesignService.GetCompletion', args).then(res => {
                 resolve({ suggestions: res })
             }).catch(err => {
-                reject(err)
+                console.log('completion error: ' + err);
+                resolve({ suggestions: [] })
             });
         })
         return promise
