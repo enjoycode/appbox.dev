@@ -1,12 +1,12 @@
 import IChannel from './IChannel';
 import axios from 'axios';
-import { Message } from 'element-ui'
+import {Message} from 'element-ui';
 import BytesOutputStream from './serialization/BytesOutputStream';
 import BinSerializer from './serialization/BinSerializer';
 import BytesInputStream from './serialization/BytesInputStream';
 import BinDeserializer from './serialization/BinDeserializer';
-import MessageType from "./MessageType";
-import InvokeErrorCode from "./InvokeErrorCode";
+import MessageType from './MessageType';
+import InvokeErrorCode from './InvokeErrorCode';
 
 export default class WebSocketChannel implements IChannel {
     private socket: WebSocket;
@@ -135,7 +135,6 @@ export default class WebSocketChannel implements IChannel {
         bs.WriteInt32(msgId);   //请求消息标识
         //写入消息体(InvokeRequest)
         bs.WriteString(service);
-        bs.WriteVariant(args.length);
         for (const arg of args) {
             bs.Serialize(arg);
         }
@@ -157,8 +156,8 @@ export default class WebSocketChannel implements IChannel {
     }
 
     login(user: string, pwd: string, external: any): Promise<any> {
-        let promise = new Promise((resolve, reject) => {
-            axios.post('/login', { u: user, p: pwd, e: external }, { responseType: "arraybuffer" }).then(res => {
+        return new Promise((resolve, reject) => {
+            axios.post('/login', {u: user, p: pwd, e: external}, {responseType: "arraybuffer"}).then(res => {
                 let rs = new BytesInputStream(res.data);
                 let errorCode = rs.ReadUInt8();
                 let bs = new BinDeserializer(rs);
@@ -171,8 +170,7 @@ export default class WebSocketChannel implements IChannel {
             }).catch(err => {
                 reject(err)
             })
-        })
-        return promise;
+        });
     }
 
     logout(): void {
@@ -180,7 +178,7 @@ export default class WebSocketChannel implements IChannel {
     }
 
     invoke(service: string, args: []): Promise<any> {
-        var promise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
                 if (!this.socket || this.socket.readyState !== WebSocket.CONNECTING) {
                     this.connect();
@@ -188,22 +186,21 @@ export default class WebSocketChannel implements IChannel {
                 // TODO:考虑挂起的列表超过阀值直接reject
                 this.addRequire(service, args, (err, res) => {
                     if (err) {
-                        reject(err)
+                        reject(err);
                     } else {
-                        resolve(res)
+                        resolve(res);
                     }
                 });
             } else {
                 this.sendRequire(service, args, (err, res) => {
                     if (err) {
-                        reject(err)
+                        reject(err);
                     } else {
-                        resolve(res)
+                        resolve(res);
                     }
                 });
             }
         })
-        return promise
     }
 
 }

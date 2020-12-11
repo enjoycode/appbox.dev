@@ -7,7 +7,7 @@ interface ITypeDeserializer {
 }
 
 const knownTypes: Map<PayloadType, ITypeDeserializer> = new Map<PayloadType, ITypeDeserializer>([
-    [PayloadType.EntityModel, bs => null],
+    // [PayloadType.EntityModel, bs => null],
     [PayloadType.String, bs => bs.ReadString()],
 ]);
 

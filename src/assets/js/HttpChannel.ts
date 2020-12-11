@@ -1,5 +1,5 @@
 import IChannel from './IChannel';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, {AxiosRequestConfig} from 'axios';
 import BytesOutputStream from './serialization/BytesOutputStream';
 import BinSerializer from './serialization/BinSerializer';
 
@@ -10,8 +10,8 @@ const POST_CONFIG: AxiosRequestConfig = {
 export default class HttpChannel implements IChannel {
 
     login(user: string, pwd: string, external: any): Promise<any> {
-        let promise = new Promise((resolve, reject) => {
-            axios.post('/login', { u: user, p: pwd, e: external }, {}).then(res => {
+        return new Promise((resolve, reject) => {
+            axios.post('/login', {u: user, p: pwd, e: external}, {}).then(res => {
                 console.log('登录结果:', res);
                 resolve(res);
                 // if (response.data.succeed) {
@@ -22,8 +22,7 @@ export default class HttpChannel implements IChannel {
             }).catch(err => {
                 reject(err)
             })
-        })
-        return promise;
+        });
     }
 
     logout(): void {
@@ -31,12 +30,11 @@ export default class HttpChannel implements IChannel {
     }
 
     invoke(service: string, args: []): Promise<any> {
-        let promise = new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             //序列化请求
             let ws = new BytesOutputStream();
             let bs = new BinSerializer(ws);
             bs.WriteString(service);
-            bs.WriteVariant(args.length);
             for (const arg of args) {
                 bs.Serialize(arg);
             }
@@ -52,8 +50,7 @@ export default class HttpChannel implements IChannel {
             }).catch(err => {
                 reject(err);
             });
-        })
-        return promise;
+        });
     }
 
 }

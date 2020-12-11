@@ -11,7 +11,7 @@ export default class BinSerializer {
     }
 
     public Serialize(obj: any) {
-        if (obj == null || obj == undefined) {
+        if (obj == null) {
             this.stream.WriteUInt8(PayloadType.Null);
             return;
         } else if (typeof obj === "boolean") {
