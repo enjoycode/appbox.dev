@@ -106,24 +106,24 @@ export function Utf8Decode(input: IInputStream, charLength: number): string {
             }
         }
 
-        const byte1 = input.ReadUInt8();
+        const byte1 = input.ReadByte();
         if ((byte1 & 0x80) === 0) {
             // 1 byte
             units.push(byte1);
         } else if ((byte1 & 0xe0) === 0xc0) {
             // 2 bytes
-            const byte2 = input.ReadUInt8() & 0x3f;
+            const byte2 = input.ReadByte() & 0x3f;
             units.push(((byte1 & 0x1f) << 6) | byte2);
         } else if ((byte1 & 0xf0) === 0xe0) {
             // 3 bytes
-            const byte2 = input.ReadUInt8() & 0x3f;
-            const byte3 = input.ReadUInt8() & 0x3f;
+            const byte2 = input.ReadByte() & 0x3f;
+            const byte3 = input.ReadByte() & 0x3f;
             units.push(((byte1 & 0x1f) << 12) | (byte2 << 6) | byte3);
         } else if ((byte1 & 0xf8) === 0xf0) {
             // 4 bytes
-            const byte2 = input.ReadUInt8() & 0x3f;
-            const byte3 = input.ReadUInt8() & 0x3f;
-            const byte4 = input.ReadUInt8() & 0x3f;
+            const byte2 = input.ReadByte() & 0x3f;
+            const byte3 = input.ReadByte() & 0x3f;
+            const byte4 = input.ReadByte() & 0x3f;
             let unit = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
             if (unit > 0xffff) {
                 unit -= 0x10000;

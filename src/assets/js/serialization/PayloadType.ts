@@ -18,21 +18,16 @@ enum PayloadType {
     Array = 19,
     List = 20,
 
-    /**
-     * 扩展类型
-     */
+    /** 扩展类型 */
     ExtKnownType = 21,
-    /**
-     * 对象引用
-     */
+    /** 对象引用 */
     ObjectRef = 22,
-    /**
-     * 未知类型
-     */
+    /** 未知类型 */
     UnknownType = 23,
 
     //----模型相关----
-    EntityModel = 50,
+    // EntityModel = 50,
+    EntityModelInfo = 51,
 
 }
 

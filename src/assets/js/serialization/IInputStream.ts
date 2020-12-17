@@ -1,9 +1,17 @@
 interface IInputStream {
-    ReadUInt8(): number;
+
+    readonly Remaining: number;
+
+    DeserializeAsync(): Promise<any>;
+
+    ReadByte(): number;
+
+    ReadInt16(): number;
 
     ReadInt32(): number;
 
-    readonly Remaining: number;
+    ReadString(): string;
+
 }
 
 export default IInputStream;

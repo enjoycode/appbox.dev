@@ -19,7 +19,7 @@ interface IChannel {
      * @param service 
      * @param args 
      */
-    invoke(service: string, args: []): Promise<any>;
+    invoke(service: string, args: any[]): Promise<any>;
 
 }
 

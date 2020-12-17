@@ -1,4 +1,4 @@
-import { Entity } from './Entity'
+import {Entity} from './Entity'
 
 // 参考: https://github.com/airyland/vux/blob/v2/src/plugins/device/index.js
 const _isAndroid = /(Android);?[\s/]+([\d.]+)?/.test(navigator.userAgent)
@@ -60,11 +60,10 @@ export default {
 
     /** 获取微信JS SDK */
     getWxSdk() {
-        var promise = new Promise((resolve, reject) => { // todo: fix IE, 参照vue-resources的Promise polyfill实现
+        return new Promise((resolve, reject) => { // todo: fix IE, 参照vue-resources的Promise polyfill实现
             require.ensure([], function (require) {
                 resolve(require('weixin-js-sdk'))
             }, 'wxsdk')
         })
-        return promise
     }
 }
