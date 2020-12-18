@@ -1,3 +1,5 @@
+import * as Long from 'long';
+
 interface IInputStream {
 
     readonly Remaining: number;
@@ -9,6 +11,10 @@ interface IInputStream {
     ReadInt16(): number;
 
     ReadInt32(): number;
+
+    ReadInt64(): Long;
+
+    ReadVariant(): number;
 
     ReadString(): string;
 

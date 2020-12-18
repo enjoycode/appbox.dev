@@ -54,11 +54,11 @@ export function Utf8Encode(str: string, output: IOutputStream): void {
 
         if ((value & 0xffffff80) === 0) {
             // 1-byte
-            output.WriteUInt8(value);
+            output.WriteByte(value);
             continue;
         } else if ((value & 0xfffff800) === 0) {
             // 2-bytes
-            output.WriteUInt8(((value >> 6) & 0x1f) | 0xc0);
+            output.WriteByte(((value >> 6) & 0x1f) | 0xc0);
         } else {
             // handle surrogate pair
             if (value >= 0xd800 && value <= 0xdbff) {
@@ -74,17 +74,17 @@ export function Utf8Encode(str: string, output: IOutputStream): void {
 
             if ((value & 0xffff0000) === 0) {
                 // 3-byte
-                output.WriteUInt8(((value >> 12) & 0x0f) | 0xe0);
-                output.WriteUInt8(((value >> 6) & 0x3f) | 0x80);
+                output.WriteByte(((value >> 12) & 0x0f) | 0xe0);
+                output.WriteByte(((value >> 6) & 0x3f) | 0x80);
             } else {
                 // 4-byte
-                output.WriteUInt8(((value >> 18) & 0x07) | 0xf0);
-                output.WriteUInt8(((value >> 12) & 0x3f) | 0x80);
-                output.WriteUInt8(((value >> 6) & 0x3f) | 0x80);
+                output.WriteByte(((value >> 18) & 0x07) | 0xf0);
+                output.WriteByte(((value >> 12) & 0x3f) | 0x80);
+                output.WriteByte(((value >> 6) & 0x3f) | 0x80);
             }
         }
 
-        output.WriteUInt8((value & 0x3f) | 0x80);
+        output.WriteByte((value & 0x3f) | 0x80);
     }
 }
 

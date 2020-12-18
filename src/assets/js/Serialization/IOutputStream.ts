@@ -1,5 +1,5 @@
 interface IOutputStream {
-    WriteUInt8(v: number): void;
+    WriteByte(v: number): void;
 
     WriteInt8(v: number): void;
 

@@ -1,11 +1,10 @@
 import IChannel from './IChannel';
 import axios from 'axios';
 import {Message} from 'element-ui';
-import BytesOutputStream from './serialization/BytesOutputStream';
-import BinSerializer from './serialization/BinSerializer';
-import BytesInputStream from './serialization/BytesInputStream';
+import BytesOutputStream from '../Serialization/BytesOutputStream';
+import BytesInputStream from '../Serialization/BytesInputStream';
 import MessageType from './MessageType';
-import InvokeErrorCode from './InvokeErrorCode';
+import InvokeErrorCode from '../InvokeErrorCode';
 
 export default class WebSocketChannel implements IChannel {
     private socket: WebSocket;
@@ -88,7 +87,7 @@ export default class WebSocketChannel implements IChannel {
     }
 
     private onInvokeResponse(reqId: number, error: InvokeErrorCode, result: any) {
-        // console.log("收到调用回复: ", error, result);
+        console.log("收到调用回复: ", error, result);
 
         for (let i = 0; i < this.waitHandles.length; i++) {
             if (this.waitHandles[i].Id === reqId) {
@@ -127,14 +126,13 @@ export default class WebSocketChannel implements IChannel {
 
         //序列化请求
         let ws = new BytesOutputStream();
-        let bs = new BinSerializer(ws);
         //写入消息头
-        bs.WriteByte(MessageType.InvokeRequest);
-        bs.WriteInt32(msgId);   //请求消息标识
+        ws.WriteByte(MessageType.InvokeRequest);
+        ws.WriteInt32(msgId);   //请求消息标识
         //写入消息体(InvokeRequest)
-        bs.WriteString(service);
+        ws.WriteString(service);
         for (const arg of args) {
-            bs.Serialize(arg);
+            ws.Serialize(arg);
         }
 
         // 通过socket发送请求

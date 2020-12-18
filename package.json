@@ -17,6 +17,7 @@
     "echarts": "^4.8.0",
     "element-ui": "^2.13.2",
     "lodash.debounce": "^4.0.8",
+    "long": "^4.0.0",
     "markdown-it": "^8.4.2",
     "markdown-it-abbr": "^1.0.4",
     "markdown-it-deflist": "^2.0.3",

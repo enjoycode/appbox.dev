@@ -1,7 +1,6 @@
 import IChannel from './IChannel';
 import axios, {AxiosRequestConfig} from 'axios';
-import BytesOutputStream from './serialization/BytesOutputStream';
-import BinSerializer from './serialization/BinSerializer';
+import BytesOutputStream from '../Serialization/BytesOutputStream';
 
 const POST_CONFIG: AxiosRequestConfig = {
     responseType: "arraybuffer", transformRequest: data => data
@@ -33,10 +32,9 @@ export default class HttpChannel implements IChannel {
         return new Promise((resolve, reject) => {
             //序列化请求
             let ws = new BytesOutputStream();
-            let bs = new BinSerializer(ws);
-            bs.WriteString(service);
+            ws.WriteString(service);
             for (const arg of args) {
-                bs.Serialize(arg);
+                ws.Serialize(arg);
             }
 
             //Post请求，注意：配置覆盖transformRequest(默认Axios's defaults.js会转换为Uint8Array.buffer)

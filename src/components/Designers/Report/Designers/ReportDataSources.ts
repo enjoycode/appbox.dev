@@ -1,6 +1,8 @@
 import ReportRootDesigner from "./ReportRootDesigner";
-import { IEntityMember, EntityMemberType, EntityFieldType } from "@/design/IEntityMember";
+import {EntityMemberType} from '@/assets/js/EntityMemberType';
+import { IEntityMember} from "@/design/IEntityMember";
 import { IPropertyOwner, IPropertyCatalog } from '@/components/Canvas/Interfaces/IPropertyPanel'
+import {DataFieldType} from '@/assets/js/EntityMemberType';
 
 class Field implements IPropertyOwner {
     private readonly _owner: ReportDataSource;
@@ -175,22 +177,22 @@ export default class ReportDataSources {
         return res;
     }
 
-    private static ToTypeName(fieldType: EntityFieldType): string {
+    private static ToTypeName(fieldType: DataFieldType): string {
         switch (fieldType) {
-            case EntityFieldType.String: return "String";
-            case EntityFieldType.Boolean: return "Boolean";
-            case EntityFieldType.DateTime: return "DateTime";
-            case EntityFieldType.Decimal: return "Decimal";
-            case EntityFieldType.Enum:
-            case EntityFieldType.Byte:
-            case EntityFieldType.Int16:
-            case EntityFieldType.Int32:
-            case EntityFieldType.Int64:
-            case EntityFieldType.UInt16:
-            case EntityFieldType.UInt32:
-            case EntityFieldType.UInt64: return "Integer";
-            case EntityFieldType.Float:
-            case EntityFieldType.Double: return "Float";
+            case DataFieldType.String: return "String";
+            case DataFieldType.Boolean: return "Boolean";
+            case DataFieldType.DateTime: return "DateTime";
+            case DataFieldType.Decimal: return "Decimal";
+            case DataFieldType.Enum:
+            case DataFieldType.Byte:
+            case DataFieldType.Int16:
+            case DataFieldType.Int32:
+            case DataFieldType.Int64:
+            case DataFieldType.UInt16:
+            case DataFieldType.UInt32:
+            case DataFieldType.UInt64: return "Integer";
+            case DataFieldType.Float:
+            case DataFieldType.Double: return "Float";
             default: return "String";
         }
     }

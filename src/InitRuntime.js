@@ -1,8 +1,7 @@
 import router from './router'
 import store from '@/design/DesignStore'
-// import Channel from '@/assets/js/channel.ws'
 // import HttpChannel from '@/assets/js/HttpChannel'
-import WebSocketChannel from "@/assets/js/WebSocketChannel";
+import WebSocketChannel from "@/assets/js/Channel/WebSocketChannel";
 import cookie from '@/assets/js/cookie'
 import Runtime from '@/assets/js/Runtime'
 

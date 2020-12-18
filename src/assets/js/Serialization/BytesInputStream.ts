@@ -1,7 +1,9 @@
 import IInputStream from './IInputStream';
-import PayloadType from '@/assets/js/serialization/PayloadType';
-import {EntityModelInfo} from '@/assets/js/serialization/EntityModelContainer';
-import {Utf8Decode} from '@/assets/js/serialization/Utf8';
+import * as Long from 'long';
+import PayloadType from '@/assets/js/Serialization/PayloadType';
+import {EntityModelInfo} from '@/assets/js/Serialization/EntityModelContainer';
+import {Utf8Decode} from '@/assets/js/Serialization/Utf8';
+import {Entity} from '@/assets/js/Entity';
 
 export default class BytesInputStream implements IInputStream {
     private pos = 0;
@@ -24,10 +26,16 @@ export default class BytesInputStream implements IInputStream {
                 return false;
             case PayloadType.String:
                 return this.ReadString();
+            case PayloadType.Int32:
+                return this.ReadInt32();
+            case PayloadType.Int64:
+                return this.ReadInt64();
             case PayloadType.UnknownType:
                 return this.ReadJsonObject();
             case PayloadType.EntityModelInfo:
                 return EntityModelInfo.ReadFrom(this);
+            case PayloadType.Entity:
+                return await Entity.ReadFrom(this);
             default:
                 throw new Error('未实现的类型: ' + payloadType.toString());
         }
@@ -63,6 +71,14 @@ export default class BytesInputStream implements IInputStream {
         const value = this.view.getInt32(this.pos, true);
         this.pos += 4;
         return value;
+    }
+
+    public ReadInt64(): Long {
+        this.ensureRemaining(8);
+        const v1 = this.view.getInt32(this.pos, true);
+        const v2 = this.view.getInt32(this.pos + 4, true);
+        this.pos += 8;
+        return new Long(v1, v2);
     }
 
     private ReadJsonObject(): any {

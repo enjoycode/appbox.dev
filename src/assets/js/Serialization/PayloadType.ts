@@ -29,6 +29,8 @@ enum PayloadType {
     // EntityModel = 50,
     EntityModelInfo = 51,
 
+    Entity = 90,
+
 }
 
 export default PayloadType;
