@@ -1,15 +1,17 @@
 /** 映射至服务端的实体 */
 import IInputStream from '@/assets/js/Serialization/IInputStream';
-import {EntityModelContainer, IMemberInfo} from '@/assets/js/Serialization/EntityModelContainer';
+import {EntityModelContainer, EntityModelInfo, IMemberInfo} from '@/assets/js/Serialization/EntityModelContainer';
 import {DataFieldType, EntityMemberType} from '@/assets/js/EntityMemberType';
 import * as Long from 'long';
+import IOutputStream from '@/assets/js/Serialization/IOutputStream';
+import PayloadType from '@/assets/js/Serialization/PayloadType';
 
 export class Entity {
-    private static readonly PS = '#PersistentState';
-    private readonly _modelId: Long | string; //暂字符串表示由前端创建的实例
+    public static readonly PS = 'PersistentState';
+    private _modelInfo: EntityModelInfo | string; //暂字符串表示由前端创建的实例
 
-    constructor(modelId: Long | string) {
-        this._modelId = modelId;
+    constructor(modelInfo: EntityModelInfo | string) {
+        this._modelInfo = modelInfo;
     }
 
     /** 是否新建的实例，另外标为删除的实例接受变更后也会转为新建的 */
@@ -40,12 +42,13 @@ export class Entity {
         if (this[Entity.PS]) {
             this[Entity.PS] = 1;
         }
+        //TODO:如果由前端创建的转换返回成后端格式
         //TODO:继续处理EntityRef及EntitySet
     }
 
     /** 返回移除所有导航属性的拷贝 */
     detachNavigations() {
-        //TODO:
+        //TODO:改为设置开关，以便序列化时是否附带导航属性
     }
 
     //region ====Serialization====
@@ -86,7 +89,7 @@ export class Entity {
 
         //读取DBEntity属性
         if (model.StoreType > 0) {
-            obj['#PersistentState'] = bs.ReadByte();
+            obj[Entity.PS] = bs.ReadByte();
             let changedCount = bs.ReadVariant();
             if (changedCount > 0) {
                 throw new Error('未实现');
@@ -96,6 +99,50 @@ export class Entity {
         //TODO:SysEntity读取EntityId
 
         return obj;
+    }
+
+    public async WriteTo(bs: IOutputStream): Promise<void> {
+        if (typeof this._modelInfo == 'string') {
+            let id: Long = Long.fromString(this._modelInfo, true);
+            this._modelInfo = await EntityModelContainer.GetModelAsync(id);
+        }
+        //model id
+        bs.WriteInt32(this._modelInfo.Id.getLowBits());
+        bs.WriteInt32(this._modelInfo.Id.getHighBits());
+        //实体成员
+        for (const m of this._modelInfo.Members) {
+            //根据成员类型进行相应的写入
+            if (m.MemberType == EntityMemberType.DataField) {
+                let fieldValue = this[m.Name];
+                if (fieldValue) {
+                    bs.WriteInt16(m.Id);
+                    switch (m.FieldType) {
+                        case DataFieldType.Int32:
+                            bs.WriteInt32(fieldValue);
+                            break;
+                        case DataFieldType.String:
+                            bs.WriteString(fieldValue);
+                            break;
+                        default:
+                            throw new Error('未实现');
+                    }
+                } else {
+                    //TODO:暂写入null值，应判断是否改变
+                    bs.WriteInt16(m.Id);
+                    bs.WriteByte(PayloadType.Null);
+                }
+            } else {
+                throw new Error('未实现');
+            }
+        }
+        bs.WriteInt16(0); //end members
+
+        //写入DBEntity属性
+        if (this._modelInfo.StoreType > 0) {
+            bs.WriteByte(this[Entity.PS]);
+            //TODO:写入变更成员列表
+            bs.WriteVariant(-1);
+        }
     }
 
     //endregion

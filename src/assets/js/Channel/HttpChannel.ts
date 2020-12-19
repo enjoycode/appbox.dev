@@ -29,12 +29,12 @@ export default class HttpChannel implements IChannel {
     }
 
     invoke(service: string, args: []): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             //序列化请求
             let ws = new BytesOutputStream();
             ws.WriteString(service);
             for (const arg of args) {
-                ws.Serialize(arg);
+                await ws.SerializeAsync(arg);
             }
 
             //Post请求，注意：配置覆盖transformRequest(默认Axios's defaults.js会转换为Uint8Array.buffer)

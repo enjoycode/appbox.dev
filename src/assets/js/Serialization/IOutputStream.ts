@@ -10,6 +10,10 @@ interface IOutputStream {
     WriteInt64(v: number): void;
 
     WriteDouble(v: number): void;
+
+    WriteVariant(v: number): void;
+
+    WriteString(v: string): void;
 }
 
 export default IOutputStream;

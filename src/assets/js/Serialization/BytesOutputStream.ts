@@ -2,6 +2,7 @@ import IOutputStream from './IOutputStream';
 import PayloadType from '@/assets/js/Serialization/PayloadType';
 import {Utf8Encode} from '@/assets/js/Serialization/Utf8';
 import * as Long from 'long';
+import {Entity} from '@/assets/js/Entity';
 
 export default class BytesOutputStream implements IOutputStream {
     private pos = 0;
@@ -12,10 +13,9 @@ export default class BytesOutputStream implements IOutputStream {
         return this.bytes.subarray(0, this.pos);
     }
 
-    public Serialize(obj: any) {
+    public async SerializeAsync(obj: any): Promise<void> {
         if (obj == null) {
             this.WriteByte(PayloadType.Null);
-            return;
         } else if (typeof obj === 'boolean') {
             this.WriteByte(obj === false ? PayloadType.BooleanFalse : PayloadType.BooleanTrue);
         } else if (typeof obj === 'number') {
@@ -27,6 +27,9 @@ export default class BytesOutputStream implements IOutputStream {
             this.WriteByte(PayloadType.Int64);
             this.WriteInt32(obj.getLowBits());
             this.WriteInt32(obj.getHighBits());
+        } else if (obj instanceof Entity) {
+            this.WriteByte(PayloadType.Entity);
+            await obj.WriteTo(this);
         } else if (Array.isArray(obj)) {
             throw new Error('未实现');
         } else {

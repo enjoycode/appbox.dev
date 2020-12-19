@@ -16,10 +16,15 @@ export class EntityModelInfo {
     private readonly storeType: number;
     private readonly members: IMemberInfo[];
     private entity: Entity;
+    private id: Long;
 
     private constructor(storeType: number, members: IMemberInfo[]) {
         this.storeType = storeType;
         this.members = members;
+    }
+
+    public get Id(): Long {
+        return this.id;
     }
 
     public get StoreType(): number {
@@ -30,12 +35,20 @@ export class EntityModelInfo {
         return this.entity;
     }
 
+    public get Members(): IMemberInfo[] {
+        return this.members;
+    }
+
     public InitTempEntity(modelId: Long): void {
         if (this.entity)
             return;
-        let obj = new Entity(modelId);
+        this.id = modelId;
+        let obj = new Entity(this);
         for (const m of this.members) {
             EntityModelInfo.DefineProperty(obj, m.Name);
+        }
+        if (this.storeType > 0) {
+            EntityModelInfo.DefineProperty(obj, Entity.PS); //TODO: readonly
         }
         Object.seal(obj);
         this.entity = obj;

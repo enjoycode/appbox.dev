@@ -87,7 +87,7 @@ export default class WebSocketChannel implements IChannel {
     }
 
     private onInvokeResponse(reqId: number, error: InvokeErrorCode, result: any) {
-        console.log("收到调用回复: ", error, result);
+        //console.log('收到调用回复: ', error, result);
 
         for (let i = 0; i < this.waitHandles.length; i++) {
             if (this.waitHandles[i].Id === reqId) {
@@ -114,7 +114,7 @@ export default class WebSocketChannel implements IChannel {
     /**
      * 发送Api调用请求
      */
-    private sendRequire(service: string, args: [], callback) {
+    private async sendRequire(service: string, args: [], callback) {
         // 先加入等待者列表
         this.msgIdIndex++;
         if (this.msgIdIndex > 0x7FFFFFFF) {
@@ -132,7 +132,7 @@ export default class WebSocketChannel implements IChannel {
         //写入消息体(InvokeRequest)
         ws.WriteString(service);
         for (const arg of args) {
-            ws.Serialize(arg);
+            await ws.SerializeAsync(arg);
         }
 
         // 通过socket发送请求
@@ -170,26 +170,22 @@ export default class WebSocketChannel implements IChannel {
 
     invoke(service: string, args: []): Promise<any> {
         return new Promise((resolve, reject) => {
+            let cb = (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            };
+
             if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
                 if (!this.socket || this.socket.readyState !== WebSocket.CONNECTING) {
                     this.connect();
                 }
                 // TODO:考虑挂起的列表超过阀值直接reject
-                this.addRequire(service, args, (err, res) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
+                this.addRequire(service, args, cb);
             } else {
-                this.sendRequire(service, args, (err, res) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                });
+                this.sendRequire(service, args, cb);
             }
         });
     }
