@@ -36,6 +36,8 @@ export default class BytesInputStream implements IInputStream {
                 return EntityModelInfo.ReadFrom(this);
             case PayloadType.Entity:
                 return await Entity.ReadFrom(this);
+            case PayloadType.List:
+                return await this.ReadList();
             default:
                 throw new Error('未实现的类型: ' + payloadType.toString());
         }
@@ -123,6 +125,16 @@ export default class BytesInputStream implements IInputStream {
     public ReadString(): string {
         let chars = this.ReadVariant();
         return Utf8Decode(this, chars);
+    }
+
+    private async ReadList(): Promise<any[]> {
+        this.ReadByte(); //Element type always = Object
+        let count = this.ReadVariant();
+        let list = [];
+        for (let i = 0; i < count; i++) {
+            list.push(await this.DeserializeAsync());
+        }
+        return list;
     }
 
 }
