@@ -5,32 +5,41 @@ import {DataFieldType, EntityMemberType} from '@/assets/js/EntityMemberType';
 import * as Long from 'long';
 
 export class Entity {
-    private readonly _modelId: Long;
+    private static readonly PS = '#PersistentState';
+    private readonly _modelId: Long | string; //暂字符串表示由前端创建的实例
 
-    constructor(modelId: Long) {
+    constructor(modelId: Long | string) {
         this._modelId = modelId;
     }
 
     /** 是否新建的实例，另外标为删除的实例接受变更后也会转为新建的 */
     isNew(): boolean {
-        return true; //return this.$T.charAt(0) === '0';
+        if (this[Entity.PS]) {
+            return this[Entity.PS] == 0;
+        }
+        return true;
     }
 
     /** 是否已标为删除 */
     isDeleted(): boolean {
-        return false; //return this.$T.charAt(0) === '3';
+        if (this[Entity.PS]) {
+            return this[Entity.PS] == 3;
+        }
+        return false;
     }
 
     /** 标为已删除 */
     markDeleted() {
-        // if (!this.isNew()) {
-        //     this.$T = '3' + this.$T.substring(1);
-        // }
+        if (this[Entity.PS]) {
+            return this[Entity.PS] = 3;
+        }
     }
 
     /** 用于调用服务保存后同步状态 */
     acceptChanges() {
-        // this.$T = '1' + this.$T.substring(1);
+        if (this[Entity.PS]) {
+            this[Entity.PS] = 1;
+        }
         //TODO:继续处理EntityRef及EntitySet
     }
 
@@ -43,12 +52,11 @@ export class Entity {
     public static async ReadFrom(bs: IInputStream): Promise<Entity> {
         let modelId = bs.ReadInt64();
         let model = await EntityModelContainer.GetModelAsync(modelId);
-        let obj = new Entity(modelId);
+        let obj = Object.create(model.Entity);
 
         //读取成员
         let memberId: number = 0;
         let memberInfo: IMemberInfo;
-        let index: number = 0;
         while (true) {
             memberId = bs.ReadInt16();
             if (memberId == 0) {
@@ -63,10 +71,10 @@ export class Entity {
             if (memberInfo.MemberType == EntityMemberType.DataField) {
                 switch (memberInfo.FieldType) {
                     case DataFieldType.Int32:
-                        this.DefineProperty(obj, memberInfo, bs.ReadInt32());
+                        obj[memberInfo.Name] = bs.ReadInt32();
                         break;
                     case DataFieldType.String:
-                        this.DefineProperty(obj, memberInfo, bs.ReadString());
+                        obj[memberInfo.Name] = bs.ReadString();
                         break;
                     default:
                         throw new Error('未实现');
@@ -88,18 +96,6 @@ export class Entity {
         //TODO:SysEntity读取EntityId
 
         return obj;
-    }
-
-    private static DefineProperty(obj: Entity, member: IMemberInfo, value: any): void {
-        obj[member.FieldName] = value;
-        Object.defineProperty(obj, member.Name, {
-            get() {
-                return obj[member.FieldName];
-            },
-            set(value) {
-                obj[member.FieldName] = value;
-            }
-        });
     }
 
     //endregion
