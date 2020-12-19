@@ -55,9 +55,9 @@ export class Entity {
                 break;
             }
 
-            memberInfo = model.GetMemberAt(index);
-            if (memberId != memberInfo.Id) {
-                throw new Error('实体模型与服务端不一致，请刷新');
+            memberInfo = model.GetMember(memberId);
+            if (!memberInfo) {
+                throw new Error('无法找到成员，实体模型与服务端不一致，请刷新');
             }
             //根据成员类型进行相应的读取
             if (memberInfo.MemberType == EntityMemberType.DataField) {
@@ -78,7 +78,7 @@ export class Entity {
 
         //读取DBEntity属性
         if (model.StoreType > 0) {
-            obj['#persistentState'] = bs.ReadByte();
+            obj['#PersistentState'] = bs.ReadByte();
             let changedCount = bs.ReadVariant();
             if (changedCount > 0) {
                 throw new Error('未实现');

@@ -25,27 +25,10 @@ export class EntityModelInfo {
         return this.storeType;
     }
 
-    public GetMemberAt(idx: number): IMemberInfo {
-        return this.members[idx];
+    public GetMember(id: number): IMemberInfo {
+        //TODO:binarySearch
+        return this.members.find(m => m.Id == id);
     }
-
-    // public GetMemberId(name: string): number {
-    //     let member = this.members.find(m => m.Name == name);
-    //     if (member) {
-    //         return member.Id;
-    //     } else {
-    //         throw new Error('Can\'t find member: ' + name);
-    //     }
-    // }
-    //
-    // public GetMemberName(id: number): string {
-    //     let member = this.members.find(m => m.Id == id);
-    //     if (member) {
-    //         return member.Name;
-    //     } else {
-    //         throw new Error('Can\'t find member: ' + id);
-    //     }
-    // }
 
     public static ReadFrom(bs: IInputStream): EntityModelInfo {
         let storeType = bs.ReadByte();
@@ -79,7 +62,7 @@ export abstract class EntityModelContainer {
         }
 
         const channel = <IChannel> Runtime.channel;
-        let res: EntityModelInfo = await channel.invoke('sys.SystemService.GetModelInfo', [id]);
+        let res: EntityModelInfo = await channel.invoke('sys.System.GetModelInfo', [id]);
         this.models[id] = res;
         return res;
     }
