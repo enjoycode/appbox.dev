@@ -40,8 +40,9 @@ export class EntityModelInfo {
     }
 
     public InitTempEntity(modelId: Long): void {
-        if (this.entity)
+        if (this.entity) {
             return;
+        }
         this.id = modelId;
         let obj = new Entity(this);
         for (const m of this.members) {
@@ -81,13 +82,19 @@ export class EntityModelInfo {
 
     private static DefineProperty(obj: object, name: string): void {
         let fieldName = '#' + name;
-        obj[fieldName] = undefined;
+        Object.defineProperty(obj, fieldName, {
+            writable: true,
+            enumerable: false
+        });
+
         Object.defineProperty(obj, name, {
+            configurable: false,
+            enumerable: true,
             get() {
-                return obj[fieldName];
+                return this[fieldName];
             },
             set(value) {
-                obj[fieldName] = value;
+                this[fieldName] = value;
             }
         });
     }
@@ -96,10 +103,11 @@ export class EntityModelInfo {
 
 export abstract class EntityModelContainer {
 
-    private static readonly models: Map<Long, EntityModelInfo> = new Map<string, EntityModelInfo>();
+    //TODO:LRU cache
+    private static readonly models: EntityModelInfo[] = [];
 
     public static async GetModelAsync(id: Long): Promise<EntityModelInfo> {
-        const cached = this.models.get(id);
+        let cached = this.models.find(m => m.Id.eq(id));
         if (cached) {
             return cached;
         }
@@ -107,7 +115,7 @@ export abstract class EntityModelContainer {
         const channel = <IChannel> Runtime.channel;
         let model: EntityModelInfo = await channel.invoke('sys.System.GetModelInfo', [id]);
         model.InitTempEntity(id);
-        this.models[id] = model;
+        this.models.push(model);
         return model;
     }
 

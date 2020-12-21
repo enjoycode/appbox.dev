@@ -144,6 +144,5 @@ export class Entity {
             bs.WriteVariant(-1);
         }
     }
-
     //endregion
 }
