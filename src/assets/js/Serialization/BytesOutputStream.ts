@@ -90,7 +90,7 @@ export default class BytesOutputStream implements IOutputStream {
 
     public WriteInt16(v: number): void {
         this.ensureSizeToWrite(2);
-        this.view.setInt16(this.pos, v);
+        this.view.setInt16(this.pos, v, true);
         this.pos += 2;
     }
 
