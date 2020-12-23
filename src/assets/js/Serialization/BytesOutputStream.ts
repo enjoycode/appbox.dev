@@ -13,7 +13,7 @@ export default class BytesOutputStream implements IOutputStream {
         return this.bytes.subarray(0, this.pos);
     }
 
-    public async SerializeAsync(obj: any): Promise<void> {
+    public async SerializeAsync(obj: any) {
         if (obj == null) {
             this.WriteByte(PayloadType.Null);
         } else if (typeof obj === 'boolean') {

@@ -8,13 +8,12 @@ import InvokeErrorCode from '../InvokeErrorCode';
 
 export default class WebSocketChannel implements IChannel {
     private socket: WebSocket;
-    private msgIdIndex = 0; // 当前消息流水计数器
-    private waitHandles = []; // 已成功发送待回复的请求列表
-    private pendingRequires = []; // 链路断开后挂起的请求列表
+    private msgIdIndex = 0;         // 当前消息流水计数器
+    private waitHandles = [];       // 待回复的请求列表
+    private pendingRequires = [];   // 等待发送的请求列表
+    private sending = false;        // 是否正在发送中
 
-    /**
-     * 连接至服务端
-     */
+    /** 连接至服务端 */
     private connect() {
         let scheme = document.location.protocol === 'https:' ? 'wss' : 'ws';
         let port = document.location.port ? (':' + document.location.port) : '';
@@ -28,18 +27,10 @@ export default class WebSocketChannel implements IChannel {
         this.socket.onmessage = (e) => this.onmessage(e);
     }
 
-    /**
-     * WebSocket链路打开
-     */
+    /** WebSocket链路打开 */
     private onopen(event: Event) {
         console.log('连接建立' + event.type);
-        if (this.pendingRequires.length > 0) {
-            for (let i = 0; i < this.pendingRequires.length; i++) {
-                let element = this.pendingRequires[i];
-                this.sendRequire(element.S, element.A, element.C);
-            }
-            this.pendingRequires.splice(0, this.pendingRequires.length);
-        }
+        this.sendPendings();
     }
 
     private onclose(event: CloseEvent) {
@@ -55,9 +46,7 @@ export default class WebSocketChannel implements IChannel {
         // store.router.replace('/')
     }
 
-    /**
-     * 接收到服务端消息，格式参照说明
-     */
+    /** 接收到服务端消息，格式参照说明 */
     private async onmessage(event: MessageEvent): Promise<void> {
         // console.log("收到WebSocket消息:", event.data);
 
@@ -104,51 +93,42 @@ export default class WebSocketChannel implements IChannel {
         }
     }
 
-    /**
-     * 链路断开时添加挂起的请求
-     */
-    private addRequire(service: string, args: [], cb) {
-        this.pendingRequires.push({S: service, A: args, C: cb});
-    }
-
-    /**
-     * 发送Api调用请求
-     */
-    private async sendRequire(service: string, args: [], callback) {
-        // 先加入等待者列表
-        this.msgIdIndex++;
-        if (this.msgIdIndex > 0x7FFFFFFF) {
-            this.msgIdIndex = 0;
-        }
-        let msgId = this.msgIdIndex;
-        this.waitHandles.push({Id: msgId, Cb: callback});
-        // console.log('加入请求等待者, 还余: ' + waitHandles.length)
-
-        //序列化请求
-        let ws = new BytesOutputStream();
-        //写入消息头
-        ws.WriteByte(MessageType.InvokeRequest);
-        ws.WriteInt32(msgId);   //请求消息标识
-        //写入消息体(InvokeRequest)
-        ws.WriteString(service);
-        for (const arg of args) {
-            await ws.SerializeAsync(arg);
+    /** 按序发送请求 */
+    private async sendPendings() {
+        if (this.pendingRequires.length == 0 || this.sending) {
+            return;
         }
 
-        // 通过socket发送请求
-        try {
-            this.socket.send(ws.Bytes);
-        } catch (error) {
-            console.log('WebSocket发送数据错误: ' + error.message);
-            this.onInvokeResponse(msgId, InvokeErrorCode.SendRequestFail, error);
-            return false;
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            if (!this.socket || this.socket.readyState !== WebSocket.CONNECTING) {
+                this.connect();
+            }
+            return;
         }
 
-        // 启动超时定时器
-        // setTimeout(function () {
-        //     onResult({ I: msgId, E: '请求超时' })
-        // }, 10000)
-        return true;
+        this.sending = true;
+        while (this.pendingRequires.length > 0) {
+            const first = this.pendingRequires.splice(0, 1);
+            const req = first[0];
+            //序列化请求
+            let ws = new BytesOutputStream();
+            //写入消息头
+            ws.WriteByte(MessageType.InvokeRequest);
+            ws.WriteInt32(req.I);   //请求消息标识
+            //写入消息体(InvokeRequest)
+            ws.WriteString(req.S);
+            for (const arg of req.A) {
+                await ws.SerializeAsync(arg);
+            }
+
+            try {
+                this.socket.send(ws.Bytes);
+            } catch (error) {
+                console.log('WebSocket发送数据错误: ' + error.message);
+                this.onInvokeResponse(req.I, InvokeErrorCode.SendRequestFail, error);
+            }
+        }
+        this.sending = false;
     }
 
     public async login(user: string, pwd: string, external: any): Promise<any> {
@@ -169,25 +149,30 @@ export default class WebSocketChannel implements IChannel {
     }
 
     invoke(service: string, args: []): Promise<any> {
-        return new Promise((resolve, reject) => {
-            let cb = (err, res) => {
+        //加入等待者列表
+        this.msgIdIndex++;
+        if (this.msgIdIndex > 0x7FFFFFFF) {
+            this.msgIdIndex = 0;
+        }
+        let msgId = this.msgIdIndex;
+        let wait = {Id: msgId, Cb: null};
+        this.waitHandles.push(wait);
+
+        let promise = new Promise((resolve, reject) => {
+            wait.Cb = (err, res) => {
                 if (err) {
                     reject(err);
                 } else {
                     resolve(res);
                 }
             };
-
-            if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-                if (!this.socket || this.socket.readyState !== WebSocket.CONNECTING) {
-                    this.connect();
-                }
-                // TODO:考虑挂起的列表超过阀值直接reject
-                this.addRequire(service, args, cb);
-            } else {
-                this.sendRequire(service, args, cb);
-            }
         });
+
+        //加入发送队列异步发送 TODO:考虑挂起的列表超过阀值直接reject
+        this.pendingRequires.push({I: msgId, S: service, A: args});
+        this.sendPendings();
+
+        return promise;
     }
 
 }

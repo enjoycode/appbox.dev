@@ -2,21 +2,20 @@ export default {
     triggerCharacters: ['.'],
     provideCompletionItems: function (model, position) {
         let wordToComplete = ''
-        var wordAtPosition = model.getWordAtPosition(position) // getWordUntilPosition()
+        const wordAtPosition = model.getWordAtPosition(position); // getWordUntilPosition()
         if (wordAtPosition) {
             wordToComplete = wordAtPosition.word
             // console.log("WordToComplete: ", wordToComplete)
         }
 
-        var promise = new Promise((resolve, reject) => {
-            var args = [1, model.fileName, position.lineNumber, position.column, wordToComplete]
+        return new Promise((resolve, reject) => {
+            const args = [1, model.fileName, position.lineNumber, position.column, wordToComplete];
             $runtime.channel.invoke('sys.DesignService.GetCompletion', args).then(res => {
-                resolve({ suggestions: res })
+                resolve({suggestions: res})
             }).catch(err => {
                 console.log('completion error: ' + err);
-                resolve({ suggestions: [] })
+                resolve({suggestions: []})
             });
         })
-        return promise
     }
 }
