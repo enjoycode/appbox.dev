@@ -9,6 +9,7 @@ export default function (runtimeCode, sourceCode, mapJson) {
     let map = JSON.parse(mapJson);
     map.sourcesContent = [];
     map.sourcesContent.push(sourceCode);
+    map.mappings = ';;;' + map.mappings; //偏移3行
 
     let newContent = '//# sourceMappingURL=data:application/json;base64,' + btoa(JSON.stringify(map));
     // newContent += '\n//# sourceURL=data:application/javascript;base64,' + btoa(sourceCode);
