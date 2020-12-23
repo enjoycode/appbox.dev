@@ -47,7 +47,7 @@ export default function (ts, template, script, hashId, viewModelId, sourceMap) {
         // https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
         // http://www.typescriptlang.org/play/playgroud.js内的transpileModule()
         const transpileOptions = {
-            compilerOptions: {sourceMap: sourceMap},
+            compilerOptions: {sourceMap: sourceMap, importHelpers: true},
             fileName: viewModelId + '.ts',
             reportDiagnostics: true,
             moduleName: undefined,
@@ -71,8 +71,8 @@ export default function (ts, template, script, hashId, viewModelId, sourceMap) {
         // console.log(output.outputText)
 
         // 3.输出
-        //const res = output.outputText + '\n//# sourceURL=' + viewModelId + '.js';
-        return {code: output.outputText, template: templateResult, sourceMap: output.sourceMapText}
+        const res = output.outputText.replace('var tslib_1 = require("tslib");','//');
+        return {code: res, template: templateResult, sourceMap: output.sourceMapText}
     } catch (error) {
         return {error}
     }

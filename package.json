@@ -39,6 +39,7 @@
     "quill": "^1.3.7",
     "resize-detector": "^0.2.2",
     "setasap": "^2.0.1",
+    "tslib": "^1.10.0",
     "vue": "^2.6.12",
     "vue-class-component": "^6.0.0",
     "vue-grid-layout": "^2.3.8",

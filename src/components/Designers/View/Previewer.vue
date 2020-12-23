@@ -9,6 +9,7 @@
     import Vue from 'vue'
     // import { Component, Inject, Model, Prop, Watch } from 'vue-property-decorator'
     import { Component, Prop, Watch } from 'vue-property-decorator'
+    import * as tslib from 'tslib';
 
 
     const ViewStyle = {
@@ -36,6 +37,7 @@
             window.Prop = Prop
             window.Watch = Watch
             window.View = this.loadView
+            window.tslib_1 = tslib
             // 设置路由拦截，注意：拦截的是当前的路由实例
             this.$router.beforeEach((to, from, next) => {
                 console.log('路由:', from, to)
