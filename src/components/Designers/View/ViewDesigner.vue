@@ -10,7 +10,8 @@
                 </el-radio-group>
                 <el-button size="mini" @click="routeDialogVisible = true">Route</el-button>
                 <el-button size="mini" :type="designButton" @click="switchPreviewPanel">Preview</el-button>
-                <el-select v-if="panelVisible === 'both'" style="width: 120px" size="mini" v-model="deviceValue" placeholder="尺寸">
+                <el-select v-if="panelVisible === 'both'" style="width: 120px" size="mini" v-model="deviceValue"
+                           placeholder="尺寸">
                     <el-option label="Responsive" value="Responsive">
                     </el-option>
                     <el-option label="iphone5" value="iphone5">
@@ -18,7 +19,8 @@
                     <el-option label="ipad" value="ipad">
                     </el-option>
                 </el-select>
-                <el-select v-if="panelVisible === 'both'" style="width:80px" size="mini" v-model="deviceZoom" placeholder="缩放">
+                <el-select v-if="panelVisible === 'both'" style="width:80px" size="mini" v-model="deviceZoom"
+                           placeholder="缩放">
                     <el-option label="100%" value="100%">
                     </el-option>
                     <el-option label="75%" value="75%">
@@ -54,21 +56,24 @@
                 </el-dialog>
             </div>
             <div class="editorPanel" ref="editorPanel">
-                <code-editor ref="editor" height="100%" language="html" theme="tm" :fileName="fileName" @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
+                <code-editor ref="editor" height="100%" language="html" theme="tm" :fileName="fileName"
+                             @mounted="onEditorMounted" :options="{readOnly: true}"></code-editor>
             </div>
         </div>
         <!-- 右边预览区域 -->
         <div slot="panel2" class="previewPanel">
-            <iframe ref="previewFrame" class="previewFrame" sandbox="allow-modals allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
-                :width="domWidth" :height="domHeight" frameborder="0" :src="previewUrl"></iframe>
+            <iframe ref="previewFrame" class="previewFrame"
+                    sandbox="allow-modals allow-forms allow-pointer-lock allow-popups allow-same-origin allow-scripts"
+                    :width="domWidth" :height="domHeight" frameborder="0" :src="previewUrl"></iframe>
         </div>
     </ex-splitter>
 </template>
 
 <script>
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import { monaco, ts, modelLibs } from '../../CodeEditor/EditorService' //TODO: remove it
+import {monaco, ts, modelLibs} from '../../CodeEditor/EditorService' //TODO: remove it
 import compiler from './Compiler'
+import embedSourceMap from './EmbedSourceMap'
 import scopeStyle from './ScopeStyle'
 import debounce from 'lodash.debounce'
 import UglifyJS from './UglifyJS'
@@ -77,10 +82,10 @@ import store from '@/design/DesignStore'
 // 缩放参考https://collaboration133.com/how-to-scale-iframe-content-in-ie-chrome-firefox-and-safari/2717/
 
 function hash(str) {
-    var hash = 0
-    var char
+    let hash = 0;
+    let char;
     if (str.length === 0) return hash
-    for (var i = 0; i < str.length; i++) {
+    for (let i = 0; i < str.length; i++) {
         char = str.charCodeAt(i)
         hash = ((hash << 5) - hash) + char
         hash = hash & hash // Convert to 32bit integer
@@ -93,13 +98,14 @@ export default {
         CodeEditor: CodeEditor
     },
     props: {
-        target: { type: Object, required: true } // 视图模型节点
+        target: {type: Object, required: true} // 视图模型节点
     },
     data() {
         return {
             readOnly: true, // 是否只读模式，对应模型的签出状态
             runtimeCode: '',
             runtimeStyle: '',
+            sourceMap: null,
             hashID: '',
             debouncedBuild: null, // 用于延时编译并预览
             permissionValue: '',
@@ -152,20 +158,19 @@ export default {
     },
     mounted() {
         this.hashID = hash(this.target.ID).toString(16) // TODO: fix it
-        this.debouncedBuild = debounce(this.build, 600) // 延迟600ms才进行预览
+        this.debouncedBuild = debounce(this.build, 1000)
     },
 
     methods: {
         // 代码编辑器初始化后开始加载服务代码
         onEditorMounted() {
-            var _this = this
             this.initEditorCommands()   // 开始设置快捷键
             modelLibs.ensureLoad()      // 确认已加载模型声明
             this.loadModel(false)       // 开始加载模型
         },
         // 设置编辑器快捷键
         initEditorCommands() {
-            var _this = this
+            const _this = this;
             // 切换编辑模式
             this.$refs.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_1, function () {
                 _this.editMode = 'template'
@@ -196,7 +201,7 @@ export default {
             this.$refs.editor.focus()
         },
         loadModel(byCheckout) {
-            var _this = this
+            const _this = this;
             $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
                 _this.onModelLoaded(res, byCheckout)
             }).catch(err => {
@@ -212,22 +217,18 @@ export default {
             this.$refs.editor.$off('codeChanged') // 解绑代码变更事件
 
             // 开始初始化editState
-            var template = { model: this.$refs.editor.createModel(model.Template, 'html'), state: null }
+            const template = {model: this.$refs.editor.createModel(model.Template, 'html'), state: null};
             this.editState.template = template
-            var script = { model: this.$refs.editor.createModel(model.Script, 'javascript'), state: null }
+            const script = {model: this.$refs.editor.createModel(model.Script, 'javascript'), state: null};
             this.editState.script = script
-            var style = { model: this.$refs.editor.createModel(model.Style, 'css'), state: null }
+            const style = {model: this.$refs.editor.createModel(model.Style, 'css'), state: null};
             this.editState.style = style
             // 加载默认为模版编辑模式
             this.$refs.editor.setModel(template.model, template.line, template.col)
 
             this.$refs.editor.$on('codeChanged', this.onCodeChanged) // 绑定代码变更事件
 
-            // if (this.typescriptServices) {
             this.build() // 必须调用一次
-            // } else {
-            //     this.needPreview = true
-            // }
 
             this.$refs.editor.focus() // focus code editor
             if (byCheckout || (this.target.CheckoutBy && this.target.CheckoutBy === 'Me')) {
@@ -242,10 +243,10 @@ export default {
             let _this = this
             let args = [this.target.ID, this.routeEnable, this.routeParent, this.routePath]
             $runtime.channel.invoke('sys.DesignService.ChangeRouteSetting', args).then(res => {
-                    _this.routeDialogVisible = false
-                }).catch(err => {
-                    alert(err)
-                })
+                _this.routeDialogVisible = false
+            }).catch(err => {
+                alert(err)
+            })
         },
         onDeviceClick(el) {
             function hasClass(elem, className) {
@@ -262,17 +263,17 @@ export default {
         /** 编译视图组件并更新预览 */
         build() {
             const template = this.editState['template'].model.getValue()
-            const script = this.editState['script'].model.getValue()
+            const script =  this.editState['script'].model.getValue()
             const styles = this.editState['style'].model.getValue()
-            var scopedStyle = ''
+            let scopedStyle = '';
 
             // 先转换编译模版及脚本
-            const compiledCode = compiler(ts, template, script, this.hashID, this.target.App + '.' + this.target.Text)
+            const compiledCode = compiler(ts, template, script, this.hashID,
+                this.target.App + '.' + this.target.Text, true) //暂强制输出sourceMap
             if (compiledCode.error) {
                 console.log('编译错误: ' + compiledCode.error.message)
                 return
             }
-            // console.log(compiledCode.code)
 
             // 再转换并设置预览的样式
             if (styles && styles.length > 0) {
@@ -281,7 +282,7 @@ export default {
             }
 
             // 合并代码
-            var normalized = 'var exports={};' // var module={};module.exports=exports;
+            let normalized = 'var exports={};\n';
             normalized += compiledCode.code
             normalized += '\nexports.default.options.render=' + compiledCode.template.render
             normalized += '\nexports.default.options.staticRenderFns=' + compiledCode.template.staticRenderFns
@@ -293,6 +294,7 @@ export default {
             // 没有错误最后设置
             this.runtimeStyle = scopedStyle
             this.runtimeCode = normalized
+            this.sourceMap = compiledCode.sourceMap;
             if (this.panelVisible === 'both') {
                 this.updatePreview(true)
             }
@@ -313,7 +315,7 @@ export default {
                     toplevel: true
                 }
             })
-            var minifyCode = this.runtimeCode
+            let minifyCode = this.runtimeCode;
             if (!minifyRes.error) {
                 minifyCode = minifyRes.code
             }
@@ -327,7 +329,7 @@ export default {
                 Style: this.runtimeStyle
             }
 
-            var _this = this
+            const _this = this;
             let args = [node.Type, node.ID, template, script, styles, JSON.stringify(runtimeCode)]
             $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
                 _this.$message.success('Save view succeed.')
@@ -355,8 +357,9 @@ export default {
         /** 通知预览窗口更新 */
         updatePreview(hotpatch) {
             if (this.runtimeCode && this.previewer) {
-                var code = this.runtimeCode
-                var styles = this.runtimeStyle
+                //转换sourceMap为嵌入
+                let code = embedSourceMap(this.runtimeCode, this.editState['script'].model.getValue(), this.sourceMap);
+                let styles = this.runtimeStyle;
 
                 if (hotpatch) { // 热更新处理，暂简单处理
                     if (this.editMode !== 'style') {

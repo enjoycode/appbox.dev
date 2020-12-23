@@ -11,14 +11,14 @@
     import { Component, Prop, Watch } from 'vue-property-decorator'
 
 
-    var ViewStyle = {
+    const ViewStyle = {
         data() {
-            return { styles: '' }
+            return {styles: ''}
         },
         render(h) {
             return h('style', null, this.styles)
         }
-    }
+    };
 
     export default {
         components: { ViewStyle: ViewStyle },

@@ -5,6 +5,7 @@
 import DesignStore from '@/design/DesignStore'
 import ModelRefTransformers from './Transformer'
 import tempCompiler from './TemplateCompiler/build'
+
 const es2015Compiler = require('vue-template-es2015-compiler')
 
 function toES2015Template(code) {
@@ -18,20 +19,23 @@ function toES2015Template(code) {
  * @param {*} script
  * @param {*} hashId
  * @param {*} viewModelId
+ * @param {*} sourceMap 是否输出源码映射
  */
-export default function (ts, template, script, hashId, viewModelId) {
+export default function (ts, template, script, hashId, viewModelId, sourceMap) {
+    let errs;
+    let i;
     try {
         // 先清除所有错误
         DesignStore.errors.clear(viewModelId)
 
         // 1.编译template
         // 参考: https://github.com/vuejs/vueify/blob/master/lib/template-compiler.js
-        var templateResult = tempCompiler.compile(template)
+        const templateResult = tempCompiler.compile(template);
         if (templateResult.errors.length) {
-            var errs = []
-            for (var i = 0; i < templateResult.errors.length; i++) {
+            errs = [];
+            for (i = 0; i < templateResult.errors.length; i++) {
                 var element = templateResult.errors[i]
-                errs.push({ Model: viewModelId, Location: 'Template', Info: element }) // todo:暂无法定位行列
+                errs.push({Model: viewModelId, Location: 'Template', Info: element}) // todo:暂无法定位行列
             }
             DesignStore.errors.update(viewModelId, errs)
             throw new Error('Template compile error')
@@ -42,20 +46,24 @@ export default function (ts, template, script, hashId, viewModelId) {
         // 2.转换脚本, 注意：sourceMap由typescriptServices的编译选项直接处理
         // https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
         // http://www.typescriptlang.org/play/playgroud.js内的transpileModule()
-        var transpileOptions = {
-            compilerOptions: { sourceMap: false },
+        const transpileOptions = {
+            compilerOptions: {sourceMap: sourceMap},
             fileName: viewModelId + '.ts',
             reportDiagnostics: true,
             moduleName: undefined,
             renamedDependencies: undefined,
             transformers: ModelRefTransformers
-        }
+        };
         const output = ts.transpileModule(script, transpileOptions)
         if (output.diagnostics.length > 0) {
             errs = []
             for (i = 0; i < output.diagnostics.length; i++) {
                 element = output.diagnostics[i]
-                errs.push({ Model: viewModelId, Location: 'Script:' + element.start + ',' + element.length, Info: element.messageText })
+                errs.push({
+                    Model: viewModelId,
+                    Location: 'Script:' + element.start + ',' + element.length,
+                    Info: element.messageText
+                })
             }
             DesignStore.errors.update(viewModelId, errs)
             throw new Error('Script compile error')
@@ -63,9 +71,9 @@ export default function (ts, template, script, hashId, viewModelId) {
         // console.log(output.outputText)
 
         // 3.输出
-        var res = output.outputText + '\n//# sourceURL=' + viewModelId + '.js'
-        return { code: res, template: templateResult }
+        //const res = output.outputText + '\n//# sourceURL=' + viewModelId + '.js';
+        return {code: output.outputText, template: templateResult, sourceMap: output.sourceMapText}
     } catch (error) {
-        return { error }
+        return {error}
     }
 }
