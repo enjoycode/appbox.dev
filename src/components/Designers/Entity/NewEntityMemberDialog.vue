@@ -22,7 +22,7 @@
                 <el-form-item prop="RefIds" label="Ref Target:">
                     <el-select v-model="viewModel.RefIds" multiple filterable key="s-refids" style="width:100%">
                         <el-option-group v-for="group in RefTreeData" :key="group.ID" :label="group.Text" :value="group.ID">
-                            <el-option v-for="item in group.Nodes" :key="item.ID" :label="item.Name" :value="item.ID">
+                            <el-option v-for="item in group.Nodes" :key="item.ID" :label="item.Text" :value="item.ID">
                             </el-option>
                         </el-option-group>
                     </el-select>
@@ -184,7 +184,7 @@
             if (!this.designer.isDTO) {
                 store.tree.getAllEntityNodes(this.RefTreeData, this.designer.target.StoreId)
                 // 获取所有引用指定模型标识的EntityRef Member集合
-                var modelId = this.designer.target.ID
+                const modelId = this.designer.target.ID;
                 $runtime.channel.invoke('sys.DesignService.GetEntityRefModels', [modelId]).then(res => {
                     this.SetTreeData = res
                 }).catch(err => {

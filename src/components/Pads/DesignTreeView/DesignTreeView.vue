@@ -240,7 +240,7 @@ export default Vue.extend({
         },
         /** 获取所有实体存储节点，用于新建实体时选择映射的存储 */
         getAllStoreNodes() {
-            var result = []
+            const result = [];
             this.designNodes[0].Nodes.forEach(node => {
                 if (node.Kind === DataStoreKind.Sql || node.Kind === DataStoreKind.Cql) {
                     result.push(node)
@@ -288,8 +288,8 @@ export default Vue.extend({
 
         /** 复制节点数据 注意：此复制为浅复制, 子级Nodes不会复制 */
         shallowCloneNode(node): IDesignNode {
-            var o = {}
-            for (var key in node) {
+            const o = {};
+            for (const key in node) {
                 if (node[key] instanceof Array) {
                     o[key] = []
                 } else {
