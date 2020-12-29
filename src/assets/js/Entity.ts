@@ -94,6 +94,15 @@ export class Entity {
             if (changedCount > 0) {
                 throw new Error('未实现');
             }
+            //读取匿名扩展字段
+            let extFields = bs.ReadVariant();
+            if (extFields > 0) {
+                for (let i = 0; i < extFields; i++) {
+                    let fieldName = bs.ReadString();
+                    let fieldValue = await bs.DeserializeAsync();
+                    obj[fieldName] = fieldValue;
+                }
+            }
         }
 
         //TODO:SysEntity读取EntityId
@@ -142,7 +151,10 @@ export class Entity {
             bs.WriteByte(this[Entity.PS]);
             //TODO:写入变更成员列表
             bs.WriteVariant(-1);
+            //暂不考虑写入扩展信息
+            bs.WriteVariant(0);
         }
     }
+
     //endregion
 }
