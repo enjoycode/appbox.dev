@@ -73,17 +73,38 @@ export class Entity {
             //根据成员类型进行相应的读取
             if (memberInfo.MemberType == EntityMemberType.DataField) {
                 switch (memberInfo.FieldType) {
+                    case DataFieldType.Boolean:
+                        obj[memberInfo.Name] = bs.ReadByte() == 1;
+                        break;
+                    case DataFieldType.Byte:
+                        obj[memberInfo.Name] = bs.ReadByte();
+                        break;
+                    case DataFieldType.Int16:
+                        obj[memberInfo.Name] = bs.ReadInt16();
+                        break;
                     case DataFieldType.Int32:
                         obj[memberInfo.Name] = bs.ReadInt32();
+                        break;
+                    case DataFieldType.Int64:
+                        obj[memberInfo.Name] = bs.ReadInt64();
                         break;
                     case DataFieldType.String:
                         obj[memberInfo.Name] = bs.ReadString();
                         break;
                     default:
-                        throw new Error('未实现');
+                        throw new Error('未实现读取实体Field: ' + memberInfo.FieldType);
                 }
+            } else if (memberInfo.MemberType == EntityMemberType.EntityRef) {
+                obj[memberInfo.Name] = await Entity.ReadFrom(bs);
+            } else if (memberInfo.MemberType == EntityMemberType.EntitySet) {
+                let count = bs.ReadVariant();
+                let list = [];
+                for (let i = 0; i < count; i++) {
+                    list.push(await Entity.ReadFrom(bs));
+                }
+                obj[memberInfo.Name] = list;
             } else {
-                throw new Error('未实现');
+                throw new Error('未实现读取实体成员类型: ' + memberInfo.MemberType);
             }
         }
 
@@ -92,15 +113,14 @@ export class Entity {
             obj[Entity.PS] = bs.ReadByte();
             let changedCount = bs.ReadVariant();
             if (changedCount > 0) {
-                throw new Error('未实现');
+                throw new Error('未实现读取实体变更成员列表');
             }
             //读取匿名扩展字段
             let extFields = bs.ReadVariant();
             if (extFields > 0) {
                 for (let i = 0; i < extFields; i++) {
                     let fieldName = bs.ReadString();
-                    let fieldValue = await bs.DeserializeAsync();
-                    obj[fieldName] = fieldValue;
+                    obj[fieldName] = await bs.DeserializeAsync();
                 }
             }
         }
@@ -133,7 +153,7 @@ export class Entity {
                             bs.WriteString(fieldValue);
                             break;
                         default:
-                            throw new Error('未实现');
+                            throw new Error('未实现写入实体Field: ' + m.FieldType);
                     }
                 } else {
                     //TODO:暂写入null值，应判断是否改变
