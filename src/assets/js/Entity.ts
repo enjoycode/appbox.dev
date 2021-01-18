@@ -91,6 +91,9 @@ export class Entity {
                     case DataFieldType.String:
                         obj[memberInfo.Name] = bs.ReadString();
                         break;
+                    case DataFieldType.EntityId:
+                        obj[memberInfo.Name] = bs.ReadEntityId();
+                        break;
                     default:
                         throw new Error('未实现读取实体Field: ' + memberInfo.FieldType);
                 }
@@ -123,9 +126,12 @@ export class Entity {
                     obj[fieldName] = await bs.DeserializeAsync();
                 }
             }
-        }
 
-        //TODO:SysEntity读取EntityId
+            //SysEntity读取EntityId
+            if (model.StoreType === 1) {
+                obj["Id"] = bs.ReadEntityId();
+            }
+        }
 
         return obj;
     }

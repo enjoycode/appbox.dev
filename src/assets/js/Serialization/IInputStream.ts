@@ -18,6 +18,8 @@ interface IInputStream {
 
     ReadString(): string;
 
+    ReadEntityId(): string; //TODO:暂转换为Base64
+
 }
 
 export default IInputStream;
