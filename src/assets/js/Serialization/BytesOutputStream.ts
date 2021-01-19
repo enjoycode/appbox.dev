@@ -9,7 +9,7 @@ export default class BytesOutputStream implements IOutputStream {
     private view = new DataView(new ArrayBuffer(1024));
     private bytes = new Uint8Array(this.view.buffer);
 
-    public get Bytes() {
+    public get Bytes(): Uint8Array {
         return this.bytes.subarray(0, this.pos);
     }
 
