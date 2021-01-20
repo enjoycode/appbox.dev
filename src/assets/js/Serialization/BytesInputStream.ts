@@ -1,5 +1,5 @@
 import IInputStream from './IInputStream';
-import * as Long from 'long';
+import Long from '@/assets/js/Long';
 import PayloadType from '@/assets/js/Serialization/PayloadType';
 import {EntityModelInfo} from '@/assets/js/Serialization/EntityModelContainer';
 import {Utf8Decode} from '@/assets/js/Serialization/Utf8';

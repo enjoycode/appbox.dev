@@ -2,7 +2,7 @@ import Runtime from '@/assets/js/Runtime';
 import IChannel from '@/assets/js/Channel/IChannel';
 import IInputStream from '@/assets/js/Serialization/IInputStream';
 import {EntityMemberType, DataFieldType} from '@/assets/js/EntityMemberType';
-import * as Long from 'long';
+import Long from '@/assets/js/Long';
 import {Entity} from '@/assets/js/Entity';
 
 export interface IMemberInfo {

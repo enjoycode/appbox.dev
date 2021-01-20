@@ -6,10 +6,8 @@ import router from './router'
 import polyfill from './polyfill'
 import initRuntime from './InitRuntime'
 import registerComponents from './ComponentRegister'
-// import VueMoment from 'vue-moment'
 
 Vue.config.productionTip = false
-// Vue.use(VueMoment)
 
 polyfill()
 initRuntime() // IDE初始化运行时

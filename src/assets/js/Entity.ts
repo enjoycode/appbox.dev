@@ -2,7 +2,7 @@
 import IInputStream from '@/assets/js/Serialization/IInputStream';
 import {EntityModelContainer, EntityModelInfo, IMemberInfo} from '@/assets/js/Serialization/EntityModelContainer';
 import {DataFieldType, EntityMemberType} from '@/assets/js/EntityMemberType';
-import * as Long from 'long';
+import Long from '@/assets/js/Long';
 import IOutputStream from '@/assets/js/Serialization/IOutputStream';
 import PayloadType from '@/assets/js/Serialization/PayloadType';
 

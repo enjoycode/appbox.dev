@@ -1,4 +1,4 @@
-import * as Long from 'long';
+import Long from '@/assets/js/Long';
 
 interface IInputStream {
 

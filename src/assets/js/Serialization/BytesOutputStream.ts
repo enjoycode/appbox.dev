@@ -1,7 +1,7 @@
 import IOutputStream from './IOutputStream';
 import PayloadType from '@/assets/js/Serialization/PayloadType';
 import {Utf8Encode} from '@/assets/js/Serialization/Utf8';
-import * as Long from 'long';
+import Long from '@/assets/js/Long';
 import {Entity} from '@/assets/js/Entity';
 
 export default class BytesOutputStream implements IOutputStream {
