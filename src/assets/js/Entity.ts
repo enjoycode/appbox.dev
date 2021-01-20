@@ -88,11 +88,18 @@ export class Entity {
                     case DataFieldType.Int64:
                         obj[memberInfo.Name] = bs.ReadInt64();
                         break;
+                    case DataFieldType.DateTime:
+                        obj[memberInfo.Name] = bs.ReadDate();
+                        break;
                     case DataFieldType.String:
                         obj[memberInfo.Name] = bs.ReadString();
                         break;
+                    case DataFieldType.Guid:
                     case DataFieldType.EntityId:
                         obj[memberInfo.Name] = bs.ReadEntityId();
+                        break;
+                    case DataFieldType.Binary:
+                        obj[memberInfo.Name] = bs.ReadBinary();
                         break;
                     default:
                         throw new Error('未实现读取实体Field: ' + memberInfo.FieldType);
@@ -129,7 +136,7 @@ export class Entity {
 
             //SysEntity读取EntityId
             if (model.StoreType === 1) {
-                obj["Id"] = bs.ReadEntityId();
+                obj['Id'] = bs.ReadEntityId();
             }
         }
 
@@ -157,6 +164,11 @@ export class Entity {
                             break;
                         case DataFieldType.String:
                             bs.WriteString(fieldValue);
+                            break;
+                        case DataFieldType.Guid:
+                        case DataFieldType.EntityId: //转换回16字节写入
+                            let data = atob(fieldValue);
+                            bs.WriteAsciiString(data);
                             break;
                         default:
                             throw new Error('未实现写入实体Field: ' + m.FieldType);

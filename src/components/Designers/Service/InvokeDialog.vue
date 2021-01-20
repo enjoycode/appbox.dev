@@ -41,10 +41,10 @@
             },
             onInvoke() {
                 // 先组装参数列表
-                var args = []
+                const args = [];
                 try {
-                    for (var i = 0; i < this.dlgProps.Method.Args.length; i++) {
-                        var arg = this.dlgProps.Method.Args[i]
+                    for (let i = 0; i < this.dlgProps.Method.Args.length; i++) {
+                        const arg = this.dlgProps.Method.Args[i];
                         args.push(JSON.parse(arg.Value))
                     }
                 } catch (error) {
@@ -52,7 +52,7 @@
                     return
                 }
 
-                var _this = this
+                const _this = this;
                 this.loading = true
                 let service = this.dlgProps.Service + '.' + this.dlgProps.Method.Name
                 $runtime.channel.invoke(service, args).then(res => {

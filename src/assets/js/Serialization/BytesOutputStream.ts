@@ -126,6 +126,16 @@ export default class BytesOutputStream implements IOutputStream {
         }
     }
 
+    public WriteAsciiString(v: string) {
+        if (!v) {
+            this.WriteByte(PayloadType.Null);
+        } else {
+            for (let i = 0; i < v.length; i++) {
+                this.WriteByte(v.charCodeAt(i));
+            }
+        }
+    }
+
     public WriteVariant(v: number): void {
         if (!Number.isInteger(v)) {
             throw new Error('must be Integer');

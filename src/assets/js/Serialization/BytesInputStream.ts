@@ -84,11 +84,28 @@ export default class BytesInputStream implements IInputStream {
         return new Long(v1, v2);
     }
 
-    public ReadEntityId(): string { //TODO:暂转换为Base64
+    public ReadDate(): Date {
+        //TODO:寻找更好的方法
+        let long = this.ReadInt64();
+        let date = new Date();
+        date.setTime(Number.parseInt(long.toString()));
+        this.pos += 8;
+        return date;
+    }
+
+    public ReadEntityId(): string {
         this.ensureRemaining(16);
         let base64 = Base64Encode(this.bytes.slice(this.pos, this.pos + 16), false);
         this.pos += 16;
-        return base64
+        return base64;
+    }
+
+    public ReadBinary(): string {
+        let len = this.ReadVariant();
+        this.ensureRemaining(len);
+        let base64 = Base64Encode(this.bytes.slice(this.pos, this.pos + len), false);
+        this.pos += len;
+        return base64;
     }
 
     private ReadJsonObject(): any {

@@ -16,9 +16,13 @@ interface IInputStream {
 
     ReadVariant(): number;
 
+    ReadDate(): Date;
+
     ReadString(): string;
 
     ReadEntityId(): string; //TODO:暂转换为Base64
+
+    ReadBinary(): string; //TODO:暂转换为Base64
 
 }
 
