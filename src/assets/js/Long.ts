@@ -19,9 +19,9 @@ const TWO_PWR_63_DBL = TWO_PWR_64_DBL / 2;
 const pow_dbl = Math.pow; // Used 4 times (4*8 to 15+4)
 
 export default class Long {
-    public readonly low: number;
-    public readonly high: number;
-    public readonly unsigned: boolean;
+    public low: number;
+    public high: number;
+    public unsigned: boolean;
     private readonly __isLong__ = true;
 
     /** A cache of the Long representations of small integer values. */
@@ -173,7 +173,7 @@ export default class Long {
                 result = result.add(Long.fromNumber(value));
             }
         }
-        (<any> result).unsigned = unsigned;
+        result.unsigned = unsigned;
         return result;
     }
 
@@ -348,19 +348,9 @@ export default class Long {
     //endregion
 
     //region ====getXXX====
-    /** Gets the high 32 bits as a signed integer. */
-    public getHighBits(): number { //TODO: remove
-        return this.high;
-    }
-
     /** Gets the high 32 bits as an unsigned integer. */
     public getHighBitsUnsigned(): number {
         return this.high >>> 0;
-    }
-
-    /** Gets the low 32 bits as a signed integer. */
-    public getLowBits(): number { //TODO: remove
-        return this.low;
     }
 
     /** Gets the low 32 bits as an unsigned integer. */

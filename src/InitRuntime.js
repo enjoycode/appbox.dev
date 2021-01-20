@@ -4,8 +4,11 @@ import store from '@/design/DesignStore'
 import WebSocketChannel from "@/assets/js/Channel/WebSocketChannel";
 import cookie from '@/assets/js/cookie'
 import Runtime from '@/assets/js/Runtime'
+import Long from '@/assets/js/Long';
 
 export default function () {
+    window.Long = Long;
+
     // 初始化运行时(仅IDE，预览由IDE传入)
     const isPreview = document.location.href.indexOf('/preview') > 0 // todo:暂简单判断
     if (!isPreview) {

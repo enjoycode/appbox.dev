@@ -142,8 +142,8 @@ export class Entity {
             this._modelInfo = await EntityModelContainer.GetModelAsync(id);
         }
         //model id
-        bs.WriteInt32(this._modelInfo.Id.getLowBits());
-        bs.WriteInt32(this._modelInfo.Id.getHighBits());
+        bs.WriteInt32(this._modelInfo.Id.low);
+        bs.WriteInt32(this._modelInfo.Id.high);
         //实体成员
         for (const m of this._modelInfo.Members) {
             //根据成员类型进行相应的写入

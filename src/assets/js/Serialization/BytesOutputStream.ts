@@ -25,8 +25,8 @@ export default class BytesOutputStream implements IOutputStream {
             this.WriteString(obj);
         } else if (obj instanceof Long) {
             this.WriteByte(PayloadType.Int64);
-            this.WriteInt32(obj.getLowBits());
-            this.WriteInt32(obj.getHighBits());
+            this.WriteInt32(obj.low);
+            this.WriteInt32(obj.high);
         } else if (obj instanceof Entity) {
             this.WriteByte(PayloadType.Entity);
             await obj.WriteTo(this);
