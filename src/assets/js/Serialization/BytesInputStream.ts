@@ -89,7 +89,6 @@ export default class BytesInputStream implements IInputStream {
         let long = this.ReadInt64();
         let date = new Date();
         date.setTime(Number.parseInt(long.toString()));
-        this.pos += 8;
         return date;
     }
 
