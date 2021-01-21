@@ -1,11 +1,10 @@
-/** 映射至服务端的实体 */
 import IInputStream from '@/assets/js/Serialization/IInputStream';
 import {EntityModelContainer, EntityModelInfo, IMemberInfo} from '@/assets/js/Serialization/EntityModelContainer';
 import {DataFieldType, EntityMemberType} from '@/assets/js/EntityMemberType';
 import Long from '@/assets/js/Long';
 import IOutputStream from '@/assets/js/Serialization/IOutputStream';
-import PayloadType from '@/assets/js/Serialization/PayloadType';
 
+/** 映射至服务端的实体 */
 export class Entity {
     public static readonly PS = 'PersistentState';
     private _modelInfo: EntityModelInfo | string; //暂字符串表示由前端创建的实例
@@ -156,30 +155,40 @@ export class Entity {
             //根据成员类型进行相应的写入
             if (m.MemberType == EntityMemberType.DataField) {
                 let fieldValue = this[m.Name];
-                if (fieldValue) {
+                if (fieldValue) { //只写入有值的成员
                     bs.WriteInt16(m.Id);
                     switch (m.FieldType) {
+                        case DataFieldType.Boolean:
+                            if (fieldValue) {
+                                bs.WriteByte(1);
+                            } else {
+                                bs.WriteByte(0);
+                            }
+                            break;
                         case DataFieldType.Int32:
                             bs.WriteInt32(fieldValue);
+                            break;
+                        case DataFieldType.DateTime:
+                            bs.WriteDate(fieldValue);
                             break;
                         case DataFieldType.String:
                             bs.WriteString(fieldValue);
                             break;
                         case DataFieldType.Guid:
                         case DataFieldType.EntityId: //转换回16字节写入
+                            bs.WriteAsciiString(atob(fieldValue)); //不需要长度信息
+                            break;
+                        case DataFieldType.Binary: //转换回字节写入
                             let data = atob(fieldValue);
+                            bs.WriteVariant(data.length); //需要长度信息
                             bs.WriteAsciiString(data);
                             break;
                         default:
                             throw new Error('未实现写入实体Field: ' + m.FieldType);
                     }
-                } else {
-                    //TODO:暂写入null值，应判断是否改变
-                    bs.WriteInt16(m.Id);
-                    bs.WriteByte(PayloadType.Null);
                 }
             } else {
-                throw new Error('未实现');
+                throw new Error('未实现写入导航属性');
             }
         }
         bs.WriteInt16(0); //end members

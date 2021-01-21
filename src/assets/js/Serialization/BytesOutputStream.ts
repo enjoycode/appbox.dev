@@ -31,9 +31,18 @@ export default class BytesOutputStream implements IOutputStream {
             this.WriteByte(PayloadType.Entity);
             await obj.WriteTo(this);
         } else if (Array.isArray(obj)) {
-            throw new Error('未实现');
+            await this.SerializeArrayAsync(obj);
         } else {
             throw new Error('未实现');
+        }
+    }
+
+    private async SerializeArrayAsync(obj: Array<any>) {
+        this.WriteByte(PayloadType.Array);
+        this.WriteByte(PayloadType.Object);
+        this.WriteVariant(obj.length);
+        for (let i = 0; i < obj.length; i++) {
+            await this.SerializeAsync(obj[i]);
         }
     }
 
@@ -113,6 +122,10 @@ export default class BytesOutputStream implements IOutputStream {
         this.ensureSizeToWrite(8);
         this.view.setFloat64(this.pos, v, true);
         this.pos += 8;
+    }
+
+    public WriteDate(v: Date) {
+        this.WriteInt64(v.getTime());
     }
 
     public WriteString(v?: string): void {

@@ -11,6 +11,8 @@ interface IOutputStream {
 
     WriteDouble(v: number): void;
 
+    WriteDate(v: Date): void;
+
     WriteVariant(v: number): void;
 
     WriteString(v: string): void;

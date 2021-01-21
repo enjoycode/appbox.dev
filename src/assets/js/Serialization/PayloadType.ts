@@ -24,6 +24,8 @@ enum PayloadType {
     ObjectRef = 22,
     /** 未知类型 */
     UnknownType = 23,
+    /** 其他未知类型 */
+    Object = 24,
 
     //----模型相关----
     // EntityModel = 50,
