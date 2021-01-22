@@ -13,42 +13,25 @@ export default {
     cookie: null,
     channel: null,
 
-    isAndroid() { return _isAndroid },
-    isIpad() { return _isIpad },
-    isIphone() { return _isIphone },
-    isWechat() { return _isWechat },
-    isAlipay() { return _isAlipay },
-    /**
-     * 用于预览窗口判断是否正在设计时
-     */
-    isDevelopment() { return this._isDevelopment },
+    isAndroid() {
+        return _isAndroid
+    },
+    isIpad() {
+        return _isIpad
+    },
+    isIphone() {
+        return _isIphone
+    },
+    isWechat() {
+        return _isWechat
+    },
+    isAlipay() {
+        return _isAlipay
+    },
 
-    /** 将数据对象转为实体(代理) */
-    parseEntity(root) {
-        const typeProp = '$T'
-
-        //TODO:考虑js Proxy方案，另考虑channel的Protocol
-        function walk(it) {
-            if (typeof it !== 'object' || !it || it instanceof Date) {
-                return it
-            }
-            if (Array.isArray(it)) {
-                for (let i = 0; i < it.length; i++) {
-                    it[i] = walk(it[i])
-                }
-            } else {
-                //判断是否实体
-                if (it.hasOwnProperty(typeProp) && typeof it[typeProp] === 'string' && !isNaN(it[typeProp].charAt(0))) {
-                    it = Object.assign(new Entity(""), it)
-                }
-                for (const key in it) {
-                    it[key] = walk(it[key])
-                }
-            }
-            return it
-        }
-
-        return walk(root)
+    /** 用于预览窗口判断是否正在设计时 */
+    isDevelopment() {
+        return this._isDevelopment
     },
 
     /** 根据模型标识新建实体实例 */
