@@ -10,6 +10,7 @@ export default class BytesInputStream implements IInputStream {
     private pos = 0;
     private view: DataView;
     private readonly bytes: Uint8Array;
+    private deserialized: Entity[] = null;
 
     constructor(buffer: ArrayBuffer) {
         this.bytes = new Uint8Array(buffer);
@@ -31,8 +32,10 @@ export default class BytesInputStream implements IInputStream {
                 return this.ReadInt32();
             case PayloadType.Int64:
                 return this.ReadInt64();
-            case PayloadType.UnknownType:
+            case PayloadType.JsonObject:
                 return this.ReadJsonObject();
+            case PayloadType.ObjectRef:
+                return this.deserialized[this.ReadVariant()];
             case PayloadType.EntityModelInfo:
                 return EntityModelInfo.ReadFrom(this);
             case PayloadType.Entity:
@@ -42,6 +45,16 @@ export default class BytesInputStream implements IInputStream {
             default:
                 throw new Error('未实现的类型: ' + payloadType.toString());
         }
+    }
+
+    public AddToDeserialized(obj: Entity) {
+        if (!obj) {
+            throw new Error('Entity is null');
+        }
+        if (!this.deserialized) {
+            this.deserialized = [];
+        }
+        this.deserialized.push(obj);
     }
 
     /** 剩余字节数 */

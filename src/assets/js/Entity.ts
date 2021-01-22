@@ -55,6 +55,7 @@ export class Entity {
         let modelId = bs.ReadInt64();
         let model = await EntityModelContainer.GetModelAsync(modelId);
         let obj = Object.create(model.Entity);
+        bs.AddToDeserialized(obj); //先加入已反序列化列表
 
         //读取成员
         let memberId: number = 0;
@@ -104,7 +105,7 @@ export class Entity {
                         throw new Error('未实现读取实体Field: ' + memberInfo.FieldType);
                 }
             } else if (memberInfo.MemberType == EntityMemberType.EntityRef) {
-                obj[memberInfo.Name] = await Entity.ReadFrom(bs);
+                obj[memberInfo.Name] = await bs.DeserializeAsync(); //注意处理循环引用
             } else if (memberInfo.MemberType == EntityMemberType.EntitySet) {
                 let count = bs.ReadVariant();
                 let list = [];

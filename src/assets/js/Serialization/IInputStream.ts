@@ -1,4 +1,5 @@
 import Long from '@/assets/js/Long';
+import {Entity} from '@/assets/js/Entity';
 
 interface IInputStream {
 
@@ -24,6 +25,8 @@ interface IInputStream {
 
     ReadBinary(): string; //TODO:暂转换为Base64
 
+    /** 添加已反序列化列表，用于解决实体循环引用 */
+    AddToDeserialized(obj: Entity): void;
 }
 
 export default IInputStream;

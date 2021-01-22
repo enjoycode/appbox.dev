@@ -23,7 +23,7 @@ enum PayloadType {
     /** 对象引用 */
     ObjectRef = 22,
     /** 未知类型 */
-    UnknownType = 23,
+    JsonObject = 23,
     /** 其他未知类型 */
     Object = 24,
 
