@@ -1,3 +1,5 @@
+import {Entity} from '@/assets/js/Entity';
+
 interface IOutputStream {
     WriteByte(v: number): void;
 
@@ -19,6 +21,9 @@ interface IOutputStream {
 
     /** 写入不带长度信息的ASCII或Base64字符串 */
     WriteAsciiString(v: string): void;
+
+    /** 将实体加入已序列化列表 */
+    AddToSerialized(obj: Entity): void;
 }
 
 export default IOutputStream;

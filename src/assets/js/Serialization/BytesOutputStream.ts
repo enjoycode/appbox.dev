@@ -8,6 +8,7 @@ export default class BytesOutputStream implements IOutputStream {
     private pos = 0;
     private view = new DataView(new ArrayBuffer(1024));
     private bytes = new Uint8Array(this.view.buffer);
+    private _serializedList: Entity[] = null;
 
     public get Bytes(): Uint8Array {
         return this.bytes.subarray(0, this.pos);
@@ -28,12 +29,28 @@ export default class BytesOutputStream implements IOutputStream {
             this.WriteInt32(obj.low);
             this.WriteInt32(obj.high);
         } else if (obj instanceof Entity) {
-            this.WriteByte(PayloadType.Entity);
-            await obj.WriteTo(this);
+            await this.SerializeEntityAsync(obj);
         } else if (Array.isArray(obj)) {
             await this.SerializeArrayAsync(obj);
         } else {
             throw new Error('未实现');
+        }
+    }
+
+    private async SerializeEntityAsync(obj: Entity) {
+        if (!obj) {
+            this.WriteByte(PayloadType.Null);
+            return;
+        }
+
+        //判断是否已经序列化过(解决实体循环引用)
+        let index = this.GetSerializedIndex(obj);
+        if (index < 0) {
+            this.WriteByte(PayloadType.Entity);
+            await obj.WriteTo(this);
+        } else {
+            this.WriteByte(PayloadType.ObjectRef);
+            this.WriteVariant(index);
         }
     }
 
@@ -167,6 +184,25 @@ export default class BytesOutputStream implements IOutputStream {
                 break;
             }
         } while (true);
+    }
+
+    private GetSerializedIndex(obj: Entity): number {
+        if (!this._serializedList || this._serializedList.length == 0) {
+            return -1;
+        }
+        for (let i = this._serializedList.length - 1; i >= 0; i--) {
+            if (this._serializedList[i] === obj) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public AddToSerialized(obj: Entity) {
+        if (!this._serializedList) {
+            this._serializedList = [];
+        }
+        this._serializedList.push(obj);
     }
 
 }

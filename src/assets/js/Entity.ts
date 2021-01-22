@@ -144,6 +144,9 @@ export class Entity {
     }
 
     public async WriteTo(bs: IOutputStream): Promise<void> {
+        //先加入已序列化列表
+        bs.AddToSerialized(this);
+
         if (typeof this._modelInfo == 'string') {
             let id: Long = Long.fromString(this._modelInfo, true);
             this._modelInfo = await EntityModelContainer.GetModelAsync(id);
