@@ -204,6 +204,11 @@ export class Entity {
             bs.WriteVariant(-1);
             //暂不考虑写入扩展信息
             bs.WriteVariant(0);
+
+            //SysEntity写入EntityId
+            if (this._modelInfo.StoreType === 1) {
+                bs.WriteAsciiString(atob(this['Id'])); //不需要长度信息
+            }
         }
     }
 
