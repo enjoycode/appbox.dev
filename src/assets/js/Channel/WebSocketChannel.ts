@@ -138,6 +138,8 @@ export default class WebSocketChannel implements IChannel {
         let errorCode = rs.ReadByte();
         let result = await rs.DeserializeAsync();
         if (errorCode == 0) {
+            if (!result.succeed)
+                throw new Error(result.error);
             return result;
         } else {
             throw new Error(result);
