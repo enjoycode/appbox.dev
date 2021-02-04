@@ -1,13 +1,11 @@
 
-/**
- * 客户端与服务端通信的通道，目前为Http及WebSocket.
- */
+/** 客户端与服务端通信的通道，目前为Http及WebSocket. */
 interface IChannel {
 
     /**
      * 用户登录
-     * @param user 
-     * @param pass 
+     * @param user
+     * @param pwd
      * @param external 外部用户
      */
     login(user: string, pwd: string, external: any): Promise<any>;
