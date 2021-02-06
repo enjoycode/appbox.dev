@@ -8,15 +8,23 @@ enum DebugEventType {
     Output //输出调试日志
 }
 
-interface IDebugEvent {
-    Type: DebugEventType;
+export interface Variable {
+    name: string;
+    value: string;
+    type: string;
 }
+
+// interface IDebugEvent {
+//     Type: DebugEventType;
+// }
 
 export default class DebugService implements IEventHandler {
     public static readonly DEBUG_EVENT: number = 12;
 
     /** 当前的服务设计器实例 */
     public static designer: any = null;
+    /** 变量列表 */
+    public static variables: Variable[] = [];
 
     /** 处理收到的调试事件 */
     process(stream: IInputStream) {
@@ -34,7 +42,19 @@ export default class DebugService implements IEventHandler {
                 DebugService.designer.onDebugStopped();
                 break;
             case DebugEventType.HitBreakPoint:
-                DebugService.designer.onHitBreakpoint({Thread: stream.ReadInt64(), Line: stream.ReadInt32()});
+                let breakPoint = {Thread: stream.ReadInt64(), Line: stream.ReadInt32()};
+                //继续读取变量信息
+                DebugService.variables.splice(0, DebugService.variables.length);
+                let varSize = stream.ReadVariant();
+                if (varSize > 0) {
+                    for (let i = 0; i < varSize; i++) {
+                        let name = stream.ReadString();
+                        let value = stream.ReadString();
+                        let type = stream.ReadString();
+                        DebugService.variables.push({name: name, value: value, type: type});
+                    }
+                }
+                DebugService.designer.onHitBreakpoint(breakPoint);
                 break;
             case DebugEventType.Output:
                 let msg = stream.ReadString();

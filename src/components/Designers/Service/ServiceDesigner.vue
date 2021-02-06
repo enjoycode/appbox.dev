@@ -6,15 +6,17 @@
             <el-button-group>
                 <el-button @click="startInvoke" size="mini" icon="fas fa-play-circle"> Invoke</el-button>
                 <el-button @click="startDebug" size="mini" icon="fas fa-bug"> Start</el-button>
-                <el-button @click="continueBreakpoint" :disabled="debugState != 2" size="mini" icon="fas fa-play"> Continue</el-button>
-                <el-button :disabled="debugState != 2" size="mini" icon="fas fa-forward"> Step</el-button>
-                <el-button :disabled="debugState == 0" size="mini" icon="fas fa-stop"> Stop</el-button>
+                <el-button @click="continueBreakpoint" :disabled="debugState !== 2" size="mini" icon="fas fa-play">
+                    Continue
+                </el-button>
+                <el-button :disabled="debugState !== 2" size="mini" icon="fas fa-forward"> Step</el-button>
+                <el-button :disabled="debugState === 0" size="mini" icon="fas fa-stop"> Stop</el-button>
             </el-button-group>
         </div>
-        <code-editor height="100%" ref="editor" :language="language" theme="tm" :fileName="fileName" 
-            @mounted="onEditorMounted" :options="{readOnly: true}">
+        <code-editor height="100%" ref="editor" :language="language" theme="tm" :fileName="fileName"
+                     @mounted="onEditorMounted" :options="{readOnly: true}">
         </code-editor>
-    </div> 
+    </div>
 </template>
 
 <script>
@@ -27,13 +29,13 @@ import DebugService from './DebugService'
 import ReferencesDialog from './ReferencesDialog'
 import InvokeDialog from './InvokeDialog'
 import DebugArgsDialog from './DebugArgsDialog'
-import { modelLibs } from '../../CodeEditor/EditorService'
+import {modelLibs} from '../../CodeEditor/EditorService'
 
 export default {
-    components: { CodeEditor: CodeEditor },
+    components: {CodeEditor: CodeEditor},
     props: {
-        target: { type: Object, required: true }, // 服务模型节点
-        goto: { type: Object } // 需要跳转的模型引用 IModelReference
+        target: {type: Object, required: true}, // 服务模型节点
+        goto: {type: Object} // 需要跳转的模型引用 IModelReference
     },
     data() {
         return {
@@ -46,10 +48,10 @@ export default {
     },
     computed: {
         language() {
-            return this.target.Language == 1 ? 'java' : "csharp";
+            return this.target.Language === 1 ? 'java' : "csharp";
         },
         fileName() {
-            let ext = this.target.Language == 1 ? '.java' : '.cs';
+            let ext = this.target.Language === 1 ? '.java' : '.cs';
             return this.target.App + '.Services.' + this.target.Text + ext
         }
     },
@@ -71,7 +73,7 @@ export default {
 
         /** 设置编辑器快捷键 */
         initEditorCommands() {
-            var _this = this
+            const _this = this;
             this.$refs.editor.addCommand(window.monaco.KeyMod.CtrlCmd | window.monaco.KeyCode.KEY_S, function () {
                 _this.save()
             })
@@ -85,7 +87,7 @@ export default {
         },
 
         loadModel(byCheckout) {
-            var _this = this
+            const _this = this;
             $runtime.channel.invoke('sys.DesignService.OpenServiceModel', [this.target.ID]).then(res => {
                 _this.onModelLoaded(res, byCheckout)
             }).catch(err => {
@@ -104,9 +106,12 @@ export default {
             }
             this.gotoReference() //跳转至指定位置，仅适用于初次打开当前编辑器
         },
+
         /** 跳转到引用位置 */
         gotoReference() {
-            if (!this.goto) { return }
+            if (!this.goto) {
+                return
+            }
             let pos = this.$refs.editor.getPositionAt(this.goto.Offset)
             this.$refs.editor.setPosition(pos) //暂简单设定位置
             this.$refs.editor.focus()
@@ -122,8 +127,8 @@ export default {
                 $runtime.channel.invoke('sys.DesignService.ChangeBuffer', [1, this.target.ID,
                     change.range.startLineNumber, change.range.startColumn,
                     change.range.endLineNumber, change.range.endColumn, change.text]).catch(err => {
-                        _this.$message.warning('提交代码变更错误: ' + err)
-                    })
+                    _this.$message.warning('提交代码变更错误: ' + err)
+                })
             }
             this.debouncedCheckCode() // todo:考虑检测改变是否仅空白类字符，是则不需要检测代码
         },
@@ -136,7 +141,11 @@ export default {
                     var errs = []
                     for (var i = 0; i < res.length; i++) {
                         var element = res[i]
-                        errs.push({ Model: this.target.App + '.' + this.target.Text, Location: '(' + element.Line + ',' + element.Column + ')', Info: element.Text })
+                        errs.push({
+                            Model: this.target.App + '.' + this.target.Text,
+                            Location: '(' + element.Line + ',' + element.Column + ')',
+                            Info: element.Text
+                        })
                     }
                     DesignStore.errors.update(this.target.App + '.' + this.target.Text, errs)
                 } else {
@@ -157,6 +166,7 @@ export default {
                 _this.$message.error('保存失败: ' + err)
             })
         },
+
         refresh() {
             this.loadModel(false)
         },
@@ -168,11 +178,13 @@ export default {
                 this.readOnly = false
             }
         },
+
         /** 显示引用编辑对话框 */
         showRefsDlg() {
-            var dlg = Vue.component('ReferencesDialog', ReferencesDialog)
+            const dlg = Vue.component('ReferencesDialog', ReferencesDialog);
             DesignStore.ide.showDialog(dlg)
         },
+
         // 开始调用服务方法
         startInvoke() {
             let _this = this
@@ -185,11 +197,12 @@ export default {
                     method.Args[i].Value = ''
                 }
                 var dlg = Vue.component('InvokeDialog', InvokeDialog)
-                DesignStore.ide.showDialog(dlg, { Service: _this.target.App + '.' + _this.target.Text, Method: method })
+                DesignStore.ide.showDialog(dlg, {Service: _this.target.App + '.' + _this.target.Text, Method: method})
             }).catch(() => {
                 _this.$message.error('Cannot find target method')
             })
         },
+
         /** 开始调试服务方法 */
         startDebug() {
             let _this = this
@@ -209,12 +222,14 @@ export default {
                     ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Text,
                     Method: method,
                     Breakpoints: breakpoints,
-                    Designer: _this                })
+                    Designer: _this
+                })
             }).catch(() => {
                 DebugService.designer = null
                 _this.$message.error('Cannot find target method')
             })
         },
+
         onDebugStarted(ok) {
             if (!ok) {
                 DebugService.designer = null
@@ -222,24 +237,28 @@ export default {
                 this.debugState = 1
             }
         },
+
         /** 收到调试结果或异常中断调试进程 */
         onDebugStopped(res) {
             this.debugState = 0
             DebugService.designer = null
             //TODO: 显示调试结果?
         },
+
         onHitBreakpoint(bp) {
             this.debugState = 2
             this.hitBreakpoint = bp
             this.$refs.editor.highlightBreakline(bp.Line) // 高亮击中的行
             this.$refs.editor.focus()
         },
+
         continueBreakpoint() {
             if (this.hitBreakpoint) {
                 let _this = this
                 let thread = this.hitBreakpoint.Thread
                 this.hitBreakpoint = null
                 this.$refs.editor.highlightBreakline(-1) // 取消当前高亮
+                DebugService.variables.splice(0, DebugService.variables.length); //先清空变量列表
                 $runtime.channel.invoke('sys.DesignService.ContinueBreakpoint', [thread]).then(res => {
                     // do nothing
                 }).catch(err => {
@@ -248,6 +267,7 @@ export default {
             }
         }
     },
+
     mounted() {
         this.debouncedCheckCode = debounce(this.checkCode, 1000)
     }
