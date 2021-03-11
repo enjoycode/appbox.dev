@@ -136,7 +136,10 @@ export default {
             this.listObjects()
         },
         onDownload(row) {
-            window.location.href = '/api/Blob/Download?storeName=' + this.storeName + '&path=' + this.curPath + row.Name
+            const url = '/blob/'
+                + this.storeName + this.curPath + '/' + row.Name
+                + '?v=sys.DesignService.CanDownload'
+            window.open(url)
         },
         onDelete(row) {
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -178,12 +181,13 @@ export default {
             this.listObjects()
         },
         formatDate(row, column, cellValue) {
-            if (cellValue && !(row.Name.charAt(row.Name.length - 1) === '/')) {
-                const date = new Date(+new Date(cellValue) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
-                return date
-            } else {
-                return null
-            }
+            // if (cellValue && !(row.Name.charAt(row.Name.length - 1) === '/')) {
+            //     const date = new Date(+new Date(cellValue) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+            //     return date
+            // } else {
+            //     return null
+            // }
+            return cellValue
         },
         formatSize(row, column, cellValue) {
             if (cellValue) {
