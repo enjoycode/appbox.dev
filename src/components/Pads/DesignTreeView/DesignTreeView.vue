@@ -3,29 +3,29 @@
         <div calss="search-pane">
             <div class="treeTitle">Models</div>
             <div class="treeSearch">
-                <el-input v-model="keyword" size="small" suffix-icon="fas fa-search"> </el-input>
+                <el-input v-model="keyword" size="small" suffix-icon="fas fa-search"></el-input>
             </div>
         </div>
         <div class="tree-pane">
-            <el-tree class="designTree" ref="designTree" draggable highlight-current v-loading="loading" 
-                node-key="ID" :current-node-key="currentNodeKey" :expand-on-click-node="false"
-                @current-change="onCurrentChanged" :render-content="onRenderContent"
-                @node-drop="onDrop" :allow-drag="allowDrag" :allow-drop="allowDrop"
-                :filter-node-method="filterNode" :data="designNodes" :props="treeOption" 
-                :default-expanded-keys="['Applications','sys']">
+            <el-tree class="designTree" ref="designTree" draggable highlight-current v-loading="loading"
+                     node-key="ID" :current-node-key="currentNodeKey" :expand-on-click-node="false"
+                     @current-change="onCurrentChanged" :render-content="onRenderContent"
+                     @node-drop="onDrop" :allow-drag="allowDrag" :allow-drop="allowDrop"
+                     :filter-node-method="filterNode" :data="designNodes" :props="treeOption"
+                     :default-expanded-keys="['Applications','DataStore','sys']">
             </el-tree>
         </div>
     </div>
 </template>
 
 <script lang="tsx">
-import Vue from 'vue'
-import store from '@/design/DesignStore'
-import DataStoreKind from '@/design/DataStoreKind'
-import DesignNodeType from '@/design/DesignNodeType'
-import ModelType from '@/design/ModelType'
-import { IDesignNode, IModelNode, IEntityModelNode } from '@/design/IDesignNode'
-import { modelLibs } from '@/components/CodeEditor/EditorService'
+import Vue from 'vue';
+import store from '@/design/DesignStore';
+import DataStoreKind from '@/design/DataStoreKind';
+import DesignNodeType from '@/design/DesignNodeType';
+import ModelType from '@/design/ModelType';
+import {IDesignNode, IModelNode, IEntityModelNode} from '@/design/IDesignNode';
+import {modelLibs} from '@/components/CodeEditor/EditorService';
 
 const iconClasses = {
     n0: 'fas fa-folder fa-fw',
@@ -46,7 +46,7 @@ const iconClasses = {
     n26: 'fas fa-random fa-fw',
     n27: 'fas fa-chart-pie fa-fw',
     n28: 'fas fa-plus fa-fw'
-}
+};
 
 export default Vue.extend({
     name: 'DesignTreeView',
@@ -58,120 +58,143 @@ export default Vue.extend({
             currentNodeKey: null, // 当前选中节点的key值
             designNodes: [],
             onRenderContent: (h, node) => {
-                var iconClass
+                var iconClass;
                 if (node.data.Type === DesignNodeType.BlobStoreNode) { // 存储节点单独处理
-                    iconClass = 'fas fa-hdd'
+                    iconClass = 'fas fa-hdd';
                 } else {
-                    iconClass = iconClasses['n' + node.data.Type]
+                    iconClass = iconClasses['n' + node.data.Type];
                 }
 
                 if (node.data.CheckoutBy) {
                     if (node.data.CheckoutBy === 'Me') {
-                        return (<span class="el-tree-node__label" style="color:green"><i class={iconClass}></i> {node.data.Text}</span>)
+                        return (<span class="el-tree-node__label" style="color:green"><i
+                            class={iconClass}></i> {node.data.Text}</span>);
                     } else {
-                        return (<span class="el-tree-node__label" style="color:gray"><i class={iconClass}></i> {node.data.Text}</span>)
+                        return (<span class="el-tree-node__label" style="color:gray"><i
+                            class={iconClass}></i> {node.data.Text}</span>);
                     }
                 } else {
-                    return (<span class="el-tree-node__label"><i class={iconClass}></i> {node.data.Text}</span>)
+                    return (<span class="el-tree-node__label"><i class={iconClass}></i> {node.data.Text}</span>);
                 }
             }
-        }
+        };
     },
 
     computed: {
         treeOption() {
-            return { label: 'Text', children: 'Nodes' }
+            return {label: 'Text', children: 'Nodes'};
         }
     },
 
     watch: {
         keyword(val) {
-            (this.$refs.designTree as any).filter(val)
+            (this.$refs.designTree as any).filter(val);
         }
     },
 
     methods: {
         loadTree() {
-            if (this.loading) { return }
-            var _this = this
-            this.loading = true
+            if (this.loading) {
+                return;
+            }
+            var _this = this;
+            this.loading = true;
             $runtime.channel.invoke('sys.DesignService.LoadDesignTree', []).then(res => {
-                _this.designNodes = res
-                _this.loading = false
+                _this.designNodes = res;
+                _this.loading = false;
             }).catch(err => {
-                _this.loading = false
-                _this.$message.error(err)
-            })
+                _this.loading = false;
+                _this.$message.error(err);
+            });
         },
         filterNode(value, data) {
-            if (!value) return true
-            return data.Text.indexOf(value) !== -1
+            if (!value) {
+                return true;
+            }
+            return data.Text.indexOf(value) !== -1;
         },
 
         /** 当前选择的节点改变 */
         onCurrentChanged(value, node) {
-            this.currentNode = value
-            store.emitEvent('CurrentNodeChanged', value)
+            this.currentNode = value;
+            store.emitEvent('CurrentNodeChanged', value);
         },
 
         /** 根据节点类型及标识查找节点，注意：返回的是数据项 */
         findNode(type, id) {
-            var loopFind = function (nodes, type, id) {
+            const loopFind = function(nodes, type, id) {
                 for (var i = 0; i < nodes.length; i++) {
-                    var element = nodes[i]
+                    var element = nodes[i];
                     if (element.Type === type && element.ID === id) {
-                        return element
+                        return element;
                     }
                     if (element.Nodes && element.Nodes.length > 0) {
-                        var found = loopFind(element.Nodes, type, id)
+                        var found = loopFind(element.Nodes, type, id);
                         if (found) {
-                            return found
+                            return found;
                         }
                     }
                 }
-                return null
-            }
-            return loopFind(this.designNodes, type, id)
+                return null;
+            };
+            return loopFind(this.designNodes, type, id);
         },
         /** 根据模型类型及名称查找节点 */
         findModelNodeByName(type, appName, modelName) {
-            let loopFind = function (nodes) {
-                for (var i = 0; i < nodes.length; i++) {
-                    var element = nodes[i]
+            let loopFind = function(nodes) {
+                for (let i = 0; i < nodes.length; i++) {
+                    const element = nodes[i];
                     if (element.ModelType && element.ModelType === type && element.Text === modelName) {
-                        return element
+                        return element;
                     }
                     if (element.Nodes && element.Nodes.length > 0) {
-                        var found = loopFind(element.Nodes)
+                        var found = loopFind(element.Nodes);
                         if (found) {
-                            return found
+                            return found;
                         }
                     }
                 }
-                return null
-            }
+                return null;
+            };
 
-            let apps = this.designNodes[1].Nodes
-            let app = apps.find(t => t.Text === appName)
-            let modelRootNode
+            let apps = this.designNodes[1].Nodes;
+            let app = apps.find(t => t.Text === appName);
+            let modelRootNode;
             switch (type) {
-                case ModelType.Entity: modelRootNode = app.Nodes[0]; break;
-                case ModelType.Service: modelRootNode = app.Nodes[1]; break;
-                case ModelType.View: modelRootNode = app.Nodes[2]; break;
-                case ModelType.Workflow: modelRootNode = app.Nodes[3]; break;
-                case ModelType.Report: modelRootNode = app.Nodes[4]; break;
-                case ModelType.Enum: modelRootNode = app.Nodes[5]; break;
-                case ModelType.Event: modelRootNode = app.Nodes[6]; break;
-                case ModelType.Permission: modelRootNode = app.Nodes[7]; break;
-                default: return null;
+                case ModelType.Entity:
+                    modelRootNode = app.Nodes[0];
+                    break;
+                case ModelType.Service:
+                    modelRootNode = app.Nodes[1];
+                    break;
+                case ModelType.View:
+                    modelRootNode = app.Nodes[2];
+                    break;
+                case ModelType.Workflow:
+                    modelRootNode = app.Nodes[3];
+                    break;
+                case ModelType.Report:
+                    modelRootNode = app.Nodes[4];
+                    break;
+                case ModelType.Enum:
+                    modelRootNode = app.Nodes[5];
+                    break;
+                case ModelType.Event:
+                    modelRootNode = app.Nodes[6];
+                    break;
+                case ModelType.Permission:
+                    modelRootNode = app.Nodes[7];
+                    break;
+                default:
+                    return null;
             }
-            return loopFind(modelRootNode.Nodes)
+            return loopFind(modelRootNode.Nodes);
         },
         /** 根据模型引用查找节点 */
         findNodeByReference(reference) {
-            let modelType = ModelType[reference.Type]
-            let names = reference.Model.split('.')
-            return this.findModelNodeByName(modelType, names[0], names[1])
+            let modelType = ModelType[reference.Type];
+            let names = reference.Model.split('.');
+            return this.findModelNodeByName(modelType, names[0], names[1]);
         },
 
         /** 用于新建成功返回后刷新模型根节点或添加新建的节点 */
@@ -182,10 +205,10 @@ export default Vue.extend({
             //     this.onNodeCheckout(rootNode, true)
             // } else { // 根节点之前已签出则简单添加
             if (nodeInfo.ParentNodeType === DesignNodeType.DataStoreRootNode) { // 存储根节点
-                this.designNodes[0].Nodes.push(nodeInfo.NewNode)
+                this.designNodes[0].Nodes.push(nodeInfo.NewNode);
             } else {
-                let parent = this.findNode(nodeInfo.ParentNodeType, nodeInfo.ParentNodeID)
-                parent.Nodes.splice(nodeInfo.InsertIndex, 0, nodeInfo.NewNode)
+                let parent = this.findNode(nodeInfo.ParentNodeType, nodeInfo.ParentNodeID);
+                parent.Nodes.splice(nodeInfo.InsertIndex, 0, nodeInfo.NewNode);
             }
             // }
         },
@@ -194,37 +217,37 @@ export default Vue.extend({
         onDeleteNode(node, /* String */ rootNodeID) {
             // 移除前端声明 TODO:向上查找获取路径
             if (node.Type === DesignNodeType.ServiceModelNode) {
-                modelLibs.remove(node.App + '.Services.' + node.Text)
+                modelLibs.remove(node.App + '.Services.' + node.Text);
             } else if (node.Type === DesignNodeType.ViewModelNode) {
-                modelLibs.remove(node.App + '.Views.' + node.Text)
+                modelLibs.remove(node.App + '.Views.' + node.Text);
             } else if (node.Type === DesignNodeType.EntityModelNode) {
-                modelLibs.remove(node.App + '.Entities.' + node.Text)
+                modelLibs.remove(node.App + '.Entities.' + node.Text);
             }
             // 如果自动签出了模型根节点，则刷新根节点
             if (rootNodeID) {
-                let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID)
-                this.onNodeCheckout(rootNode, true)
+                let rootNode = this.findNode(DesignNodeType.ModelRootNode, rootNodeID);
+                this.onNodeCheckout(rootNode, true);
             }
             // 找到待删除的节点并移除
-            var loopFind = function (nodes, type, id) {
+            var loopFind = function(nodes, type, id) {
                 for (var index = 0; index < nodes.length; index++) {
-                    var n = nodes[index]
+                    var n = nodes[index];
                     if (n.Type === type && n.ID === id) {
-                        nodes.splice(index, 1)
-                        return
+                        nodes.splice(index, 1);
+                        return;
                     }
                     if (n.Nodes && n.Nodes.length > 0) {
-                        loopFind(n.Nodes, type, id)
+                        loopFind(n.Nodes, type, id);
                     }
                 }
-            }
+            };
             // TODO:优化查找
-            loopFind(this.designNodes, node.Type, node.ID)
+            loopFind(this.designNodes, node.Type, node.ID);
         },
         /** 选中node，不激活相应的设计器 */
         selectNode(data) {
-            this.currentNode = data
-            this.currentNodeKey = data.ID
+            this.currentNode = data;
+            this.currentNodeKey = data.ID;
         },
         /**
          * 用于绑定Select控件上
@@ -234,19 +257,19 @@ export default Vue.extend({
          * @param storeId 实体模型存储标识,如果null表示所有,非null表示相同类型的存储
          */
         getAllEntityNodes(result, storeId) {
-            result = result || []
+            result = result || [];
             this.loopGetModelNodes(this.designNodes as IDesignNode[], result as IDesignNode[],
-                DesignNodeType.EntityModelNode, ModelType.Entity, true, storeId)
+                DesignNodeType.EntityModelNode, ModelType.Entity, true, storeId);
         },
         /** 获取所有实体存储节点，用于新建实体时选择映射的存储 */
         getAllStoreNodes() {
             const result = [];
             this.designNodes[0].Nodes.forEach(node => {
                 if (node.Kind === DataStoreKind.Sql || node.Kind === DataStoreKind.Cql) {
-                    result.push(node)
+                    result.push(node);
                 }
-            })
-            return result
+            });
+            return result;
         },
         /** 获取指定类型的模型节点 */
         getAllModelNodes(nodeType: DesignNodeType, modelType: ModelType): IDesignNode[] {
@@ -256,7 +279,7 @@ export default Vue.extend({
         },
         /** 从树中获取指定类型的模型节点 */
         loopGetModelNodes(nodes: IDesignNode[], result: IDesignNode[],
-            nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean, storeId/*实体模型存储标识*/) {
+                          nodeType: DesignNodeType, modelType: ModelType, groupByApp: boolean, storeId/*实体模型存储标识*/) {
             for (const node of nodes) {
                 if (node.Type == DesignNodeType.ApplicationNode) {
                     if (groupByApp) {
@@ -291,60 +314,64 @@ export default Vue.extend({
             const o = {};
             for (const key in node) {
                 if (node[key] instanceof Array) {
-                    o[key] = []
+                    o[key] = [];
                 } else {
-                    o[key] = node[key]
+                    o[key] = node[key];
                 }
             }
-            return o as IDesignNode
+            return o as IDesignNode;
         },
 
         /** 重新刷新节点，主要用于签出状态变更 */
         refreshNode(node) {
-            var temp = node.Text
-            node.Text = ''
-            node.Text = temp
+            var temp = node.Text;
+            node.Text = '';
+            node.Text = temp;
         },
 
         // ====订阅的事件处理====
         /** 签出节点成功后更新状态显示 */
         onNodeCheckout(node, needUpdate /* TODO:移除此参数 */) {
-            node.CheckoutBy = 'Me'
-            this.refreshNode(node)
+            node.CheckoutBy = 'Me';
+            this.refreshNode(node);
             // 判断是否签出模型根节点，是则开始刷新(目前更新所有子目录签出状态)
             if (node.Type === DesignNodeType.ModelRootNode) {
-                let loopCheckout = function (tree, nodes) {
-                    if (!nodes) { return }
-                    for (let i = 0; i < nodes.length; i++) {
-                        const element = nodes[i]
-                        if (element.Type === DesignNodeType.FolderNode) {
-                            element.CheckoutBy = 'Me'
-                            tree.refreshNode(element)
-                        }
-                        loopCheckout(tree, element.Nodes)
+                let loopCheckout = function(tree, nodes) {
+                    if (!nodes) {
+                        return;
                     }
-                }
-                loopCheckout(this, node.Nodes)
+                    for (let i = 0; i < nodes.length; i++) {
+                        const element = nodes[i];
+                        if (element.Type === DesignNodeType.FolderNode) {
+                            element.CheckoutBy = 'Me';
+                            tree.refreshNode(element);
+                        }
+                        loopCheckout(tree, element.Nodes);
+                    }
+                };
+                loopCheckout(this, node.Nodes);
             }
         },
 
         /** 发布成功后更新所有签出节点的状态显示 */
         onPublish() {
-            let _this = this
+            let _this = this;
+
             function loopCheckin(node) {
                 if (node.CheckoutBy === 'Me') {
-                    delete node['CheckoutBy']
-                    _this.refreshNode(node)
+                    delete node['CheckoutBy'];
+                    _this.refreshNode(node);
                 }
                 if (node.Nodes && node.Nodes.length > 0) {
                     for (var i = 0; i < node.Nodes.length; i++) {
-                        var child = node.Nodes[i]
-                        loopCheckin(child)
+                        var child = node.Nodes[i];
+                        loopCheckin(child);
                     }
                 }
             }
+
             for (var i = 0; i < this.designNodes.length; i++) {
-                loopCheckin(this.designNodes[i])
+                loopCheckin(this.designNodes[i]);
             }
         },
 
@@ -352,80 +379,84 @@ export default Vue.extend({
         getParentNodeByType(node, nodeType) { // 用于往上查找指定类型的节点
             if (node.parent) {
                 if (node.parent.data.Type === nodeType) {
-                    return node.parent
+                    return node.parent;
                 } else {
-                    return this.getParentNodeByType(node.parent, nodeType)
+                    return this.getParentNodeByType(node.parent, nodeType);
                 }
             } else {
-                return null
+                return null;
             }
         },
         allowDrag(node) { // 用于判断节点是否可拖动
-            let nodeType = node.data.Type
+            let nodeType = node.data.Type;
             if (nodeType === DesignNodeType.FolderNode) { // FolderNode判断模型根节点是否签出
-                if (node.data.CheckoutBy !== 'Me') { return false }
+                if (node.data.CheckoutBy !== 'Me') {
+                    return false;
+                }
             } else if (nodeType >= DesignNodeType.EntityModelNode
                 && nodeType <= DesignNodeType.ReportModelNode) { // 模型节点判断当前节点及模型根节点是否签出
                 if (node.data.CheckoutBy !== 'Me') {
-                    return false
+                    return false;
                 } else {
-                    let rootNode = this.getParentNodeByType(node, DesignNodeType.ModelRootNode)
+                    let rootNode = this.getParentNodeByType(node, DesignNodeType.ModelRootNode);
                     if (!rootNode || rootNode.data.CheckoutBy !== 'Me') {
-                        return false
+                        return false;
                     }
                 }
             } else { // 暂不支持其他类型节点拖动
-                return false
+                return false;
             }
-            return true
+            return true;
         },
         allowDrop(dragNode, dropNode, type) { // 用于判断是否允许drop
-            let snode = dragNode.data
-            let tnode = dropNode.data
+            let snode = dragNode.data;
+            let tnode = dropNode.data;
             if (snode.Type === DesignNodeType.FolderNode) { // 源为FolderNode
                 if (tnode.Type !== DesignNodeType.FolderNode && tnode.Type !== DesignNodeType.ModelRootNode) { // 目标为模型节点
-                    return false
+                    return false;
                 } else if (type !== 'inner') { // 暂不支持排序
-                    return false
+                    return false;
                 }
             } else { // 源为ModelNode
                 if (tnode.Type === DesignNodeType.FolderNode || tnode.Type === DesignNodeType.ModelRootNode) { // 目标为Folder或ModelRoot
-                    if (type !== 'inner') { return false }
-                    let targetAppNode = this.getParentNodeByType(dropNode, DesignNodeType.ApplicationNode)
+                    if (type !== 'inner') {
+                        return false;
+                    }
+                    let targetAppNode = this.getParentNodeByType(dropNode, DesignNodeType.ApplicationNode);
                     if (targetAppNode.data.ID !== snode.App) {
-                        return false
+                        return false;
                     }
                 } else {
-                    return false
+                    return false;
                 }
             }
-            return true
+            return true;
         },
         onDrop(dragNode, dropNode, type, ev) {
-            let source = dragNode.data
-            let target = dropNode.data
-            let args = [source.Type, source.ID, target.Type, target.ID, type]
-            let _this = this
+            let source = dragNode.data;
+            let target = dropNode.data;
+            let args = [source.Type, source.ID, target.Type, target.ID, type];
+            let _this = this;
             $runtime.channel.invoke('sys.DesignService.DragDropNode', args).catch(err => {
                 // TODO:失败回滚
-                _this.$message.error(err)
-            })
+                _this.$message.error(err);
+            });
         }
     },
 
     mounted() {
-        store.tree = this
-        this.loadTree()
+        store.tree = this;
+        this.loadTree();
         // 订阅事件
-        store.onEvent('NodeCheckout', this.onNodeCheckout)
-        store.onEvent('Publish', this.onPublish)
+        store.onEvent('NodeCheckout', this.onNodeCheckout);
+        store.onEvent('Publish', this.onPublish);
     },
 
     destroyed() {
-        store.offEvent('NodeCheckout', this.onNodeCheckout)
-        store.offEvent('Publish', this.onPublish)
+        store.offEvent('NodeCheckout', this.onNodeCheckout);
+        store.offEvent('Publish', this.onPublish);
     }
-})
+});
 </script>
 
 <style scoped>
@@ -473,9 +504,9 @@ export default Vue.extend({
 }
 
 .tree-pane
-    >>> .el-tree--highlight-current
-    .el-tree-node.is-current
-    > .el-tree-node__content {
+>>> .el-tree--highlight-current
+.el-tree-node.is-current
+> .el-tree-node__content {
     background-color: #b3b3b3;
 }
 
