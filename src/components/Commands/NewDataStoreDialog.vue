@@ -6,9 +6,9 @@
                 <td>
                     <el-radio v-model="storeType" :label="0">SQL</el-radio>
                     <el-radio v-model="storeType" :label="1">CQL</el-radio>
-                    <!--<el-radio v-model="storeType" :label="2">Blob</el-radio>
-                    <el-radio v-model="storeType" :label="3">Cache</el-radio>
-                    <el-radio v-model="storeType" :label="4">Search</el-radio> -->
+                    <el-radio v-model="storeType" :label="2">OSS</el-radio>
+<!--                    <el-radio v-model="storeType" :label="3">Cache</el-radio>-->
+<!--                    <el-radio v-model="storeType" :label="4">Search</el-radio>-->
                 </td>
             </tr>
             <tr>
@@ -68,7 +68,7 @@
             },
             onOkClick() {
                 let _this = this
-                var args = [this.storeType, this.storeProvider, this.storeName]
+                const args = [this.storeType, this.storeProvider, this.storeName];
                 // 获取实体属性
                 $runtime.channel.invoke('sys.DesignService.NewDataStore', args).then(res => {
                     // 根据返回结果添加新节点

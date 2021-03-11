@@ -13,7 +13,7 @@
                     <td></td>
                 </tr>
             </table>
-            <list-view v-if="storeView==='listView'" :storeName="target.App" ref="storeView"></list-view>
+            <list-view v-if="storeView==='listView'" :storeName="target.Text" ref="storeView"></list-view>
         </div>
     </div>
 </template>

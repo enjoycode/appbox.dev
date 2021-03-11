@@ -3,7 +3,7 @@
         <div class="toolbar">
             <el-breadcrumb class="sep-path">
                 <el-breadcrumb-item v-for="path in sepPaths" :key="path.Path">
-                  <a @click="onSepPathClick(path.Path)">{{ path.Name }}</a>  
+                    <a @click="onSepPathClick(path.Path)">{{ path.Name }}</a>
                 </el-breadcrumb-item>
             </el-breadcrumb>
             <div class="toolbar-right">
@@ -11,9 +11,13 @@
                     <el-button @click="onSearch" slot="append" icon="fas fa-search"></el-button>
                 </el-input>
                 <el-button-group>
-                    <el-button @click="uploadDlgVisible = true" type="primary" size="small" icon="fas fa-upload"> 上传</el-button>
-                    <el-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small" icon="fas fa-angle-left">上一页</el-button>
-                    <el-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页<i class="fas fa-angle-right"></i></el-button>
+                    <el-button @click="uploadDlgVisible = true" type="primary" size="small" icon="fas fa-upload"> 上传
+                    </el-button>
+                    <el-button @click="onPrePage" :disabled="preBtnVisible" type="primary" size="small"
+                               icon="fas fa-angle-left">上一页
+                    </el-button>
+                    <el-button @click="onNextPage" :disabled="nextBtnVisible" type="primary" size="small">下一页<i
+                        class="fas fa-angle-right"></i></el-button>
                 </el-button-group>
             </div>
             <div style="clear:both"></div>
@@ -39,7 +43,7 @@
         <!-- 上传对话框 -->
         <el-dialog title="上传文件" :visible.sync="uploadDlgVisible" width="400px">
             <span>目标路径: <el-input v-model="uploadPath" size="small" placeholder="空上传至当前路径"></el-input></span>
-            <el-upload drag :action="uploadUrl" :multiple="false">
+            <el-upload drag :action="uploadUrl" :multiple="false" :http-request="uploadFile">
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                 <div class="el-upload__tip" slot="tip">不超过64Mb</div>
@@ -50,10 +54,13 @@
         </el-dialog>
     </div>
 </template>
+
 <script>
+import axios from 'axios'
+
 export default {
     props: {
-        storeName: { type: String, required: true }
+        storeName: {type: String, required: true}
     },
     data() {
         return {
@@ -68,20 +75,20 @@ export default {
     },
     computed: {
         sepPaths() {
-            var paths = [{Name: 'Home', Path: '/'}]
+            const paths = [{Name: 'Home', Path: '/'}];
             if (this.curPath === '/') {
                 return paths
             }
-            var sr = this.curPath.split('/')
-            for (var i = 1; i < sr.length; ++i) {
-                var p = sr.slice(0, i + 1).join('/')
+            const sr = this.curPath.split('/');
+            for (let i = 1; i < sr.length; ++i) {
+                const p = sr.slice(0, i + 1).join('/');
                 paths.push({Name: sr[i], Path: p})
             }
             return paths
         },
         // 组装上传url
         uploadUrl() {
-            var url = '/blob/dev/' + this.storeName
+            let url = '/blob/' + this.storeName;
             if (this.uploadPath === '') {
                 if (this.curPath !== '/') {
                     url += this.curPath
@@ -97,7 +104,7 @@ export default {
 
     methods: {
         listObjects() {
-            var _this = this
+            const _this = this;
             $runtime.channel.invoke('sys.DesignService.GetBlobObjects', [this.storeName, this.curPath]).then(res => {
                 // _this.preBtnVisible = true
                 // _this.nextBtnVisible = true
@@ -172,7 +179,7 @@ export default {
         },
         formatDate(row, column, cellValue) {
             if (cellValue && !(row.Name.charAt(row.Name.length - 1) === '/')) {
-                var date = new Date(+new Date(cellValue) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')
+                const date = new Date(+new Date(cellValue) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
                 return date
             } else {
                 return null
@@ -180,7 +187,7 @@ export default {
         },
         formatSize(row, column, cellValue) {
             if (cellValue) {
-                var size = cellValue / 1024
+                const size = cellValue / 1024;
                 return size.toFixed(3) + 'KB'
             } else {
                 return null
@@ -188,6 +195,13 @@ export default {
         },
         objectIcon(row) {
             return row.IsFile ? 'fas fa-file' : 'fas fa-folder'
+        },
+        /** 自定义上传文件至BlobStore */
+        uploadFile(params) {
+            let url = params.action;
+            const file = params.file;
+            url += '/' + file.name + '?v=sys.DesignService.CanUpload'
+            return axios.post(url, file, {headers: {'Content-Type': file.type}})
         }
     },
 

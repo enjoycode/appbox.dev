@@ -16,7 +16,6 @@ import DataStoreProviders from '../Designers/DataStore/DataStoreProviders'
 
 const EntityDesigner = () => import('../Designers/Entity/EntityDesigner')
 const EnumDesigner = () => import('../Designers/Enum/EnumDesigner')
-const BlobDesigner = () => import('../Designers/DataStore/BlobStore/BlobDesigner')
 const ViewDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/View/ViewDesigner')
 const ServiceDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/Service/ServiceDesigner')
 const WorkflowDesigner = () => import('../Designers/Workflow/WorkflowDesigner')
@@ -43,7 +42,7 @@ export default {
         removeTab(targetName) {
             let tabs = this.openedTabs
             let activeName = this.currentTab
-            var targetNode = null
+            let targetNode = null;
             if (activeName === targetName) {
                 tabs.forEach((tab, index) => {
                     if (tab.name === targetName) {
@@ -69,9 +68,9 @@ export default {
         },
         /** 设计树当前选择的节点改变后打开相应的设计器 */
         onCurrentNodeChanged(node, goto /* IModelReference */) {
-            var key = node.ID + '-' + node.Type
+            const key = node.ID + '-' + node.Type;
             // 检查是否已打开
-            for (var index = 0; index < this.openedTabs.length; index++) {
+            for (let index = 0; index < this.openedTabs.length; index++) {
                 if (this.openedTabs[index].name === key) {
                     this.currentTab = key
                     this.openedTabs[index].goto = goto
@@ -79,13 +78,13 @@ export default {
                 }
             }
             // 没有则新建tab
-            var tab = {
+            let tab = {
                 title: node.App + '.' + node.Text,
                 name: key,
                 target: node,
                 designer: null,
                 goto: goto
-            }
+            };
             switch (node.Type) {
                 case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break
                 case DesignNodeType.EntityModelNode: tab.designer = EntityDesigner; break
@@ -93,7 +92,6 @@ export default {
                 case DesignNodeType.EnumModelNode: tab.designer = EnumDesigner; break
                 case DesignNodeType.WorkflowModelNode: tab.designer = WorkflowDesigner; break
                 case DesignNodeType.ReportModelNode: tab.designer = ReportDesigner; break
-                case DesignNodeType.BlobStoreNode: tab.designer = BlobDesigner; break
                 case DesignNodeType.DataStoreNode:
                     tab.designer = DataStoreProviders.getDesigner(node)
                     tab.title = 'DataStore.' + node.Text
