@@ -136,9 +136,10 @@ export default {
             this.listObjects()
         },
         onDownload(row) {
-            const url = '/blob/'
-                + this.storeName + this.curPath + '/' + row.Name
-                + '?v=sys.DesignService.CanDownload'
+            let url = '/blob/' + this.storeName + this.curPath
+            if (!this.curPath.endsWith('/'))
+                url += '/'
+            url += row.Name + '?v=sys.DesignService.CanDownload'
             window.open(url)
         },
         onDelete(row) {
