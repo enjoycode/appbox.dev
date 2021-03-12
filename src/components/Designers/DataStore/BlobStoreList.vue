@@ -148,12 +148,10 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                var _this = this
-                $runtime.channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, this.curPath + row.Name]).then(res => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    })
+                const _this = this;
+                let path = this.curPath.endsWith('/') ? this.curPath + row.Name : this.curPath + '/' + row.Name
+                $runtime.channel.invoke('sys.DesignService.DeleteBlobObject', [this.storeName, path]).then(res => {
+                    _this.$message({type: 'success', message: '删除成功!'})
                     _this.listObjects()
                 }).catch(err => {
                     _this.$message.error(err)
