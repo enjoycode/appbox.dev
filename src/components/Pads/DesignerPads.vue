@@ -16,7 +16,7 @@ import DataStoreProviders from '../Designers/DataStore/DataStoreProviders'
 
 const EntityDesigner = () => import('../Designers/Entity/EntityDesigner')
 const EnumDesigner = () => import('../Designers/Enum/EnumDesigner')
-const ViewDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/View/ViewDesigner')
+const VueCodeDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/View/VueCodeDesigner')
 const ServiceDesigner = () => import(/* webpackChunkName: "editor" */ '../Designers/Service/ServiceDesigner')
 const WorkflowDesigner = () => import('../Designers/Workflow/WorkflowDesigner')
 const ReportDesigner = () => import('../Designers/Report/ReportDesigner')
@@ -88,7 +88,7 @@ export default {
             switch (node.Type) {
                 case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break
                 case DesignNodeType.EntityModelNode: tab.designer = EntityDesigner; break
-                case DesignNodeType.ViewModelNode: tab.designer = ViewDesigner; break
+                case DesignNodeType.ViewModelNode: tab.designer = VueCodeDesigner; break
                 case DesignNodeType.EnumModelNode: tab.designer = EnumDesigner; break
                 case DesignNodeType.WorkflowModelNode: tab.designer = WorkflowDesigner; break
                 case DesignNodeType.ReportModelNode: tab.designer = ReportDesigner; break
