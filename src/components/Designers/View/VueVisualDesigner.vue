@@ -42,8 +42,8 @@
                                :h="item.h" :i="item.i" :key="item.i">
                         <div class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component v-if="item.t.VText" :is="makeWidget(item)" style="z-index: -1;width: 100%"
-                                   v-bind="item.p" v-text="getWidgetText(item)"></component>
+                        <component v-if="item.c.VText" :is="makeWidget(item)" style="z-index: -1;width: 100%"
+                                   v-bind="item.p" v-text="item.t"></component>
                         <component v-else :is="makeWidget(item)" style="z-index: -1"
                                    v-bind="item.p"></component>
                     </grid-item>
@@ -51,32 +51,7 @@
             </div>
         </div>
         <!-- 右边属性区域 -->
-        <div slot="panel2" class="ide-property-panel">
-            <el-collapse class="ide-property-collapse" :value="collapseValue">
-                <el-collapse-item title="Widget Properties" name="1">
-                    <el-form label-position="right" size="mini" label-width="120px">
-                        <el-form-item label="ID">
-                            <el-input v-model="target.ID" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="Comment">
-                            <el-input v-model="target.Comment" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="AppID">
-                            <el-input v-model="target.AppID" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="Model Name">
-                            <el-input v-model="target.Text" :disabled="true"></el-input>
-                        </el-form-item>
-                        <el-form-item label="SortNo">
-                            <el-input v-model="target.SortNo" :disabled="true"></el-input>
-                        </el-form-item>
-                    </el-form>
-                </el-collapse-item>
-                <!--                <el-collapse-item v-if="currentMemberTitle !== null" :title="currentMemberTitle" name="2">-->
-                <!--                    <component :is="currentMemberDesigner" :member.sync="currentMember" :owner="target"></component>-->
-                <!--                </el-collapse-item>-->
-            </el-collapse>
-        </div>
+        <property-panel slot="panel2" :owner="selectedWidget"></property-panel>
     </ex-splitter>
 </template>
 
@@ -85,20 +60,13 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import DesignStore from '@/design/DesignStore';
+import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
 import VueToolbox, {IVueComponent} from '@/components/Designers/View/VueToolbox';
+import ILayoutItem from '@/components/Designers/View/ILayoutItem';
 
-interface ILayoutItem {
-    i: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    c: string;
-    p: any;            //Props
-    t?: IVueComponent;
-}
-
-@Component
+@Component({
+    components: {PropertyPanel: VuePropertyPanel}
+})
 export default class VueVisualDesigner extends Vue {
     @Prop({type: Object, required: true}) target;
 
@@ -115,9 +83,29 @@ export default class VueVisualDesigner extends Vue {
     temp_input: string = '';
 
     layout: ILayoutItem[] = [
-        {x: 0, y: 0, w: 6, h: 4, i: '0', c: 'Input', p: {size: 'small'}, t: VueToolbox.GetComponent('Input')},
-        {x: 0, y: 6, w: 12, h: 4, i: '1', c: 'Button', p: {size: 'small'}, t: VueToolbox.GetComponent('Button')},
-        {x: 6, y: 0, w: 6, h: 4, i: '2', c: 'Button', p: {size: 'small'}, t: VueToolbox.GetComponent('Button')}
+        {x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', p: {size: 'small'}, c: VueToolbox.GetComponent('Input')},
+        {
+            x: 0,
+            y: 6,
+            w: 12,
+            h: 4,
+            i: '1',
+            n: 'Button',
+            t: 'Button',
+            p: {size: 'small'},
+            c: VueToolbox.GetComponent('Button')
+        },
+        {
+            x: 6,
+            y: 0,
+            w: 6,
+            h: 4,
+            i: '2',
+            n: 'Button',
+            t: 'Button',
+            p: {size: 'small'},
+            c: VueToolbox.GetComponent('Button')
+        }
     ];
 
     /** 生成新的标识号 */
@@ -135,6 +123,10 @@ export default class VueVisualDesigner extends Vue {
 
     /** 添加工具箱选择的Widget */
     onAdd() {
+        if (!DesignStore.toolBoxTree) {
+            this.$message.error('Please select a widget from toolbox');
+            return;
+        }
         let toolboxItem: IVueComponent = DesignStore.toolBoxTree.getSelected();
         if (!toolboxItem) {
             this.$message.error('Please select a widget from toolbox');
@@ -146,10 +138,13 @@ export default class VueVisualDesigner extends Vue {
             i: id, x: 0, y: 100, //TODO:排到最后
             w: toolboxItem.DWidth,
             h: toolboxItem.DHeight,
-            c: toolboxItem.Name,
+            n: toolboxItem.Name,
             p: VueToolbox.MakeDefaultProps(toolboxItem),
-            t: toolboxItem
+            c: toolboxItem
         };
+        if (toolboxItem.VText) {
+            layoutItem.t = toolboxItem.VText;
+        }
         this.layout.push(layoutItem);
     }
 
@@ -172,22 +167,15 @@ export default class VueVisualDesigner extends Vue {
 
     makeWidget(item: ILayoutItem) {
         //先判断是否全局注册的组件
-        let isGlobal = item.t.Component.indexOf('.') < 0; //TODO:暂简单判断
+        let isGlobal = item.c.Component.indexOf('.') < 0; //TODO:暂简单判断
         if (isGlobal) {
-            return Vue.component(item.t.Component);
-        }
-        return null;
-    }
-
-    getWidgetText(item: ILayoutItem) {
-        if (item.t.VText) {
-            return item.t.VText;
+            return Vue.component(item.c.Component);
         }
         return null;
     }
 
     getWidgetBind(item: ILayoutItem) {
-        if (item.c == 'Input') {
+        if (item.n == 'Input') {
             return 'temp_input';
         }
         return undefined;
