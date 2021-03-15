@@ -43,9 +43,9 @@
                         <div class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
                         <component v-if="item.t.VText" :is="makeWidget(item)" style="z-index: -1;width: 100%"
-                                   v-bind="getWidgetProps(item)" v-text="getWidgetText(item)"></component>
+                                   v-bind="item.p" v-text="getWidgetText(item)"></component>
                         <component v-else :is="makeWidget(item)" style="z-index: -1"
-                                   v-bind="getWidgetProps(item)"></component>
+                                   v-bind="item.p"></component>
                     </grid-item>
                 </grid-layout>
             </div>
@@ -94,7 +94,7 @@ interface ILayoutItem {
     w: number;
     h: number;
     c: string;
-    o: any;
+    p: any;            //Props
     t?: IVueComponent;
 }
 
@@ -115,9 +115,9 @@ export default class VueVisualDesigner extends Vue {
     temp_input: string = '';
 
     layout: ILayoutItem[] = [
-        {x: 0, y: 0, w: 6, h: 4, i: '0', c: 'Input', o: {}, t: VueToolbox.GetComponent('Input')},
-        {x: 0, y: 6, w: 12, h: 4, i: '1', c: 'Button', o: {}, t: VueToolbox.GetComponent('Button')},
-        {x: 6, y: 0, w: 6, h: 4, i: '2', c: 'Button', o: {}, t: VueToolbox.GetComponent('Button')}
+        {x: 0, y: 0, w: 6, h: 4, i: '0', c: 'Input', p: {size: 'small'}, t: VueToolbox.GetComponent('Input')},
+        {x: 0, y: 6, w: 12, h: 4, i: '1', c: 'Button', p: {size: 'small'}, t: VueToolbox.GetComponent('Button')},
+        {x: 6, y: 0, w: 6, h: 4, i: '2', c: 'Button', p: {size: 'small'}, t: VueToolbox.GetComponent('Button')}
     ];
 
     /** 生成新的标识号 */
@@ -143,11 +143,11 @@ export default class VueVisualDesigner extends Vue {
 
         let id = this.makeWidgetId();
         let layoutItem: ILayoutItem = {
-            i: id, x: 0, y: 0, //TODO:排到最后
-            w: toolboxItem.DefaultWidth,
-            h: toolboxItem.DefaultHeight,
+            i: id, x: 0, y: 100, //TODO:排到最后
+            w: toolboxItem.DWidth,
+            h: toolboxItem.DHeight,
             c: toolboxItem.Name,
-            o: {},
+            p: VueToolbox.MakeDefaultProps(toolboxItem),
             t: toolboxItem
         };
         this.layout.push(layoutItem);
@@ -191,14 +191,6 @@ export default class VueVisualDesigner extends Vue {
             return 'temp_input';
         }
         return undefined;
-    }
-
-    getWidgetProps(layoutItem: ILayoutItem) {
-        return {
-            type: 'primary',
-            size: 'small',
-            placeholder: 'Please Input'
-        };
     }
 
     /** 改变路由设置 */
