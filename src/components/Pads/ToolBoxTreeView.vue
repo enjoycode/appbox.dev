@@ -16,16 +16,11 @@
 </template>
 
 <script>
-// import ControlToolBox from './ControlToolBox'
-// import ToolInfoDialog from './ToolInfoDialog'
 import ReportToolbox from "@/components/Designers/Report/ReportToolbox"
 import store from '@/design/DesignStore'
 
 export default {
     name: 'ToolBoxTreeView',
-    // components: {
-    //     ToolInfoDialog
-    // },
     data() {
         return {
             filterText: '',
@@ -37,10 +32,9 @@ export default {
             },
             onRenderContent: (h, node) => {
                 // return h('span', {staticClass: 'el-tree-node__label'}, node.data.Text)
-                var iconClass = 'fa fa-' + node.data.Icon
+                const iconClass = 'fa fa-' + node.data.Icon;
                 return (<span class="el-tree-node__label"><i class={iconClass}></i> {node.data.Name}</span>)
-            },
-            DialogData: ''
+            }
         }
     },
     watch: {
@@ -66,9 +60,6 @@ export default {
         /** 清除选择 */
         clearSelected() {
             this.$refs.toolBoxTree.setCurrentKey(null)
-        },
-        assignDialogData() {
-            return this.DialogData
         }
     },
     mounted() {
@@ -94,7 +85,7 @@ export default {
 .treewarp {
     overflow: auto;
     height: calc(100% - 94px);
-    padding: 0 10px 0px 10px;
+    padding: 0 10px 0 10px;
 }
 
 .treeTitle {

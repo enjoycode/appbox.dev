@@ -15,8 +15,8 @@
 </template>
 
 <script>
-    import ErrorsView from './ErrorsView/ErrorsView'
-    import UsagesView from './UsagesView/UsagesView'
+    import ErrorsView from './ErrorsView'
+    import UsagesView from './UsagesView'
 
     export default {
         components: { ErrorsView: ErrorsView, UsagesView: UsagesView },
@@ -46,6 +46,6 @@
     }
 
     .bottomPads>>>.el-tabs__header {
-        margin: 0px;
+        margin: 0;
     }
 </style>

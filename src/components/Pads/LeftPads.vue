@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import DesignTreeView from './DesignTreeView/DesignTreeView'
-import ToolBoxTreeView from './ToolBoxTreeView/ToolBoxTreeView'
-import DebugView from "@/components/Pads/DebugView/DebugView";
+import DesignTreeView from './DesignTreeView'
+import ToolBoxTreeView from './ToolBoxTreeView'
+import DebugView from "./DebugView";
 
 export default {
     data() {
