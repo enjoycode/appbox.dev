@@ -4,6 +4,8 @@
         <div slot="panel1" style="height: 100%">
             <!-- 顶部工具栏 -->
             <div class="editorTool">
+                <el-button size="mini" icon="fa fa-plus fa-fw" @click="onAdd">Add</el-button>
+                <el-button size="mini" icon="fa fa-times fa-fw" @click="onRemove">Remove</el-button>
                 <el-button size="mini" @click="routeDialogVisible = true">Route</el-button>
 
                 <!-- 路由设置对话框TODO:移至外部 -->
@@ -37,14 +39,13 @@
                 <grid-layout class="editorCanvas" :layout.sync="layout" :col-num="24" :row-height="32" is-draggable
                              is-resizable>
                     <grid-item class="widgetPanel" v-for="item in layout" :x="item.x" :y="item.y" :w="item.w"
-                               :h="item.h"
-                               :i="item.i"
-                               :key="item.i" @mouseover.native="onEnterWidget(item.i)"
-                               @mouseleave.native="onLeaveWidget(item.i)">
-                        <div class="widgetOverlay"></div>
+                               :h="item.h" :i="item.i" :key="item.i">
+                        <div class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component :is="makeWidget(item)" v-bind="getWidgetProps(item)"
-                                   v-text="getWidgetText(item)" style="z-index: -1"></component>
+                        <component v-if="item.t.VText" :is="makeWidget(item)" style="z-index: -1;width: 100%"
+                                   v-bind="getWidgetProps(item)" v-text="getWidgetText(item)"></component>
+                        <component v-else :is="makeWidget(item)" style="z-index: -1"
+                                   v-bind="getWidgetProps(item)"></component>
                     </grid-item>
                 </grid-layout>
             </div>
@@ -83,6 +84,19 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
+import DesignStore from '@/design/DesignStore';
+import VueToolbox, {IVueComponent} from '@/components/Designers/View/VueToolbox';
+
+interface ILayoutItem {
+    i: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    c: string;
+    o: any;
+    t?: IVueComponent;
+}
 
 @Component
 export default class VueVisualDesigner extends Vue {
@@ -96,48 +110,95 @@ export default class VueVisualDesigner extends Vue {
     routeDialogVisible = false;
 
     hoverWidget: number = -1;
+    selectedWidget: ILayoutItem = null; //当前选择的Widget
 
-    layout = [
-        {x: 0, y: 0, w: 6, h: 4, i: '0', c: 'Line', o: {}},
-        {x: 0, y: 6, w: 12, h: 4, i: '1', c: 'Column', o: {}},
-        {x: 6, y: 0, w: 6, h: 4, i: '2', c: 'Pie', o: {}}
+    temp_input: string = '';
+
+    layout: ILayoutItem[] = [
+        {x: 0, y: 0, w: 6, h: 4, i: '0', c: 'Input', o: {}, t: VueToolbox.GetComponent('Input')},
+        {x: 0, y: 6, w: 12, h: 4, i: '1', c: 'Button', o: {}, t: VueToolbox.GetComponent('Button')},
+        {x: 6, y: 0, w: 6, h: 4, i: '2', c: 'Button', o: {}, t: VueToolbox.GetComponent('Button')}
     ];
 
-    onEnterWidget(i: number) {
-        this.hoverWidget = i;
+    /** 生成新的标识号 */
+    private makeWidgetId(): string {
+        let id = 0;
+        do {
+            if (this.layout.find(t => t.i == id.toString())) {
+                id++;
+            } else {
+                break;
+            }
+        } while (true);
+        return id.toString();
     }
 
-    onLeaveWidget(i: number) {
-        this.hoverWidget = -1;
-    }
+    /** 添加工具箱选择的Widget */
+    onAdd() {
+        let toolboxItem: IVueComponent = DesignStore.toolBoxTree.getSelected();
+        if (!toolboxItem) {
+            this.$message.error('Please select a widget from toolbox');
+            return;
+        }
 
-    showWidgetButtons(i: number): boolean {
-        return this.hoverWidget === i;
-    }
-
-    makeWidget(layoutItem: any) {
-        let c = Vue.component('ElButton');
-        return c;
-        //return Vue.extend({template:'<div>' + layoutItem.c + '</div>'});
-    }
-
-    getWidgetText(layoutItem: any) {
-        return 'Button';
-    }
-
-    getWidgetProps(layoutItem: any) {
-        return {
-            type: 'primary',
-            size: 'small'
+        let id = this.makeWidgetId();
+        let layoutItem: ILayoutItem = {
+            i: id, x: 0, y: 0, //TODO:排到最后
+            w: toolboxItem.DefaultWidth,
+            h: toolboxItem.DefaultHeight,
+            c: toolboxItem.Name,
+            o: {},
+            t: toolboxItem
         };
+        this.layout.push(layoutItem);
     }
 
-    /** 删除指定标识组件 */
-    delWidget(id: string) {
-        let index = this.layout.findIndex(t => t.i == id);
+    /** 删除选择的Widget */
+    onRemove() {
+        if (!this.selectedWidget) {
+            this.$message.error('Please select a widget first');
+            return;
+        }
+        let index = this.layout.findIndex(t => t === this.selectedWidget);
         if (index >= 0) {
             this.layout.splice(index, 1);
+            this.selectedWidget = null;
         }
+    }
+
+    onSelectWidget(item: ILayoutItem) {
+        this.selectedWidget = item;
+    }
+
+    makeWidget(item: ILayoutItem) {
+        //先判断是否全局注册的组件
+        let isGlobal = item.t.Component.indexOf('.') < 0; //TODO:暂简单判断
+        if (isGlobal) {
+            return Vue.component(item.t.Component);
+        }
+        return null;
+    }
+
+    getWidgetText(item: ILayoutItem) {
+        if (item.t.VText) {
+            return item.t.VText;
+        }
+        return null;
+    }
+
+    getWidgetBind(item: ILayoutItem) {
+        if (item.c == 'Input') {
+            return 'temp_input';
+        }
+        return undefined;
+    }
+
+    getWidgetProps(layoutItem: ILayoutItem) {
+        return {
+            type: 'primary',
+            size: 'small',
+            placeholder: 'Please Input'
+        };
     }
 
     /** 改变路由设置 */

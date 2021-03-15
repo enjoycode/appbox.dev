@@ -3,21 +3,22 @@
         <div class="search-pane">
             <div class="treeTitle">Toolbox</div>
             <div class="treeSearch">
-                <el-input v-model="filterText" suffix-icon="fas fa-search" size="small"> </el-input>
+                <el-input v-model="filterText" suffix-icon="fas fa-search" size="small"></el-input>
             </div>
         </div>
         <div class="treewarp">
             <el-tree class="designTree" ref="toolBoxTree" :data="node" node-key="Name"
-                @current-change="onCurrentChanged" :render-content="onRenderContent"
-                :props="treeOption" :filter-node-method="filterNode" highlight-current>
+                     :render-content="onRenderContent"
+                     :props="treeOption" :filter-node-method="filterNode" highlight-current>
             </el-tree>
         </div>
     </div>
 </template>
 
-<script>
-import ReportToolbox from "@/components/Designers/Report/ReportToolbox"
+<script lang="jsx">
 import store from '@/design/DesignStore'
+// import ReportToolbox from "@/components/Designers/Report/ReportToolbox"
+import VueToolbox from "@/components/Designers/View/VueToolbox";
 
 export default {
     name: 'ToolBoxTreeView',
@@ -38,20 +39,14 @@ export default {
         }
     },
     watch: {
-        filterText(val) { this.$refs.toolBoxTree.filter(val) }
+        filterText(val) {
+            this.$refs.toolBoxTree.filter(val)
+        }
     },
     methods: {
         filterNode(value, data) {
             if (!value) return true
             return data.Name.indexOf(value) !== -1
-        },
-        // 当前选择的节点改变
-        onCurrentChanged(value, node) {
-            // if (node.data.Type === 1) {
-            //     this.DialogData = node.data.ItemInfo
-            //     // ToolInfoDialog.data.apiModel = JSON.stringify(ToolInfoDialog.data.apiModel)
-            //     store.ide.showDialog(ToolInfoDialog)
-            // }
         },
         /** 获取当前选择 */
         getSelected() {
@@ -65,7 +60,8 @@ export default {
     mounted() {
         store.toolBoxTree = this
         // TODO:根据当前编辑器加载，暂直接加载报表工具箱
-        this.node = ReportToolbox.GetToolboxItems()
+        //this.node = ReportToolbox.GetToolboxItems()
+        this.node = VueToolbox.GetToolboxItems();
     }
 }
 </script>
@@ -114,10 +110,7 @@ export default {
     background-color: #f3f3f3;
 }
 
-.treewarp
-    >>> .el-tree--highlight-current
-    .el-tree-node.is-current
-    > .el-tree-node__content {
+.treewarp >>> .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
     background-color: #b3b3b3;
 }
 
