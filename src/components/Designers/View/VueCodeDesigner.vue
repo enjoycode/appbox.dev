@@ -431,7 +431,7 @@ export default {
 
 .previewFrame {
     background-color: #fff;
-    box-shadow: 0px 0px 10px #000000;
+    box-shadow: 0 0 10px #000000;
 
     /* -moz-transform: scale(0.71); */
     /* -moz-transform-origin: 0 0;
