@@ -8,7 +8,7 @@
                     <el-radio-button label="script">Script</el-radio-button>
                     <el-radio-button label="style">Style</el-radio-button>
                 </el-radio-group>
-                <el-button size="mini" @click="routeDialogVisible = true">Route</el-button>
+                <el-button size="mini" @click="route.DlgVisible = true">Route</el-button>
                 <el-button size="mini" :type="designButton" @click="switchPreviewPanel">Preview</el-button>
                 <el-select v-if="panelVisible === 'both'" style="width: 120px" size="mini" v-model="deviceValue"
                            placeholder="尺寸">
@@ -30,30 +30,8 @@
                 </el-select>
 
                 <!-- 路由设置对话框 -->
-                <el-dialog title="Route" width="500px" :visible.sync="routeDialogVisible">
-                    <el-form label-width="120px">
-                        <el-form-item>
-                            <el-checkbox v-model="routeEnable" :disabled="readOnly">List in route</el-checkbox>
-                        </el-form-item>
-                        <el-form-item label="Route Parent:">
-                            <!--TODO:考虑用选择器直接选择，目前输入-->
-                            <el-input v-model="routeParent" :disabled="readOnly" placeholder="eg: sys.Home"></el-input>
-                        </el-form-item>
-                        <el-form-item label="Custom Path:">
-                            <el-input v-model="routePath" :disabled="readOnly" placeholder="eg: customers"></el-input>
-                        </el-form-item>
-                        <!-- <el-form-item label="Bind Permission:">
-                            <el-select :disabled="readOnly" v-model="permissionValue" clearable placeholder="权限">
-                                <el-option label="管理员1" value="1">
-                                </el-option>
-                            </el-select>
-                        </el-form-item> -->
-                    </el-form>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button @click="routeDialogVisible = false">Cancel</el-button>
-                        <el-button :disabled="readOnly" type="primary" @click="changeRouteSetting">OK</el-button>
-                    </span>
-                </el-dialog>
+                <route-dialog :visible.sync="route.DlgVisible" :route="route" :readonly="readOnly"
+                              @change="changeRouteSetting"></route-dialog>
             </div>
             <div class="editorPanel" ref="editorPanel">
                 <code-editor ref="editor" height="100%" language="html" theme="tm" :fileName="fileName"
@@ -78,6 +56,7 @@ import scopeStyle from './ScopeStyle'
 import debounce from 'lodash.debounce'
 import UglifyJS from './UglifyJS'
 import store from '@/design/DesignStore'
+import RouteDialog from "@/components/Designers/View/RouteDialog";
 
 // 缩放参考https://collaboration133.com/how-to-scale-iframe-content-in-ie-chrome-firefox-and-safari/2717/
 
@@ -95,7 +74,8 @@ function hash(str) {
 
 export default {
     components: {
-        CodeEditor: CodeEditor
+        RouteDialog,
+        CodeEditor
     },
     props: {
         target: {type: Object, required: true} // 视图模型节点
@@ -117,10 +97,14 @@ export default {
             designButton: 'primary',
             panelVisible: 'first',
             deviceZoom: '100%',
-            routeEnable: false, // 是否启用路由
-            routeParent: '', // 自定义路由的上级
-            routePath: '', // 自定义路由的路径
-            routeDialogVisible: false,
+
+            route: {
+                Enable: false, // 是否启用路由
+                Parent: '',    // 自定义路由的上级
+                Path: '',      // 自定义路由的路径
+                DlgVisible: false
+            },
+
             previewer: null // 指向预览窗口内的实例，由预览窗口加载时设置
         }
     },
@@ -241,9 +225,9 @@ export default {
         /** 改变路由设置 */
         changeRouteSetting() {
             let _this = this
-            let args = [this.target.ID, this.routeEnable, this.routeParent, this.routePath]
+            let args = [this.target.ID, this.route.Enable, this.route.Parent, this.route.Path]
             $runtime.channel.invoke('sys.DesignService.ChangeRouteSetting', args).then(res => {
-                _this.routeDialogVisible = false
+                _this.route.DlgVisible = false
             }).catch(err => {
                 alert(err)
             })
@@ -263,7 +247,7 @@ export default {
         /** 编译视图组件并更新预览 */
         build() {
             const template = this.editState['template'].model.getValue()
-            const script =  this.editState['script'].model.getValue()
+            const script = this.editState['script'].model.getValue()
             const styles = this.editState['style'].model.getValue()
             let scopedStyle = '';
 

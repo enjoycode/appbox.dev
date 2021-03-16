@@ -6,35 +6,12 @@
             <div class="editorTool">
                 <el-button size="mini" icon="fa fa-plus fa-fw" @click="onAdd">Add</el-button>
                 <el-button size="mini" icon="fa fa-times fa-fw" @click="onRemove">Remove</el-button>
-                <el-button size="mini" @click="routeDialogVisible = true">Route</el-button>
+                <el-button size="mini" @click="route.DlgVisible = true">Route</el-button>
                 <el-button size="mini" v-model="preview" :type="preview ? 'primary' : 'plain'" @click="onSwitchPreview">
                     Preview
                 </el-button>
-                <!-- 路由设置对话框TODO:移至外部 -->
-                <el-dialog title="Route" width="500px" :visible.sync="routeDialogVisible">
-                    <el-form label-width="120px">
-                        <el-form-item>
-                            <el-checkbox v-model="routeEnable" :disabled="readOnly">List in route</el-checkbox>
-                        </el-form-item>
-                        <el-form-item label="Route Parent:">
-                            <!--TODO:考虑用选择器直接选择，目前输入-->
-                            <el-input v-model="routeParent" :disabled="readOnly" placeholder="eg: sys.Home"></el-input>
-                        </el-form-item>
-                        <el-form-item label="Custom Path:">
-                            <el-input v-model="routePath" :disabled="readOnly" placeholder="eg: customers"></el-input>
-                        </el-form-item>
-                        <!-- <el-form-item label="Bind Permission:">
-                            <el-select :disabled="readOnly" v-model="permissionValue" clearable placeholder="权限">
-                                <el-option label="管理员1" value="1">
-                                </el-option>
-                            </el-select>
-                        </el-form-item> -->
-                    </el-form>
-                    <span slot="footer" class="dialog-footer">
-                        <el-button @click="routeDialogVisible = false">Cancel</el-button>
-                        <el-button :disabled="readOnly" type="primary" @click="changeRouteSetting">OK</el-button>
-                    </span>
-                </el-dialog>
+                <!-- 路由设置对话框 -->
+                <route-dialog :visible.sync="route.DlgVisible" :route="route" :readonly="readOnly"></route-dialog>
             </div>
             <!-- 设计区域 -->
             <div class="editorPanel">
@@ -66,19 +43,22 @@ import DesignStore from '@/design/DesignStore';
 import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
 import VueToolbox, {IVueComponent, IVueState} from '@/components/Designers/View/VueToolbox';
 import ILayoutItem from '@/components/Designers/View/ILayoutItem';
+import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
 
 @Component({
-    components: {PropertyPanel: VuePropertyPanel}
+    components: {RouteDialog, PropertyPanel: VuePropertyPanel}
 })
 export default class VueVisualDesigner extends Vue {
     @Prop({type: Object, required: true}) target;
 
     readOnly = true; // 是否只读模式，对应模型的签出状态
     preview = false; // 是否预览模式
-    routeEnable = false; // 是否启用路由
-    routeParent = ''; // 自定义路由的上级
-    routePath = ''; // 自定义路由的路径
-    routeDialogVisible = false;
+    route = {
+        Enable: false, // 是否启用路由
+        Parent: '',    // 自定义路由的上级
+        Path: '',      // 自定义路由的路径
+        DlgVisible: false
+    };
     selectedWidget: ILayoutItem = null; //当前选择的Widget
 
     state: IVueState[] = [{Name: 'keyword', Type: 'string', Value: 'hello'}];
@@ -175,9 +155,9 @@ export default class VueVisualDesigner extends Vue {
 
     /** 改变路由设置 */
     changeRouteSetting() {
-        let args = [this.target.ID, this.routeEnable, this.routeParent, this.routePath];
+        let args = [this.target.ID, this.route.Enable, this.route.Parent, this.route.Path];
         $runtime.channel.invoke('sys.DesignService.ChangeRouteSetting', args).then(res => {
-            this.routeDialogVisible = false;
+            this.route.DlgVisible = false;
         }).catch(err => {
             this.$message.error(err);
         });
