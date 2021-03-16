@@ -1,3 +1,5 @@
+import SelectEditor from '@/components/Designers/View/PropertyEditors/SelectEditor.vue';
+
 export interface IVueProp {
     readonly Name: string;
     readonly Type: string;
@@ -66,6 +68,10 @@ export default class VueToolbox {
 
     public static GetComponent(name: string): IVueComponent {
         return VueToolbox.components.find(c => c.Name == name);
+    }
+
+    public static GetPropEditor(prop: IVueProp): any {
+        return SelectEditor;
     }
 
 }

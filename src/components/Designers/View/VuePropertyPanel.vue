@@ -17,8 +17,10 @@
             <el-collapse-item v-if="props" key="Props" title="Props" name="Props">
                 <el-form label-position="right" size="mini" :label-width="labelWidth">
                     <el-form-item v-for="item in props" :key="item.Name" :label="item.Name + ':'">
-                        <!--                        <component ref="editors" :is="item.editor" :target="item"></component>-->
-                        <el-input></el-input>
+                        <component :is="getPropEditor(item)"
+                                   :value="getPropValue(item.Name)"
+                                   :options="item.EditorOptions"
+                                    @change="setPropValue(item.Name, $event)"></component>
                     </el-form-item>
                 </el-form>
             </el-collapse-item>
@@ -31,6 +33,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import ILayoutItem from '@/components/Designers/View/ILayoutItem';
+import VueToolbox, {IVueProp} from '@/components/Designers/View/VueToolbox';
 
 @Component
 export default class VuePropertyPanel extends Vue {
@@ -66,6 +69,23 @@ export default class VuePropertyPanel extends Vue {
 
     get props() {
         return this.owner ? this.owner.c.Props : [];
+    }
+
+    getPropValue(name: string): any {
+        if (!this.owner || !this.owner.p[name]) {
+            return null;
+        }
+
+        return this.owner.p[name];
+    }
+
+    setPropValue(name: string, newValue: any) {
+        //TODO:判断等于默认值删除属性
+        this.$set(this.owner.p, name, newValue);
+    }
+
+    getPropEditor(prop: IVueProp): any {
+        return VueToolbox.GetPropEditor(prop);
     }
 
 }
