@@ -7,7 +7,9 @@
                 <el-button size="mini" icon="fa fa-plus fa-fw" @click="onAdd">Add</el-button>
                 <el-button size="mini" icon="fa fa-times fa-fw" @click="onRemove">Remove</el-button>
                 <el-button size="mini" @click="routeDialogVisible = true">Route</el-button>
-
+                <el-button size="mini" v-model="preview" :type="preview ? 'primary' : 'plain'" @click="onSwitchPreview">
+                    Preview
+                </el-button>
                 <!-- 路由设置对话框TODO:移至外部 -->
                 <el-dialog title="Route" width="500px" :visible.sync="routeDialogVisible">
                     <el-form label-width="120px">
@@ -36,22 +38,23 @@
             </div>
             <!-- 设计区域 -->
             <div class="editorPanel">
-                <grid-layout class="editorCanvas" :layout.sync="layout" :col-num="24" :row-height="32" is-draggable
-                             is-resizable>
+                <grid-layout class="editorCanvas" :layout.sync="layout" :col-num="24" :row-height="32"
+                             :is-draggable="!preview" :is-resizable="!preview">
                     <grid-item class="widgetPanel" v-for="item in layout" :x="item.x" :y="item.y" :w="item.w"
                                :h="item.h" :i="item.i" :key="item.i">
-                        <div class="widgetOverlay" @click="onSelectWidget(item)"></div>
+                        <div v-if="!preview" class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component v-if="item.c.VText" :is="makeWidget(item)" style="z-index: -1;width: 100%"
+                        <component v-if="item.c.VText" :is="makeWidget(item)"
+                                   :style="{zIndex: preview ? 'auto' : -1, width: '100%'}"
                                    v-bind="item.p" v-text="item.t"></component>
-                        <component v-else :is="makeWidget(item)" style="z-index: -1"
-                                   v-bind="item.p"></component>
+                        <component v-else :is="makeWidget(item)" :style="{zIndex: preview ? 'auto' : -1}"
+                                   v-model="runState[item.b]" v-bind="item.p"></component>
                     </grid-item>
                 </grid-layout>
             </div>
         </div>
         <!-- 右边属性区域 -->
-        <property-panel slot="panel2" :owner="selectedWidget"></property-panel>
+        <property-panel slot="panel2" :owner="selectedWidget" :state="state"></property-panel>
     </ex-splitter>
 </template>
 
@@ -61,7 +64,7 @@ import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import DesignStore from '@/design/DesignStore';
 import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
-import VueToolbox, {IVueComponent} from '@/components/Designers/View/VueToolbox';
+import VueToolbox, {IVueComponent, IVueState} from '@/components/Designers/View/VueToolbox';
 import ILayoutItem from '@/components/Designers/View/ILayoutItem';
 
 @Component({
@@ -71,42 +74,30 @@ export default class VueVisualDesigner extends Vue {
     @Prop({type: Object, required: true}) target;
 
     readOnly = true; // 是否只读模式，对应模型的签出状态
-    collapseValue = ['1'];
+    preview = false; // 是否预览模式
     routeEnable = false; // 是否启用路由
     routeParent = ''; // 自定义路由的上级
     routePath = ''; // 自定义路由的路径
     routeDialogVisible = false;
-
-    hoverWidget: number = -1;
     selectedWidget: ILayoutItem = null; //当前选择的Widget
 
-    temp_input: string = '';
-
+    state: IVueState[] = [{Name: 'keyword', Type: 'string', Value: 'hello'}];
     layout: ILayoutItem[] = [
-        {x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', p: {size: 'small'}, c: VueToolbox.GetComponent('Input')},
         {
-            x: 0,
-            y: 6,
-            w: 12,
-            h: 4,
-            i: '1',
-            n: 'Button',
-            t: 'Button',
-            p: {size: 'small'},
-            c: VueToolbox.GetComponent('Button')
+            x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', b: 'keyword',
+            p: {size: 'small'}, c: VueToolbox.GetComponent('Input')
         },
         {
-            x: 6,
-            y: 0,
-            w: 6,
-            h: 4,
-            i: '2',
-            n: 'Button',
-            t: 'Button',
-            p: {size: 'small'},
-            c: VueToolbox.GetComponent('Button')
+            x: 0, y: 6, w: 12, h: 4, i: '1', n: 'Button', t: 'Button',
+            p: {size: 'small'}, c: VueToolbox.GetComponent('Button')
+        },
+        {
+            x: 6, y: 0, w: 6, h: 4, i: '2', n: 'Button', t: 'Button',
+            p: {size: 'small'}, c: VueToolbox.GetComponent('Button')
         }
     ];
+
+    runState = {};
 
     /** 生成新的标识号 */
     private makeWidgetId(): string {
@@ -174,11 +165,12 @@ export default class VueVisualDesigner extends Vue {
         return null;
     }
 
-    getWidgetBind(item: ILayoutItem) {
-        if (item.n == 'Input') {
-            return 'temp_input';
+    onSwitchPreview() {
+        this.preview = !this.preview;
+        //TODO:重新生成运行时state
+        if (!this.runState['keyword']) {
+            this.$set(this.runState, 'keyword', 'Hello Future!');
         }
-        return undefined;
     }
 
     /** 改变路由设置 */
@@ -228,8 +220,8 @@ export default class VueVisualDesigner extends Vue {
     left: 0;
     filter: alpha(opacity=60);
     background-color: #777;
-    opacity: 0.2;
-    -moz-opacity: 0.2;
+    opacity: 0.1;
+    -moz-opacity: 0.1;
     width: 100%;
     height: 100%;
 }

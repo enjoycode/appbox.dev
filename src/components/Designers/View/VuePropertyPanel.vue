@@ -1,26 +1,48 @@
 <template>
     <div class="ide-property-panel">
-        <h4 class="panel-title">{{ name }}</h4>
         <el-collapse class="ide-property-collapse" :value="expands">
-            <el-collapse-item key="Common" title="Common" name="Common">
+            <!--State-->
+            <el-collapse-item key="State" title="State" name="State">
+                <el-button-group>
+                    <el-button size="mini" type="plain" icon="fa fa-plus"></el-button>
+                    <el-button size="mini" type="plain" icon="fa fa-times"></el-button>
+                </el-button-group>
+                <el-table :data="state" size="mini" border>
+                    <el-table-column prop="Name" label="Name"></el-table-column>
+                    <el-table-column prop="Type" label="Type"></el-table-column>
+                    <el-table-column prop="Value" label="Value"></el-table-column>
+                </el-table>
+            </el-collapse-item>
+            <!--Common-->
+            <el-collapse-item v-if="owner" key="Widget" title="Widget" name="Widget">
                 <el-form label-position="right" size="mini" :label-width="labelWidth">
+                    <el-form-item key="name" label="Name:">
+                        <el-input :value="name" disabled></el-input>
+                    </el-form-item>
                     <el-form-item key="id" label="Id:">
                         <el-input :value="id" disabled></el-input>
                     </el-form-item>
-
                     <el-form-item v-if="hasText" key="text" label="Text:">
                         <el-input v-model="text"></el-input>
                     </el-form-item>
                 </el-form>
             </el-collapse-item>
-
-            <el-collapse-item v-if="props" key="Props" title="Props" name="Props">
+            <!--Props-->
+            <el-collapse-item v-if="owner && props" key="Props" title="Props" name="Props">
                 <el-form label-position="right" size="mini" :label-width="labelWidth">
                     <el-form-item v-for="item in props" :key="item.Name" :label="item.Name + ':'">
                         <component :is="getPropEditor(item)"
                                    :value="getPropValue(item.Name)"
                                    :options="item.EditorOptions"
-                                    @change="setPropValue(item.Name, $event)"></component>
+                                   @change="setPropValue(item.Name, $event)"></component>
+                    </el-form-item>
+                </el-form>
+            </el-collapse-item>
+            <!--Events-->
+            <el-collapse-item v-if="owner && events" key="Events" title="Events" name="Events">
+                <el-form label-position="right" size="mini" :label-width="labelWidth">
+                    <el-form-item v-for="item in events" :key="item.Name" :label="item.Name + ':'">
+                        <event-editor></event-editor>
                     </el-form-item>
                 </el-form>
             </el-collapse-item>
@@ -33,14 +55,18 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import ILayoutItem from '@/components/Designers/View/ILayoutItem';
-import VueToolbox, {IVueProp} from '@/components/Designers/View/VueToolbox';
+import VueToolbox, {IVueProp, IVueState} from '@/components/Designers/View/VueToolbox';
+import EventEditor from '@/components/Designers/View/PropertyEditors/EventEditor.vue';
 
-@Component
+@Component({
+    components: {EventEditor}
+})
 export default class VuePropertyPanel extends Vue {
+    @Prop({type: Array}) state: IVueState[];
     @Prop({type: Object}) owner: ILayoutItem;
 
     labelWidth = '100px';
-    expands = ['Common', 'Props', 'Events']; // 展开所有分类
+    expands = ['State', 'Widget', 'Props', 'Events']; // 展开所有分类
 
     get name() {
         return this.owner ? this.owner.n : '';
@@ -71,6 +97,10 @@ export default class VuePropertyPanel extends Vue {
         return this.owner ? this.owner.c.Props : [];
     }
 
+    get events() {
+        return this.owner ? this.owner.c.Events : null;
+    }
+
     getPropValue(name: string): any {
         if (!this.owner || !this.owner.p[name]) {
             return null;
@@ -90,10 +120,3 @@ export default class VuePropertyPanel extends Vue {
 
 }
 </script>
-
-<style scoped>
-.panel-title {
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-</style>
