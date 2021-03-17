@@ -13,7 +13,7 @@
                     <el-table-column prop="Value" label="Value"></el-table-column>
                 </el-table>
             </el-collapse-item>
-            <!--Common-->
+            <!--Widget-->
             <el-collapse-item v-if="owner" key="Widget" title="Widget" name="Widget">
                 <el-form label-position="right" size="mini" :label-width="labelWidth">
                     <el-form-item key="name" label="Name:">
@@ -22,8 +22,11 @@
                     <el-form-item key="id" label="Id:">
                         <el-input :value="id" disabled></el-input>
                     </el-form-item>
-                    <el-form-item v-if="hasText" key="text" label="Text:">
+                    <el-form-item v-if="owner && owner.c.VText" key="text" label="Text:">
                         <el-input v-model="text"></el-input>
+                    </el-form-item>
+                    <el-form-item v-if="owner && owner.c.VModel" key="model" label="Model:">
+                        <el-input v-model="model"></el-input> <!--TODO:专用编辑器-->
                     </el-form-item>
                 </el-form>
             </el-collapse-item>
@@ -76,13 +79,6 @@ export default class VuePropertyPanel extends Vue {
         return this.owner ? this.owner.i : '';
     }
 
-    get hasText(): boolean {
-        if (!this.owner) {
-            return false;
-        }
-        return !!this.owner.c.VText;
-    }
-
     get text() {
         return this.owner ? this.owner.t : '';
     }
@@ -90,6 +86,16 @@ export default class VuePropertyPanel extends Vue {
     set text(value: string) {
         if (this.owner) {
             this.owner.t = value;
+        }
+    }
+
+    get model(): string {
+        return this.owner ? this.owner.b : '';
+    }
+
+    set model(value: string) {
+        if (this.owner) {
+            this.owner.b = value;
         }
     }
 

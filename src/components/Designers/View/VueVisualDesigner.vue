@@ -64,7 +64,7 @@ export default class VueVisualDesigner extends Vue {
     state: IVueState[] = [{Name: 'keyword', Type: 'string', Value: 'hello'}];
     layout: ILayoutItem[] = [
         {
-            x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', b: 'keyword',
+            x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', b: ''/*需要初始化为空*/,
             p: {size: 'small'}, c: VueToolbox.GetComponent('Input')
         },
         {
@@ -77,7 +77,7 @@ export default class VueVisualDesigner extends Vue {
         }
     ];
 
-    runState = {};
+    runState = {keyword: 'Hello Future!', keyword2: 'World'};
 
     /** 生成新的标识号 */
     private makeWidgetId(): string {
@@ -148,9 +148,6 @@ export default class VueVisualDesigner extends Vue {
     onSwitchPreview() {
         this.preview = !this.preview;
         //TODO:重新生成运行时state
-        if (!this.runState['keyword']) {
-            this.$set(this.runState, 'keyword', 'Hello Future!');
-        }
     }
 
     /** 改变路由设置 */
