@@ -21,10 +21,10 @@
                                :h="item.h" :i="item.i" :key="item.i">
                         <div v-if="!preview" class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component v-if="item.c.VText" :is="makeWidget(item)"
-                                   :style="{zIndex: preview ? 'auto' : -1, width: '100%'}"
-                                   v-bind="item.p" v-text="item.t"></component>
-                        <component v-else :is="makeWidget(item)" :style="{zIndex: preview ? 'auto' : -1}"
+                        <component v-if="item.c.VText" :is="makeWidget(item)" :style="getWidgetStyle(item)"
+                                   v-bind="item.p">{{ item.t }}
+                        </component>
+                        <component v-else :is="makeWidget(item)" :style="getWidgetStyle(item)"
                                    v-model="runState[item.b]" v-bind="item.p"></component>
                     </grid-item>
                 </grid-layout>
@@ -65,7 +65,7 @@ export default class VueVisualDesigner extends Vue {
     layout: ILayoutItem[] = [
         {
             x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', b: ''/*需要初始化为空*/,
-            p: {size: 'small'}, c: VueToolbox.GetComponent('Input')
+            p: {size: 'small', placeholder: 'abc'}, c: VueToolbox.GetComponent('Input')
         },
         {
             x: 0, y: 6, w: 12, h: 4, i: '1', n: 'Button', t: 'Button',
@@ -143,6 +143,12 @@ export default class VueVisualDesigner extends Vue {
             return Vue.component(item.c.Component);
         }
         return null;
+    }
+
+    getWidgetStyle(item: ILayoutItem): object {
+        let s = item.c.Style ? item.c.Style : {};
+        s['zIndex'] = this.preview ? 'auto' : -1;
+        return s;
     }
 
     onSwitchPreview() {

@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import SelectEditor from '@/components/Designers/View/PropertyEditors/SelectEditor.vue';
 
 export interface IVueProp {
@@ -26,6 +27,7 @@ export interface IVueComponent {
     readonly VText?: string;        //Button类组件的v-text
     readonly DWidth: number;        //默认宽度，单位:网格
     readonly DHeight: number;       //默认高度，单位:网格
+    readonly Style?: object;        //默认样式，如Button默认宽100%
     readonly Props?: IVueProp[];
     readonly Events?: IVueEvent[];
 }
@@ -35,7 +37,7 @@ export default class VueToolbox {
     private static components: IVueComponent[] = [
         {
             Name: 'Button', Component: 'ElButton', VText: 'Button', Icon: 'fas fa-ad fa-fw',
-            DWidth: 3, DHeight: 1,
+            DWidth: 3, DHeight: 1, Style: {width: '100%'},
             Props: [
                 {
                     Name: 'type', Type: 'string', Default: 'primary', Editor: 'Select',
@@ -50,6 +52,20 @@ export default class VueToolbox {
         {
             Name: 'Input', Component: 'ElInput', VModel: 'string', Icon: 'fas fa-text-width fa-fw',
             DWidth: 4, DHeight: 1,
+            Props: [
+                {
+                    Name: 'size', Type: 'string', Default: 'small', Editor: 'Select',
+                    EditorOptions: [null, 'medium', 'small', 'mini']
+                },
+                {
+                    Name: 'placeholder', Type: 'string', Default: ''
+                }
+            ]
+        },
+        {
+            Name: 'Checkbox', Component: 'ElCheckbox', VText: 'Checkbox', VModel: 'string',
+            Icon: 'fas fa-check-square fa-fw', DWidth: 4, DHeight: 1,
+            Style: {height: '100%'},
             Props: [
                 {
                     Name: 'size', Type: 'string', Default: 'small', Editor: 'Select',
@@ -82,7 +98,12 @@ export default class VueToolbox {
     }
 
     public static GetPropEditor(prop: IVueProp): any {
-        return SelectEditor;
+        //TODO: finish it
+        if (prop.Editor == 'Select') {
+            return SelectEditor;
+        } else {
+            return Vue.component('ElInput');
+        }
     }
 
 }
