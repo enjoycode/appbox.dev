@@ -57,16 +57,17 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
-import ILayoutItem from '@/components/Designers/View/ILayoutItem';
-import VueToolbox, {IVueProp, IVueState} from '@/components/Designers/View/VueToolbox';
+import IDesignLayoutItem from '@/design/IDesignLayoutItem';
+import VueToolbox from '@/components/Designers/View/VueToolbox';
 import EventEditor from '@/components/Designers/View/PropertyEditors/EventEditor.vue';
+import {IVueProp, IVueState} from '@/design/IVueWidget';
 
 @Component({
     components: {EventEditor}
 })
 export default class VuePropertyPanel extends Vue {
     @Prop({type: Array}) state: IVueState[];
-    @Prop({type: Object}) owner: ILayoutItem;
+    @Prop({type: Object}) owner: IDesignLayoutItem;
 
     labelWidth = '100px';
     expands = ['State', 'Widget', 'Props', 'Events']; // 展开所有分类
@@ -90,12 +91,12 @@ export default class VuePropertyPanel extends Vue {
     }
 
     get model(): string {
-        return this.owner ? this.owner.b : '';
+        return this.owner ? this.owner.m : '';
     }
 
     set model(value: string) {
         if (this.owner) {
-            this.owner.b = value;
+            this.owner.m = value;
         }
     }
 

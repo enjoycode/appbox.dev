@@ -1,6 +1,4 @@
-import {IVueComponent} from '@/components/Designers/View/VueToolbox';
-
-export default interface ILayoutItem {
+export interface IVueLayoutItem {
     i: string;
     x: number;
     y: number;
@@ -11,9 +9,14 @@ export default interface ILayoutItem {
     /** v-text */
     t?: string;
     /** v-model */
-    b?: string;
+    m?: string;
     /** 组件Props */
     p: any;
-    /** 对应的工具箱组件定义 */
-    c?: IVueComponent;
+}
+
+export interface IVueVisual {
+    /** 状态 */
+    readonly s: object;
+    /** 布局 */
+    readonly l: IVueLayoutItem[];
 }

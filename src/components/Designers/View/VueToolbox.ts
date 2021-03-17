@@ -1,40 +1,10 @@
 import Vue from 'vue';
 import SelectEditor from '@/components/Designers/View/PropertyEditors/SelectEditor.vue';
-
-export interface IVueProp {
-    readonly Name: string;
-    readonly Type: string;
-    readonly Default?: any;         //默认值
-    readonly Editor?: string        //属性编辑器
-    readonly EditorOptions?: any;   //属性编辑器选项
-}
-
-export interface IVueEvent {
-    readonly Name: string;
-}
-
-export interface IVueState {
-    readonly Name: string;
-    readonly Type: string;
-    readonly Value: any;
-}
-
-export interface IVueComponent {
-    readonly Name: string;          //工具箱的显示名称
-    readonly Icon: string;          //工具箱显示图标
-    readonly Component: string;     //全局组件名称: eg: ElInput或者自定义名称 eg:sys.Views.Dashboard
-    readonly VModel?: string;       //v-model, 保存的为类型 eg:string
-    readonly VText?: string;        //Button类组件的v-text
-    readonly DWidth: number;        //默认宽度，单位:网格
-    readonly DHeight: number;       //默认高度，单位:网格
-    readonly Style?: object;        //默认样式，如Button默认宽100%
-    readonly Props?: IVueProp[];
-    readonly Events?: IVueEvent[];
-}
+import {IVueProp, IVueWidget} from '@/design/IVueWidget';
 
 export default class VueToolbox {
 
-    private static components: IVueComponent[] = [
+    private static widgets: IVueWidget[] = [
         {
             Name: 'Button', Component: 'ElButton', VText: 'Button', Icon: 'fas fa-ad fa-fw',
             DWidth: 3, DHeight: 1, Style: {width: '100%'},
@@ -75,12 +45,12 @@ export default class VueToolbox {
         }
     ];
 
-    public static GetToolboxItems(): IVueComponent[] {
+    public static GetToolboxItems(): IVueWidget[] {
         //TODO:从服务端加载
-        return VueToolbox.components;
+        return VueToolbox.widgets;
     }
 
-    public static MakeDefaultProps(component: IVueComponent): any {
+    public static MakeDefaultProps(component: IVueWidget): any {
         if (!component.Props) {
             return null;
         }
@@ -93,8 +63,8 @@ export default class VueToolbox {
         return props;
     }
 
-    public static GetComponent(name: string): IVueComponent {
-        return VueToolbox.components.find(c => c.Name == name);
+    public static GetComponent(name: string): IVueWidget {
+        return VueToolbox.widgets.find(c => c.Name == name);
     }
 
     public static GetPropEditor(prop: IVueProp): any {

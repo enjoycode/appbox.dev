@@ -25,7 +25,7 @@
                                    v-bind="item.p">{{ item.t }}
                         </component>
                         <component v-else :is="makeWidget(item)" :style="getWidgetStyle(item)"
-                                   v-model="runState[item.b]" v-bind="item.p"></component>
+                                   v-model="runState[item.m]" v-bind="item.p"></component>
                     </grid-item>
                 </grid-layout>
             </div>
@@ -41,9 +41,10 @@ import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import DesignStore from '@/design/DesignStore';
 import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
-import VueToolbox, {IVueComponent, IVueState} from '@/components/Designers/View/VueToolbox';
-import ILayoutItem from '@/components/Designers/View/ILayoutItem';
+import VueToolbox from '@/components/Designers/View/VueToolbox';
+import IDesignLayoutItem from '@/design/IDesignLayoutItem';
 import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
+import {IVueState, IVueWidget} from '@/design/IVueWidget';
 
 @Component({
     components: {RouteDialog, PropertyPanel: VuePropertyPanel}
@@ -59,12 +60,12 @@ export default class VueVisualDesigner extends Vue {
         Path: '',      // 自定义路由的路径
         DlgVisible: false
     };
-    selectedWidget: ILayoutItem = null; //当前选择的Widget
+    selectedWidget: IDesignLayoutItem = null; //当前选择的Widget
 
     state: IVueState[] = [{Name: 'keyword', Type: 'string', Value: 'hello'}];
-    layout: ILayoutItem[] = [
+    layout: IDesignLayoutItem[] = [
         {
-            x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', b: ''/*需要初始化为空*/,
+            x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', m: ''/*需要初始化为空*/,
             p: {size: 'small', placeholder: 'abc'}, c: VueToolbox.GetComponent('Input')
         },
         {
@@ -98,14 +99,14 @@ export default class VueVisualDesigner extends Vue {
             this.$message.error('Please select a widget from toolbox');
             return;
         }
-        let toolboxItem: IVueComponent = DesignStore.toolBoxTree.getSelected();
+        let toolboxItem: IVueWidget = DesignStore.toolBoxTree.getSelected();
         if (!toolboxItem) {
             this.$message.error('Please select a widget from toolbox');
             return;
         }
 
         let id = this.makeWidgetId();
-        let layoutItem: ILayoutItem = {
+        let layoutItem: IDesignLayoutItem = {
             i: id, x: 0, y: 100, //TODO:排到最后
             w: toolboxItem.DWidth,
             h: toolboxItem.DHeight,
@@ -132,11 +133,11 @@ export default class VueVisualDesigner extends Vue {
         }
     }
 
-    onSelectWidget(item: ILayoutItem) {
+    onSelectWidget(item: IDesignLayoutItem) {
         this.selectedWidget = item;
     }
 
-    makeWidget(item: ILayoutItem) {
+    makeWidget(item: IDesignLayoutItem) {
         //先判断是否全局注册的组件
         let isGlobal = item.c.Component.indexOf('.') < 0; //TODO:暂简单判断
         if (isGlobal) {
@@ -145,7 +146,7 @@ export default class VueVisualDesigner extends Vue {
         return null;
     }
 
-    getWidgetStyle(item: ILayoutItem): object {
+    getWidgetStyle(item: IDesignLayoutItem): object {
         let s = item.c.Style ? item.c.Style : {};
         s['zIndex'] = this.preview ? 'auto' : -1;
         return s;
