@@ -45,12 +45,14 @@ import VueToolbox from '@/components/Designers/View/VueToolbox';
 import IDesignLayoutItem from '@/design/IDesignLayoutItem';
 import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
 import {IVueState, IVueWidget} from '@/design/IVueWidget';
+import {IVueLayoutItem} from '@/runtime/IVueVisual';
+import {IDesignNode} from '@/design/IDesignNode';
 
 @Component({
     components: {RouteDialog, PropertyPanel: VuePropertyPanel}
 })
 export default class VueVisualDesigner extends Vue {
-    @Prop({type: Object, required: true}) target;
+    @Prop({type: Object, required: true}) target: IDesignNode;
 
     readOnly = true; // 是否只读模式，对应模型的签出状态
     preview = false; // 是否预览模式
@@ -62,23 +64,9 @@ export default class VueVisualDesigner extends Vue {
     };
     selectedWidget: IDesignLayoutItem = null; //当前选择的Widget
 
-    state: IVueState[] = [{Name: 'keyword', Type: 'string', Value: 'hello'}];
-    layout: IDesignLayoutItem[] = [
-        {
-            x: 0, y: 0, w: 6, h: 4, i: '0', n: 'Input', m: ''/*需要初始化为空*/,
-            p: {size: 'small', placeholder: 'abc'}, c: VueToolbox.GetComponent('Input')
-        },
-        {
-            x: 0, y: 6, w: 12, h: 4, i: '1', n: 'Button', t: 'Button',
-            p: {size: 'small'}, c: VueToolbox.GetComponent('Button')
-        },
-        {
-            x: 6, y: 0, w: 6, h: 4, i: '2', n: 'Button', t: 'Button',
-            p: {size: 'small'}, c: VueToolbox.GetComponent('Button')
-        }
-    ];
-
-    runState = {keyword: 'Hello Future!', keyword2: 'World'};
+    state: IVueState[] = [];            //设计时状态
+    layout: IDesignLayoutItem[] = [];   //设计时布局
+    runState = {};                      //运行时状态
 
     /** 生成新的标识号 */
     private makeWidgetId(): string {
@@ -155,6 +143,7 @@ export default class VueVisualDesigner extends Vue {
     onSwitchPreview() {
         this.preview = !this.preview;
         //TODO:重新生成运行时state
+        console.log(this.runState);
     }
 
     /** 改变路由设置 */
@@ -164,6 +153,61 @@ export default class VueVisualDesigner extends Vue {
             this.route.DlgVisible = false;
         }).catch(err => {
             this.$message.error(err);
+        });
+    }
+
+    save() {
+        let runLayout = this.buildRunLayout();
+        let template = JSON.stringify(runLayout);
+        let script = JSON.stringify(this.state);
+        let styles = ''; //TODO:grid props
+        let runtimeCode = JSON.stringify({
+            V: 1, //保留版本号
+            L: runLayout,
+            S: this.buildRunState(),
+        });
+
+        let node = this.target;
+        let args = [node.Type, node.ID, template, script, styles, runtimeCode];
+        $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
+            this.$message.success('Save view succeed.');
+        }).catch(err => {
+            this.$message.error(err);
+        });
+    }
+
+    /** 生成运行时的布局 */
+    private buildRunLayout(): IVueLayoutItem[] {
+        let items: IVueLayoutItem[] = [];
+        for (const item of this.layout) {
+            items.push({
+                i: item.i, n: item.n, x: item.x, y: item.y, w: item.w, h: item.h,
+                t: item.t, m: item.m, p: item.p
+            });
+        }
+        return items;
+    }
+
+    /** 生成运行时状态 */
+    private buildRunState(): object {
+        let rs = {};
+        for (const s of this.state) {
+            rs[s.Name] = JSON.parse(s.Value);
+        }
+        return rs;
+    }
+
+    mounted() {
+        $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
+            this.state = JSON.parse(res.Script);
+            this.runState = this.buildRunState();
+            let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
+            for (const item of designLayout) {
+                item.c = VueToolbox.GetWidget(item.n);
+            }
+            this.layout = designLayout;
+        }).catch(err => {
+            this.$message.error('OpenViewModel error: ' + err);
         });
     }
 }

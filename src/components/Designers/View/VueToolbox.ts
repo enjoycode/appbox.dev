@@ -63,7 +63,7 @@ export default class VueToolbox {
         return props;
     }
 
-    public static GetComponent(name: string): IVueWidget {
+    public static GetWidget(name: string): IVueWidget {
         return VueToolbox.widgets.find(c => c.Name == name);
     }
 
