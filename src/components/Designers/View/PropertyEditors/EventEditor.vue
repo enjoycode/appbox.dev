@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button @click="dlgVisible = true" style="width:100%">...</el-button>
+        <el-button @click="dlgVisible = true" style="width:100%">{{ buttonText }}</el-button>
         <el-dialog title="Event Action" :visible.sync="dlgVisible" width="450px">
             <el-form label-position="right" size="mini" label-width="80px">
                 <el-form-item key="action" label="Action:">
@@ -53,6 +53,10 @@ export default class EventEditor extends Vue {
     actions = [{Name: 'LoadData'}, {Name: 'PostData'}, {Name: 'RunScript'}];
 
     action: IVueLoadDataAction = {Type: 'LoadData', State: '', Service: '', ServiceArgs: []};
+
+    get buttonText(): string {
+        return this.value ? this.value.Type : '...';
+    }
 
     get hasState(): boolean {
         return this.type == 'LoadData';

@@ -187,11 +187,9 @@ export default class VueVisualDesigner extends Vue {
 
         let node = this.target;
         let args = [node.Type, node.ID, template, script, styles, runtimeCode];
-        $runtime.channel.invoke('sys.DesignService.SaveModel', args).then(res => {
-            this.$message.success('Save view succeed.');
-        }).catch(err => {
-            this.$message.error(err);
-        });
+        $runtime.channel.invoke('sys.DesignService.SaveModel', args)
+            .then(res => this.$message.success('Save view succeed.'))
+            .catch(err => this.$message.error(err));
     }
 
     /** 生成运行时的布局 */

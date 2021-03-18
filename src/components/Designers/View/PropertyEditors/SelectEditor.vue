@@ -1,5 +1,5 @@
 <template>
-    <el-select :value="value" @change="onChange">
+    <el-select :value="value" @change="$emit('change', $event)">
         <el-option v-for="item in options" :key="item" :value="item"></el-option>
     </el-select>
 </template>
@@ -13,9 +13,5 @@ import {Prop} from 'vue-property-decorator';
 export default class SelectEditor extends Vue {
     @Prop() value: any;
     @Prop({required: true}) options: Array<any>;
-
-    onChange(newValue: any) {
-        this.$emit('change', newValue);
-    }
 }
 </script>

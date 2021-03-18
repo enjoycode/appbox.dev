@@ -1,5 +1,5 @@
-import Vue from 'vue';
 import SelectEditor from '@/components/Designers/View/PropertyEditors/SelectEditor.vue';
+import TextEditor from '@/components/Designers/View/PropertyEditors/TextEditor.vue';
 import {IVueProp, IVueWidget} from '@/design/IVueWidget';
 
 export default class VueToolbox {
@@ -72,7 +72,7 @@ export default class VueToolbox {
         if (prop.Editor == 'Select') {
             return SelectEditor;
         } else {
-            return Vue.component('ElInput');
+            return TextEditor;
         }
     }
 
