@@ -1,6 +1,7 @@
 <template>
-    <el-dialog class="dialog" title="Debug Service" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
-        <span>Method: {{dlgProps.Service + "." + dlgProps.Method.Name}}</span>
+    <el-dialog class="dialog" title="Debug Service" width="500px" :visible.sync="visible"
+               :close-on-click-modal="false" @close="onClose">
+        <span>Method: {{ dlgProps.Service + "." + dlgProps.Method.Name }}</span>
         <el-table :data="dlgProps.Method.Args" border highlight-current-row>
             <el-table-column prop="Name" label="Parameter" width="120" align="center">
             </el-table-column>
@@ -35,10 +36,10 @@ export default {
         },
         onOkClick() {
             // 先组装参数列表
-            var args = []
+            const args = [];
             try {
-                for (var i = 0; i < this.dlgProps.Method.Args.length; i++) {
-                    var arg = this.dlgProps.Method.Args[i]
+                for (let i = 0; i < this.dlgProps.Method.Args.length; i++) {
+                    const arg = this.dlgProps.Method.Args[i];
                     args.push(JSON.parse(arg.Value))
                 }
             } catch (error) {
@@ -47,7 +48,8 @@ export default {
             }
 
             let _this = this
-            let invokeArgs = [this.dlgProps.ModelID, this.dlgProps.Method.Name, JSON.stringify(args), JSON.stringify(this.dlgProps.Breakpoints)]
+            let invokeArgs = [this.dlgProps.ModelID, this.dlgProps.Method.Name, JSON.stringify(args),
+                JSON.stringify(this.dlgProps.Breakpoints)]
             $runtime.channel.invoke('sys.DesignService.StartDebugging', invokeArgs).then(res => {
                 _this.dlgProps.Designer.onDebugStarted(true)
                 _this.$message.success('开始调试成功')
@@ -61,9 +63,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.dialog >>> .el-dialog--small {
-    width: 500px;
-}
-</style>

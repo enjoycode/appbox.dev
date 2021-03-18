@@ -1,3 +1,5 @@
+import {IVueLayoutItem} from '@/runtime/IVueVisual';
+
 export interface IVueProp {
     readonly Name: string;
     readonly Type: string;
@@ -27,4 +29,47 @@ export interface IVueWidget {
     readonly Style?: object;        //默认样式，如Button默认宽100%
     readonly Props?: IVueProp[];
     readonly Events?: IVueEvent[];
+}
+
+type EventAction = 'LoadData' | 'PostData' | 'RunScript';
+
+export interface IVueEventAction {
+    /** 操作类型, eg: LoadData */
+    readonly Type: EventAction;
+}
+
+export interface IVueLoadDataAction extends IVueEventAction {
+    State: string;
+    Service: string;
+    ServiceArgs: any[]; //eg: [{Name:'arg1', Type:'string', Value:'"rick"'}], Value为表达式
+}
+
+export function BuildActionScript(action: IVueEventAction): string {
+    if (action.Type == 'LoadData') {
+        let loadData: IVueLoadDataAction = <IVueLoadDataAction> action;
+        let s = '$runtime.channel.invoke("' + loadData.Service + '",[';
+        let needSep = false;
+        for (const arg of loadData.ServiceArgs) {
+            if (needSep) {
+                s += ',';
+            } else {
+                needSep = true;
+            }
+            s += arg.Value;
+        }
+        s += ']).then(res=>s.' + loadData.State + '=res)';
+        s += '.catch(err=>alert(err))';
+        return s;
+    } else {
+        //TODO:
+        return '';
+    }
+}
+
+/** 设计时的布局项 */
+export interface IDesignLayoutItem extends IVueLayoutItem {
+    /** 对应的工具箱Widget定义 */
+    Widget?: IVueWidget;
+    /** 设计时事件定义 eg: {click: {IVueEventAction}} */
+    Events?: object;
 }

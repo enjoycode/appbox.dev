@@ -192,11 +192,11 @@ export default {
             let position = this.$refs.editor.getPosition()
             let args = [this.target.ID, position.lineNumber, position.column]
             $runtime.channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
-                var method = JSON.parse(res)
-                for (var i = 0; i < method.Args.length; i++) {
+                const method = JSON.parse(res);
+                for (let i = 0; i < method.Args.length; i++) {
                     method.Args[i].Value = ''
                 }
-                var dlg = Vue.component('InvokeDialog', InvokeDialog)
+                const dlg = Vue.component('InvokeDialog', InvokeDialog);
                 DesignStore.ide.showDialog(dlg, {Service: _this.target.App + '.' + _this.target.Text, Method: method})
             }).catch(() => {
                 _this.$message.error('Cannot find target method')

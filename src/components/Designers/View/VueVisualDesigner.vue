@@ -21,17 +21,17 @@
                                :h="item.h" :i="item.i" :key="item.i">
                         <div v-if="!preview" class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component v-if="item.c.VText" :is="makeWidget(item)" :style="getWidgetStyle(item)"
-                                   v-bind="item.p">{{ item.t }}
+                        <component :is="makeWidget(item)" :style="makeWidgetStyle(item)"
+                                   v-model="runState[item.m]" v-bind="item.p" v-on="item.a">
+                            {{ item.t }}
                         </component>
-                        <component v-else :is="makeWidget(item)" :style="getWidgetStyle(item)"
-                                   v-model="runState[item.m]" v-bind="item.p"></component>
                     </grid-item>
                 </grid-layout>
             </div>
         </div>
         <!-- 右边属性区域 -->
-        <property-panel slot="panel2" :owner="selectedWidget" :state="state"></property-panel>
+        <property-panel slot="panel2" :owner="selectedWidget" :state="state"
+                        @build-event="onBuildEvent"></property-panel>
     </ex-splitter>
 </template>
 
@@ -42,11 +42,11 @@ import {Prop} from 'vue-property-decorator';
 import DesignStore from '@/design/DesignStore';
 import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
 import VueToolbox from '@/components/Designers/View/VueToolbox';
-import IDesignLayoutItem from '@/design/IDesignLayoutItem';
 import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
-import {IVueState, IVueWidget} from '@/design/IVueWidget';
-import {IVueLayoutItem} from '@/runtime/IVueVisual';
+import {IDesignLayoutItem, IVueState, IVueWidget} from '@/design/IVueWidget';
+import {IVueEvent, IVueLayoutItem} from '@/runtime/IVueVisual';
 import {IDesignNode} from '@/design/IDesignNode';
+import {BuildEventHandler} from '@/runtime/VueWidgetService';
 
 @Component({
     components: {RouteDialog, PropertyPanel: VuePropertyPanel}
@@ -100,10 +100,16 @@ export default class VueVisualDesigner extends Vue {
             h: toolboxItem.DHeight,
             n: toolboxItem.Name,
             p: VueToolbox.MakeDefaultProps(toolboxItem),
-            c: toolboxItem
+            Widget: toolboxItem
         };
         if (toolboxItem.VText) {
             layoutItem.t = toolboxItem.VText;
+        }
+        if (toolboxItem.VModel) {
+            layoutItem.m = '';
+        }
+        if (toolboxItem.Events) {
+            layoutItem.Events = {};
         }
         this.layout.push(layoutItem);
     }
@@ -125,17 +131,23 @@ export default class VueVisualDesigner extends Vue {
         this.selectedWidget = item;
     }
 
+    /** 修改事件处理后重新生成运行时事件处理器 */
+    onBuildEvent(item: IDesignLayoutItem) {
+        BuildEventHandler(item, this.runState, $runtime);
+    }
+
     makeWidget(item: IDesignLayoutItem) {
         //先判断是否全局注册的组件
-        let isGlobal = item.c.Component.indexOf('.') < 0; //TODO:暂简单判断
+        let isGlobal = item.Widget.Component.indexOf('.') < 0; //TODO:暂简单判断
         if (isGlobal) {
-            return Vue.component(item.c.Component);
+            return Vue.component(item.Widget.Component);
         }
         return null;
     }
 
-    getWidgetStyle(item: IDesignLayoutItem): object {
-        let s = item.c.Style ? item.c.Style : {};
+    /** 仅用于设计时绑定设计及默认样式 */
+    makeWidgetStyle(item: IDesignLayoutItem): object {
+        let s = item.Widget.Style ? item.Widget.Style : {};
         s['zIndex'] = this.preview ? 'auto' : -1;
         return s;
     }
@@ -143,7 +155,7 @@ export default class VueVisualDesigner extends Vue {
     onSwitchPreview() {
         this.preview = !this.preview;
         //TODO:重新生成运行时state
-        console.log(this.runState);
+        console.log(this.runState, this.layout);
     }
 
     /** 改变路由设置 */
@@ -157,15 +169,21 @@ export default class VueVisualDesigner extends Vue {
     }
 
     save() {
-        let runLayout = this.buildRunLayout();
-        let template = JSON.stringify(runLayout);
+        let template = JSON.stringify(this.layout, (k, v) => {
+            if (k == 'Widget' || k == 'moved') { //忽略序列化
+                return undefined;
+            }
+            return v;
+        });
         let script = JSON.stringify(this.state);
         let styles = ''; //TODO:grid props
         let runtimeCode = JSON.stringify({
             V: 1, //保留版本号
-            L: runLayout,
+            L: this.buildRunLayout(),
             S: this.buildRunState(),
         });
+
+        //console.log(template);
 
         let node = this.target;
         let args = [node.Type, node.ID, template, script, styles, runtimeCode];
@@ -182,7 +200,7 @@ export default class VueVisualDesigner extends Vue {
         for (const item of this.layout) {
             items.push({
                 i: item.i, n: item.n, x: item.x, y: item.y, w: item.w, h: item.h,
-                t: item.t, m: item.m, p: item.p
+                t: item.t, m: item.m, p: item.p, e: item.e
             });
         }
         return items;
@@ -198,17 +216,22 @@ export default class VueVisualDesigner extends Vue {
     }
 
     mounted() {
+        //TODO: ensure toolbox loaded
         $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
             this.state = JSON.parse(res.Script);
             this.runState = this.buildRunState();
             let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
             for (const item of designLayout) {
-                item.c = VueToolbox.GetWidget(item.n);
+                item.Widget = VueToolbox.GetWidget(item.n);
+                if (item.Widget.Events && !item.Events) {
+                    item.Events = {};
+                }
+                if (item.e) {
+                    BuildEventHandler(item, this.runState, $runtime);
+                }
             }
             this.layout = designLayout;
-        }).catch(err => {
-            this.$message.error('OpenViewModel error: ' + err);
-        });
+        }).catch(err => this.$message.error('OpenViewModel error: ' + err));
     }
 }
 </script>

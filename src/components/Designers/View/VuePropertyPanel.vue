@@ -22,10 +22,10 @@
                     <el-form-item key="id" label="Id:">
                         <el-input :value="id" disabled></el-input>
                     </el-form-item>
-                    <el-form-item v-if="owner && owner.c.VText" key="text" label="Text:">
+                    <el-form-item v-if="owner && owner.Widget.VText" key="text" label="Text:">
                         <el-input v-model="text"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="owner && owner.c.VModel" key="model" label="Model:">
+                    <el-form-item v-if="owner && owner.Widget.VModel" key="model" label="Model:">
                         <el-input v-model="model"></el-input> <!--TODO:专用编辑器-->
                     </el-form-item>
                 </el-form>
@@ -45,7 +45,8 @@
             <el-collapse-item v-if="owner && events" key="Events" title="Events" name="Events">
                 <el-form label-position="right" size="mini" :label-width="labelWidth">
                     <el-form-item v-for="item in events" :key="item.Name" :label="item.Name + ':'">
-                        <event-editor></event-editor>
+                        <event-editor :value="getEventAction(item.Name)"
+                                      @change="setEventAction(item.Name, $event)"></event-editor>
                     </el-form-item>
                 </el-form>
             </el-collapse-item>
@@ -57,10 +58,9 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
-import IDesignLayoutItem from '@/design/IDesignLayoutItem';
 import VueToolbox from '@/components/Designers/View/VueToolbox';
 import EventEditor from '@/components/Designers/View/PropertyEditors/EventEditor.vue';
-import {IVueProp, IVueState} from '@/design/IVueWidget';
+import {BuildActionScript, IDesignLayoutItem, IVueEventAction, IVueProp, IVueState} from '@/design/IVueWidget';
 
 @Component({
     components: {EventEditor}
@@ -101,11 +101,11 @@ export default class VuePropertyPanel extends Vue {
     }
 
     get props() {
-        return this.owner ? this.owner.c.Props : [];
+        return this.owner ? this.owner.Widget.Props : [];
     }
 
     get events() {
-        return this.owner ? this.owner.c.Events : null;
+        return this.owner ? this.owner.Widget.Events : null;
     }
 
     getPropValue(name: string): any {
@@ -123,6 +123,30 @@ export default class VuePropertyPanel extends Vue {
 
     getPropEditor(prop: IVueProp): any {
         return VueToolbox.GetPropEditor(prop);
+    }
+
+    getEventAction(name: string): IVueEventAction | undefined {
+        if (!this.owner || !this.owner.Events || !this.owner.Events[name]) {
+            return undefined;
+        }
+        return this.owner.Events[name];
+    }
+
+    setEventAction(name: string, newValue: IVueEventAction) {
+        this.$set(this.owner.Events, name, newValue);
+        //生成运行时脚本
+        let actionScript = BuildActionScript(newValue);
+        if (!this.owner.e) {
+            this.$set(this.owner, 'e', []);
+        }
+        let index = this.owner.e.findIndex(i => i.n == name);
+        if (index < 0) {
+            this.owner.e.push({n: name, c: actionScript});
+        } else {
+            this.owner.e[index].c = actionScript; //已存在更新脚本
+        }
+        //触发事件通知设计器重新生成运行时事件处理器
+        this.$emit('build-event', this.owner);
     }
 
 }
