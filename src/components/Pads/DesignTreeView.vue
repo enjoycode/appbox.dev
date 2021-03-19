@@ -1,13 +1,13 @@
 <template>
-    <div class="pane">
-        <div calss="search-pane">
-            <div class="treeTitle">Models</div>
-            <div class="treeSearch">
+    <div class="ide-left-pane">
+        <div calss="search-ide-left-search-pane">
+            <div class="ide-left-tree-title">Models</div>
+            <div class="ide-left-tree-search">
                 <el-input v-model="keyword" size="small" suffix-icon="fas fa-search"></el-input>
             </div>
         </div>
-        <div class="tree-pane">
-            <el-tree class="designTree" ref="designTree" draggable highlight-current v-loading="loading"
+        <div class="ide-left-tree-warp">
+            <el-tree class="ide-left-tree" ref="designTree" draggable highlight-current v-loading="loading"
                      node-key="ID" :current-node-key="currentNodeKey" :expand-on-click-node="false"
                      @current-change="onCurrentChanged" :render-content="onRenderContent"
                      @node-drop="onDrop" :allow-drag="allowDrag" :allow-drop="allowDrop"
@@ -458,59 +458,3 @@ export default Vue.extend({
     }
 });
 </script>
-
-<style scoped>
-.pane {
-    background-color: #f3f3f3;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-.search-pane {
-    height: 94px;
-}
-
-.tree-pane {
-    overflow: auto;
-    height: calc(100% - 94px);
-    padding: 0 10px 0px 10px;
-}
-
-.treeTitle {
-    height: 34px;
-    padding-left: 18px;
-    line-height: 34px;
-    background-color: #f3f3f3;
-    color: #838383;
-    font-size: 10px;
-}
-
-.treeSearch {
-    padding: 15px;
-}
-
-.designTree {
-    width: 100%;
-}
-
-.tree-pane >>> .el-tree {
-    background: none;
-    border: none;
-}
-
-.tree-pane >>> .el-tree-node__content {
-    background-color: #f3f3f3;
-}
-
-.tree-pane
->>> .el-tree--highlight-current
-.el-tree-node.is-current
-> .el-tree-node__content {
-    background-color: #b3b3b3;
-}
-
-.tree-pane >>> .el-tree-node__content:hover {
-    background-color: #e3e3e3;
-}
-</style>

@@ -4,12 +4,14 @@
         <main-menu class="ide-menu"></main-menu>
         <!-- body -->
         <div class="ide-body">
-            <ex-splitter :pin-second="false" :minSize="50" :handlerSize="leftPadsHandlerSize" handlerColor="#f1f1f1" :size="leftPadsPanelSize">
+            <ex-splitter :pin-second="false" :minSize="50" :handlerSize="leftPadsHandlerSize" handlerColor="#f1f1f1"
+                         :size="leftPadsPanelSize">
                 <!--左边Pads-->
-                <left-pads slot="panel1" class="ide-left" @leftpadsEvent="onLeftPadsChange"></left-pads>
+                <left-pads slot="panel1" class="ide-left" @LeftPadChanged="onLeftPadsChange"></left-pads>
                 <ex-splitter slot="panel2" vertical :size="150" handlerColor="#fff">
                     <!--主编辑区域Pads-->
-                    <designer-pads slot="panel1" class="ide-designers" @currentTabChanged="designTabChanged"></designer-pads>
+                    <designer-pads slot="panel1" class="ide-designers"
+                                   @currentTabChanged="designTabChanged"></designer-pads>
                     <bottom-pads slot="panel2" class="ide-bottom"></bottom-pads>
                 </ex-splitter>
             </ex-splitter>
@@ -74,11 +76,15 @@ export default {
 
         // 移除文本选中
         if (typeof this.$el.onselectstart !== 'undefined') {
-            this.$el.onselectstart = function () { return false } // IE
+            this.$el.onselectstart = function () {
+                return false
+            } // IE
         } else if (typeof this.$el.style.MozUserSelect !== 'undefined') {
             this.$el.style.MozUserSelect = 'none' // Moz
         } else {
-            this.$el.onmousedown = function () { return false }
+            this.$el.onmousedown = function () {
+                return false
+            }
         }
     }
 }
@@ -172,5 +178,56 @@ export default {
     padding: 0;
     height: 20px;
     width: 20px;
+}
+
+.ide-left-pane {
+    background-color: #f3f3f3;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.ide-left-search-pane {
+    height: 94px;
+}
+
+.ide-left-tree-title {
+    height: 34px;
+    padding-left: 18px;
+    line-height: 34px;
+    background-color: #f3f3f3;
+    color: #838383;
+    font-size: 10px;
+}
+
+.ide-left-tree-search {
+    padding: 15px;
+}
+
+.ide-left-tree {
+    width: 100%;
+}
+
+.ide-left-tree-warp {
+    overflow: auto;
+    height: calc(100% - 94px);
+    padding: 0 10px 0 10px;
+}
+
+.ide-left-tree-warp > .el-tree {
+    background: none;
+    border: none;
+}
+
+.ide-left-tree-warp > .el-tree-node__content {
+    background-color: #f3f3f3;
+}
+
+.ide-left-tree-warp > .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #b3b3b3;
+}
+
+.ide-left-tree-warp > .el-tree-node__content:hover {
+    background-color: #6d6c6c;
 }
 </style>

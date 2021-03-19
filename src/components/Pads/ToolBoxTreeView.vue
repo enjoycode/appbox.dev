@@ -1,13 +1,13 @@
 <template>
-    <div class="pane">
-        <div class="search-pane">
-            <div class="treeTitle">Toolbox</div>
-            <div class="treeSearch">
+    <div class="ide-left-pane">
+        <div class="ide-left-search-pane">
+            <div class="ide-left-tree-title">Toolbox</div>
+            <div class="ide-left-tree-search">
                 <el-input v-model="filterText" suffix-icon="fas fa-search" size="small"></el-input>
             </div>
         </div>
-        <div class="treewarp">
-            <el-tree class="designTree" ref="toolBoxTree" :data="node" node-key="Name"
+        <div class="ide-left-tree-warp">
+            <el-tree class="ide-left-tree" ref="toolBoxTree" :data="node" node-key="Name"
                      :render-content="onRenderContent"
                      :props="treeOption" :filter-node-method="filterNode" highlight-current>
             </el-tree>
@@ -78,56 +78,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.pane {
-    background-color: #f3f3f3;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-.search-pane {
-    height: 94px;
-}
-
-.treewarp {
-    overflow: auto;
-    height: calc(100% - 94px);
-    padding: 0 10px 0 10px;
-}
-
-.treeTitle {
-    height: 34px;
-    padding-left: 18px;
-    line-height: 34px;
-    background-color: #f3f3f3;
-    color: #838383;
-    font-size: 10px;
-}
-
-.treeSearch {
-    padding: 15px;
-}
-
-.designTree {
-    width: 100%;
-}
-
-.treewarp >>> .el-tree {
-    background: none;
-    border: none;
-}
-
-.treewarp >>> .el-tree-node__content {
-    background-color: #f3f3f3;
-}
-
-.treewarp >>> .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-    background-color: #b3b3b3;
-}
-
-.treewarp >>> .el-tree-node__content:hover {
-    background-color: #e3e3e3;
-}
-</style>

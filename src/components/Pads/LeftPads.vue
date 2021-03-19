@@ -2,18 +2,17 @@
     <div>
         <div class="icons">
             <el-menu :style="{ height:'100%', width:'50px' }" :default-active="activeMenu" @select="menuSelect"
-                     background-color="#464b5b"
-                     active-text-color="#fff">
+                     background-color="#464b5b" active-text-color="#fff">
                 <el-menu-item index="file" style="padding-left: 16px;font-size:22px">
                     <i class="fas fa-file"></i>
                 </el-menu-item>
-                <el-menu-item index="toolBox" style="padding-left: 13px;font-size:22px">
+                <el-menu-item index="toolbox" style="padding-left: 13px;font-size:22px">
                     <i class="fas fa-wrench"></i>
                 </el-menu-item>
                 <el-menu-item index="debug" style="padding-left:13px;font-size:22px">
                     <i class="fas fa-bug"></i>
                 </el-menu-item>
-                <el-menu-item index="4" style="padding-left: 13px;font-size:22px">
+                <el-menu-item index="settings" style="padding-left: 13px;font-size:22px">
                     <i class="fas fa-cog"></i>
                 </el-menu-item>
             </el-menu>
@@ -30,6 +29,7 @@
 import DesignTreeView from './DesignTreeView'
 import ToolBoxTreeView from './ToolBoxTreeView'
 import DebugView from "./DebugView";
+import SettingsTreeView from './SettingsTreeView';
 
 export default {
     data() {
@@ -41,7 +41,8 @@ export default {
     components: {
         DesignTree: DesignTreeView,
         ToolTree: ToolBoxTreeView,
-        DebugView: DebugView
+        DebugView: DebugView,
+        SettingsView: SettingsTreeView
     },
     methods: {
         menuSelect: function (index) {
@@ -50,7 +51,7 @@ export default {
                 this.activeMenu = ''
                 this.mainView = ''
                 visible = false
-                this.$emit('leftpadsEvent', visible)
+                this.$emit('LeftPadChanged', visible)
                 return
             } else {
                 visible = true
@@ -59,15 +60,17 @@ export default {
             visible = true
             if (index === 'file') {
                 this.mainView = 'DesignTree'
-            } else if (index === 'toolBox') {
+            } else if (index === 'toolbox') {
                 this.mainView = 'ToolTree'
             } else if (index === 'debug') {
                 this.mainView = 'DebugView'
+            } else if (index === 'settings') {
+                this.mainView = 'SettingsView'
             } else {
                 visible = false
                 this.mainView = ''
             }
-            this.$emit('leftpadsEvent', visible)
+            this.$emit('LeftPadChanged', visible)
         }
     }
 }
