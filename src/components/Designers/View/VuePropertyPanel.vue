@@ -22,10 +22,10 @@
                     <el-form-item key="id" label="Id:">
                         <el-input :value="id" disabled></el-input>
                     </el-form-item>
-                    <el-form-item v-if="owner && owner.Widget.VText" key="text" label="Text:">
+                    <el-form-item v-if="owner && owner.Widget.Text" key="text" label="Text:">
                         <el-input v-model="text"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="owner && owner.Widget.VModel" key="model" label="Model:">
+                    <el-form-item v-if="owner && owner.Widget.Model" key="model" label="Model:">
                         <el-input v-model="model"></el-input> <!--TODO:专用编辑器-->
                     </el-form-item>
                 </el-form>

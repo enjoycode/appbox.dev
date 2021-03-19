@@ -6,8 +6,8 @@ export default class VueToolbox {
 
     private static widgets: IVueWidget[] = [
         {
-            Name: 'Button', Component: 'ElButton', VText: 'Button', Icon: 'fas fa-ad fa-fw',
-            DWidth: 3, DHeight: 1, Style: {width: '100%'},
+            Name: 'Button', Component: 'ElButton', Text: 'Button', Icon: 'fas fa-ad fa-fw',
+            Width: 3, Height: 1, Style: {width: '100%'},
             Props: [
                 {
                     Name: 'type', Type: 'string', Default: 'primary', Editor: 'Select',
@@ -20,8 +20,8 @@ export default class VueToolbox {
             Events: [{Name: 'click'}]
         },
         {
-            Name: 'Input', Component: 'ElInput', VModel: 'string', Icon: 'fas fa-text-width fa-fw',
-            DWidth: 4, DHeight: 1,
+            Name: 'Input', Component: 'ElInput', Model: 'string', Icon: 'fas fa-text-width fa-fw',
+            Width: 4, Height: 1,
             Props: [
                 {
                     Name: 'size', Type: 'string', Default: 'small', Editor: 'Select',
@@ -33,8 +33,8 @@ export default class VueToolbox {
             ]
         },
         {
-            Name: 'Checkbox', Component: 'ElCheckbox', VText: 'Checkbox', VModel: 'string',
-            Icon: 'fas fa-check-square fa-fw', DWidth: 4, DHeight: 1,
+            Name: 'Checkbox', Component: 'ElCheckbox', Text: 'Checkbox', Model: 'string',
+            Icon: 'fas fa-check-square fa-fw', Width: 4, Height: 1,
             Style: {height: '100%'},
             Props: [
                 {

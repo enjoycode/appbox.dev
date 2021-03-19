@@ -96,16 +96,16 @@ export default class VueVisualDesigner extends Vue {
         let id = this.makeWidgetId();
         let layoutItem: IDesignLayoutItem = {
             i: id, x: 0, y: 100, //TODO:排到最后
-            w: toolboxItem.DWidth,
-            h: toolboxItem.DHeight,
+            w: toolboxItem.Width,
+            h: toolboxItem.Height,
             n: toolboxItem.Name,
             p: VueToolbox.MakeDefaultProps(toolboxItem),
             Widget: toolboxItem
         };
-        if (toolboxItem.VText) {
-            layoutItem.t = toolboxItem.VText;
+        if (toolboxItem.Text) {
+            layoutItem.t = toolboxItem.Text;
         }
-        if (toolboxItem.VModel) {
+        if (toolboxItem.Model) {
             layoutItem.m = '';
         }
         if (toolboxItem.Events) {
