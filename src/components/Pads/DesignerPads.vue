@@ -38,6 +38,12 @@ export default {
         }
     },
 
+    watch: {
+        currentTab: function (newTab, oldTab) {
+            store.emitEvent('DesignerChanged', newTab, oldTab)
+        }
+    },
+
     methods: {
         // 注意： targetName = nodeData.ID + '-' + nodeData.Type
         removeTab(targetName) {
@@ -87,19 +93,30 @@ export default {
                 goto: goto
             };
             switch (node.Type) {
-                case DesignNodeType.ServiceModelNode: tab.designer = ServiceDesigner; break
-                case DesignNodeType.EntityModelNode: tab.designer = EntityDesigner; break
+                case DesignNodeType.ServiceModelNode:
+                    tab.designer = ServiceDesigner;
+                    break
+                case DesignNodeType.EntityModelNode:
+                    tab.designer = EntityDesigner;
+                    break
                 case DesignNodeType.ViewModelNode:
                     tab.designer = tab.target.ViewType === 0 ? VueCodeDesigner : VueVisualDesigner;
                     break
-                case DesignNodeType.EnumModelNode: tab.designer = EnumDesigner; break
-                case DesignNodeType.WorkflowModelNode: tab.designer = WorkflowDesigner; break
-                case DesignNodeType.ReportModelNode: tab.designer = ReportDesigner; break
+                case DesignNodeType.EnumModelNode:
+                    tab.designer = EnumDesigner;
+                    break
+                case DesignNodeType.WorkflowModelNode:
+                    tab.designer = WorkflowDesigner;
+                    break
+                case DesignNodeType.ReportModelNode:
+                    tab.designer = ReportDesigner;
+                    break
                 case DesignNodeType.DataStoreNode:
                     tab.designer = DataStoreProviders.getDesigner(node)
                     tab.title = 'DataStore.' + node.Text
                     break
-                default: return
+                default:
+                    return
             }
             this.openedTabs.push(tab)
             this.currentTab = tab.name
@@ -107,8 +124,8 @@ export default {
         tabClick(tab) {
             let val = tab.$children[0].target
             if (val) {
-                var key = val.ID + '-' + val.Type
-                for (var index = 0; index < this.openedTabs.length; index++) {
+                const key = val.ID + '-' + val.Type;
+                for (let index = 0; index < this.openedTabs.length; index++) {
                     if (this.openedTabs[index].name === key) {
                         this.currentTab = key
                         this.$emit('currentTabChanged', val)
@@ -125,8 +142,8 @@ export default {
                 return null
             }
             let children = this.$refs.tabs.$children
-            for (var i = 0; i < children.length; i++) {
-                var element = children[i]
+            for (let i = 0; i < children.length; i++) {
+                const element = children[i];
                 if (element.name && element.name === this.currentTab) {
                     return element.$children[0] // 注意返回子级，因为当前是TabPane实例
                 }
@@ -138,7 +155,7 @@ export default {
             if (node.Type >= 20 || node.Type === 2) { // 模型节点或存储节点
                 // 找到已打开的对应的设计器，通知其重新加载模型
                 let children = this.$refs.tabs.$children
-                for (var i = 0; i < children.length; i++) {
+                for (let i = 0; i < children.length; i++) {
                     let designer = children[i].$children[0] // 注意返回子级，因为当前是TabPane实例
                     if (designer && designer.target && designer.target.Type === node.Type && designer.target.ID === node.ID) {
                         if (designer.onCheckout) {
@@ -151,7 +168,7 @@ export default {
         },
         onPublish() {
             let children = this.$refs.tabs.$children
-            for (var i = 0; i < children.length; i++) {
+            for (let i = 0; i < children.length; i++) {
                 let designer = children[i].$children[0] // 注意返回子级，因为当前是TabPane实例
                 if (designer && designer.target && !designer.readOnly) {
                     designer.readOnly = true
@@ -210,20 +227,20 @@ export default {
 }
 
 .designerPads
-    > .el-tabs
-    > .el-tabs__header
-    > .el-tabs__nav-wrap
-    > .el-tabs__nav-scroll {
+> .el-tabs
+> .el-tabs__header
+> .el-tabs__nav-wrap
+> .el-tabs__nav-scroll {
     background-color: #f3f3f3;
 }
 
 .designerPads
-    > .el-tabs
-    > .el-tabs__header
-    > .el-tabs__nav-wrap
-    > .el-tabs__nav-scroll
-    > .el-tabs__nav
-    > .el-tabs__item {
+> .el-tabs
+> .el-tabs__header
+> .el-tabs__nav-wrap
+> .el-tabs__nav-scroll
+> .el-tabs__nav
+> .el-tabs__item {
     background-color: #ececec;
     border-color: #f3f3f3;
     border-bottom-color: transparent;
@@ -233,12 +250,12 @@ export default {
 }
 
 .designerPads
-    > .el-tabs
-    > .el-tabs__header
-    > .el-tabs__nav-wrap
-    > .el-tabs__nav-scroll
-    > .el-tabs__nav
-    > .el-tabs__item.is-active {
+> .el-tabs
+> .el-tabs__header
+> .el-tabs__nav-wrap
+> .el-tabs__nav-scroll
+> .el-tabs__nav
+> .el-tabs__item.is-active {
     background-color: #ffffff;
     border-color: #f3f3f3;
     border-bottom-color: transparent;

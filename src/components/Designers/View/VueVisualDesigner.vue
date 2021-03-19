@@ -168,6 +168,10 @@ export default class VueVisualDesigner extends Vue {
         });
     }
 
+    toolbox() {
+        return VueToolbox.widgets;
+    }
+
     save() {
         let template = JSON.stringify(this.layout, (k, v) => {
             if (k == 'Widget' || k == 'moved') { //忽略序列化

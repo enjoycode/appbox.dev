@@ -4,7 +4,7 @@ import {IVueProp, IVueWidget} from '@/design/IVueWidget';
 
 export default class VueToolbox {
 
-    private static widgets: IVueWidget[] = [];
+    public static widgets: IVueWidget[] = [];
 
     public static EnsureLoaded(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -18,11 +18,6 @@ export default class VueToolbox {
                     resolve();
                 }).catch(err => reject(err));
         });
-    }
-
-    public static GetToolboxItems(): IVueWidget[] {
-        //TODO:从服务端加载
-        return VueToolbox.widgets;
     }
 
     public static MakeDefaultProps(component: IVueWidget): any {

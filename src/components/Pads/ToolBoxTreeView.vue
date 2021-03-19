@@ -17,8 +17,6 @@
 
 <script lang="jsx">
 import store from '@/design/DesignStore'
-// import ReportToolbox from "@/components/Designers/Report/ReportToolbox"
-import VueToolbox from "@/components/Designers/View/VueToolbox";
 
 export default {
     name: 'ToolBoxTreeView',
@@ -55,13 +53,28 @@ export default {
         /** 清除选择 */
         clearSelected() {
             this.$refs.toolBoxTree.setCurrentKey(null)
+        },
+        /** 当前的编辑器改变后加载相应的工具箱 */
+        onDesignerChanged() {
+            let designer = store.designers.getActiveDesigner()
+            if (designer && designer.toolbox) {
+                this.node = designer.toolbox()
+            } else {
+                this.node = [];
+            }
         }
     },
+
+    activated() {
+        this.onDesignerChanged()
+    },
+
     mounted() {
         store.toolBoxTree = this
-        // TODO:根据当前编辑器加载，暂直接加载报表工具箱
-        //this.node = ReportToolbox.GetToolboxItems()
-        this.node = VueToolbox.GetToolboxItems();
+        store.onEvent('DesignerChanged', this.onDesignerChanged)
+    },
+    destroyed() {
+        store.offEvent('DesignerChanged', this.onDesignerChanged)
     }
 }
 </script>
