@@ -5,7 +5,7 @@
             <!-- 顶部工具栏 -->
             <div class="editorTool">
                 <el-button size="mini" icon="fa fa-plus fa-fw" @click="onAdd">Add</el-button>
-                <el-button size="mini" icon="fa fa-times fa-fw" @click="onRemove">Remove</el-button>
+                <el-button size="mini" icon="fa fa-minus fa-fw" @click="onRemove">Remove</el-button>
                 <el-button size="mini" @click="route.DlgVisible = true">Route</el-button>
                 <el-button size="mini" v-model="preview" :type="preview ? 'primary' : 'plain'" @click="onSwitchPreview">
                     Preview
@@ -214,21 +214,26 @@ export default class VueVisualDesigner extends Vue {
     }
 
     mounted() {
-        //TODO: ensure toolbox loaded
-        $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
-            this.state = JSON.parse(res.Script);
-            this.runState = this.buildRunState();
-            let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
-            for (const item of designLayout) {
-                item.Widget = VueToolbox.GetWidget(item.n);
-                if (item.Widget.Events && !item.Events) {
-                    item.Events = {};
-                }
-                if (item.e) {
-                    BuildEventHandler(item, this.runState, $runtime);
-                }
+        VueToolbox.EnsureLoaded().then(() => {
+            return $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]);
+        }).then(res => {
+            if (res.Script) {
+                this.state = JSON.parse(res.Script);
+                this.runState = this.buildRunState();
             }
-            this.layout = designLayout;
+            if (res.Template) {
+                let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
+                for (const item of designLayout) {
+                    item.Widget = VueToolbox.GetWidget(item.n);
+                    if (item.Widget.Events && !item.Events) {
+                        item.Events = {};
+                    }
+                    if (item.e) {
+                        BuildEventHandler(item, this.runState, $runtime);
+                    }
+                }
+                this.layout = designLayout;
+            }
         }).catch(err => this.$message.error('OpenViewModel error: ' + err));
     }
 }

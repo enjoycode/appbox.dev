@@ -5,7 +5,7 @@
             <el-collapse-item key="State" title="State" name="State">
                 <el-button-group>
                     <el-button size="mini" type="plain" icon="fa fa-plus"></el-button>
-                    <el-button size="mini" type="plain" icon="fa fa-times"></el-button>
+                    <el-button size="mini" type="plain" icon="fa fa-minus"></el-button>
                 </el-button-group>
                 <el-table :data="state" size="mini" border>
                     <el-table-column prop="Name" label="Name"></el-table-column>
