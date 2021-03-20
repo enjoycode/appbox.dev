@@ -128,7 +128,7 @@ export default class BytesOutputStream implements IOutputStream {
 
     public WriteInt64(v: number): void {
         this.ensureSizeToWrite(8);
-        const high = Math.floor(v / 0x1_0000_0000);
+        const high = Math.floor(v / 0x100000000);
         this.view.setUint32(this.pos, v, true); // high bits are truncated by DataView
         this.view.setUint32(this.pos + 4, high, true);
         this.pos += 8;

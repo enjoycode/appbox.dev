@@ -1,7 +1,7 @@
 import IOutputStream from './IOutputStream';
 import IInputStream from './IInputStream';
 
-const CHUNK_SIZE = 0x1_000;
+const CHUNK_SIZE = 0x1000;
 
 /**
  * 计算编码后的字节数
