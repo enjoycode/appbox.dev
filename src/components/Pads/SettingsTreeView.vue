@@ -81,6 +81,7 @@ export default class SettingsTreeView extends Vue {
         $runtime.channel.invoke('sys.DesignService.SaveAppSettings', args).then(() => {
             //激发设计时事件通知需要刷新的对象
             DesignStore.emitEvent('SettingsChanged', this.currentSetting.Name);
+            this.$message.success('Save settings ok.')
         }).catch(err => this.$message.error('Save error: ' + err));
     }
 }
