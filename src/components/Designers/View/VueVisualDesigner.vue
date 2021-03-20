@@ -83,11 +83,11 @@ export default class VueVisualDesigner extends Vue {
 
     /** 添加工具箱选择的Widget */
     onAdd() {
-        if (!DesignStore.toolBoxTree) {
+        if (!DesignStore.toolbox) {
             this.$message.error('Please select a widget from toolbox');
             return;
         }
-        let toolboxItem: IVueWidget = DesignStore.toolBoxTree.getSelected();
+        let toolboxItem: IVueWidget = DesignStore.toolbox.getSelected();
         if (!toolboxItem) {
             this.$message.error('Please select a widget from toolbox');
             return;

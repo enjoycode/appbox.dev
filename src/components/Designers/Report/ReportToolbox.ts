@@ -44,14 +44,14 @@ class ReportToolboxItem<T extends ReportItemDesigner> implements IDesignToolboxI
 export default class ReportToolbox implements IDesignToolbox {
 
     public get SelectedItem(): IDesignToolboxItem | null {
-        if (!DesignStore.toolBoxTree) { return null; }
-        let item = DesignStore.toolBoxTree.getSelected();
+        if (!DesignStore.toolbox) { return null; }
+        let item = DesignStore.toolbox.getSelected();
         if (item instanceof ReportToolboxItem) { return item; }
         return null;
     }
     public set SelectedItem(value) { //暂只支持清空选择
-        if (!DesignStore.toolBoxTree) { return; }
-        DesignStore.toolBoxTree.clearSelected();
+        if (!DesignStore.toolbox) { return; }
+        DesignStore.toolbox.clearSelected();
     }
 
     public static GetToolboxItems(): IDesignToolboxItem[] {

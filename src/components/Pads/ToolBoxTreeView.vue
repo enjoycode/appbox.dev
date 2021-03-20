@@ -70,7 +70,7 @@ export default {
     },
 
     mounted() {
-        store.toolBoxTree = this
+        store.toolbox = this
         store.onEvent('DesignerChanged', this.onDesignerChanged)
     },
     destroyed() {
