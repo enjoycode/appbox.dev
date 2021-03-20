@@ -185,12 +185,9 @@ export default {
             this.$refs.editor.focus()
         },
         loadModel(byCheckout) {
-            const _this = this;
             $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]).then(res => {
-                _this.onModelLoaded(res, byCheckout)
-            }).catch(err => {
-                _this.$message.error('加载视图代码失败: ' + err)
-            })
+                this.onModelLoaded(res, byCheckout)
+            }).catch(err => this.$message.error('加载视图代码失败: ' + err))
         },
         // 视图模型加载成功
         onModelLoaded(model, byCheckout) {

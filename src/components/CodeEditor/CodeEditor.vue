@@ -19,7 +19,7 @@ export default {
         this.createMonaco()
     },
     destroyed() {
-        for (var i = 0; i < this.toDispose.length; i++) {
+        for (let i = 0; i < this.toDispose.length; i++) {
             this.toDispose[i].dispose()
         }
         if (this.editor) {
@@ -102,7 +102,7 @@ export default {
         },
         createMonaco(isFirstTime) {
             this.editor = monaco.editor.create(this.$el, this.editorOptions)
-            var model = this.editor.getModel()
+            const model = this.editor.getModel();
             model.fileName = this.fileName // 给model设置虚拟文件名
             this.toDispose.push(this.editor.onDidChangeModelContent(event => {
                 this.$emit('codeChanged', event)
@@ -119,26 +119,26 @@ export default {
                 return
             }
 
-            var existed = this.getLineBreakpoint(e.target.position.lineNumber)
+            const existed = this.getLineBreakpoint(e.target.position.lineNumber);
             if (existed !== -1) {
-                var oldbp = this.breakpoints[existed]
+                const oldbp = this.breakpoints[existed];
                 this.breakpoints.splice(existed, 1)
                 this.editor.deltaDecorations([oldbp], [])
             } else {
-                var newbps = this.editor.deltaDecorations([], [{
+                const newbps = this.editor.deltaDecorations([], [{
                     range: e.target.range,
                     options: {
                         isWholeLine: true,
                         glyphMarginClassName: 'breakpoint'
                     }
-                }])
+                }]);
                 this.breakpoints = this.breakpoints.concat(newbps)
             }
         },
         getLineBreakpoint(line) {
-            for (var i = 0; i < this.breakpoints.length; i++) {
-                var bp = this.breakpoints[i]
-                var range = this.editor.getModel().getDecorationRange(bp)
+            for (let i = 0; i < this.breakpoints.length; i++) {
+                const bp = this.breakpoints[i];
+                const range = this.editor.getModel().getDecorationRange(bp);
                 if (range.startLineNumber === line) {
                     return i
                 }
@@ -147,10 +147,10 @@ export default {
         },
         /** 用于开始调试时获取 */
         getBreakpoints() {
-            var bps = []
-            for (var i = 0; i < this.breakpoints.length; i++) {
-                var bp = this.breakpoints[i]
-                var range = this.editor.getModel().getDecorationRange(bp)
+            const bps = [];
+            for (let i = 0; i < this.breakpoints.length; i++) {
+                const bp = this.breakpoints[i];
+                const range = this.editor.getModel().getDecorationRange(bp);
                 bps.push({ id: bp, line: range.startLineNumber })
             }
             return bps

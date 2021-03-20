@@ -16,6 +16,10 @@ export default {
     errors: null, // 指向ErrorsView实例
     usages: null, // 指向UsagesView实例
 
+    events: {
+      SettingsChanged: 'SettingsChanged'
+    },
+
     emitEvent(eventId, arg1, arg2, arg3) {
         eventBus.$emit(eventId, arg1, arg2, arg3)
     },
