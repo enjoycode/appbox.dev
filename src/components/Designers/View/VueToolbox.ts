@@ -2,6 +2,7 @@ import SelectEditor from '@/components/Designers/View/PropertyEditors/SelectEdit
 import TextEditor from '@/components/Designers/View/PropertyEditors/TextEditor.vue';
 import {IVueProp, IVueWidget} from '@/design/IVueWidget';
 import DesignStore from '@/design/DesignStore';
+import LoadView from '@/design/LoadView';
 
 export default class VueToolbox {
 
@@ -52,12 +53,17 @@ export default class VueToolbox {
         return VueToolbox.widgets.find(c => c.Name == name);
     }
 
-    public static GetPropEditor(prop: IVueProp): any {
+    public static GetPropEditor(prop: IVueProp, root: any): any {
         //TODO: finish it
-        if (prop.Editor == 'Select') {
-            return SelectEditor;
+        let isGlobal = !prop.Editor || prop.Editor.indexOf('.') < 0; //TODO:暂简单判断
+        if (isGlobal) {
+            if (prop.Editor == 'Select') {
+                return SelectEditor;
+            } else {
+                return TextEditor;
+            }
         } else {
-            return TextEditor;
+            return LoadView(prop.Editor, root);
         }
     }
 

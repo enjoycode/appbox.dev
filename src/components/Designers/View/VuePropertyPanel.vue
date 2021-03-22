@@ -122,7 +122,7 @@ export default class VuePropertyPanel extends Vue {
     }
 
     getPropEditor(prop: IVueProp): any {
-        return VueToolbox.GetPropEditor(prop);
+        return VueToolbox.GetPropEditor(prop, this.$root);
     }
 
     getEventAction(name: string): IVueEventAction | undefined {

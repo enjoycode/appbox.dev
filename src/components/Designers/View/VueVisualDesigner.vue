@@ -21,7 +21,7 @@
                                :h="item.h" :i="item.i" :key="item.i">
                         <div v-if="!preview" class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component :is="makeWidget(item)" :style="makeWidgetStyle(item)"
+                        <component :is="item.c" :style="makeWidgetStyle(item)"
                                    v-model="runState[item.m]" v-bind="item.p" v-on="item.a">
                             {{ item.t }}
                         </component>
@@ -101,7 +101,8 @@ export default class VueVisualDesigner extends Vue {
             h: toolboxItem.Height,
             n: toolboxItem.Name,
             p: VueToolbox.MakeDefaultProps(toolboxItem),
-            Widget: toolboxItem
+            Widget: toolboxItem,
+            c: this.makeWidget(toolboxItem.Component)
         };
         if (toolboxItem.Text) {
             layoutItem.t = toolboxItem.Text;
@@ -137,21 +138,22 @@ export default class VueVisualDesigner extends Vue {
         BuildEventHandler(item, this.runState, $runtime);
     }
 
-    makeWidget(item: IDesignLayoutItem) {
-        //先判断是否全局注册的组件
-        let isGlobal = item.Widget.Component.indexOf('.') < 0; //TODO:暂简单判断
-        if (isGlobal) {
-            return Vue.component(item.Widget.Component);
-        } else {
-            return LoadView(item.Widget.Component, this.$root);
-        }
-    }
-
     /** 仅用于设计时绑定设计及默认样式 */
     makeWidgetStyle(item: IDesignLayoutItem): object {
         let s = item.Widget.Style ? item.Widget.Style : {};
         s['zIndex'] = this.preview ? 'auto' : -1;
         return s;
+    }
+
+    makeWidget(name: string) {
+        //先判断是否全局注册的组件
+        let isGlobal = name.indexOf('.') < 0; //TODO:暂简单判断
+        if (isGlobal) {
+            return Vue.component(name);
+        } else {
+            console.log('加载自定义视图组件: ' + name);
+            return LoadView(name, this.$root);
+        }
     }
 
     onSwitchPreview() {
@@ -231,6 +233,7 @@ export default class VueVisualDesigner extends Vue {
                 let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
                 for (const item of designLayout) {
                     item.Widget = VueToolbox.GetWidget(item.n);
+                    item.c = this.makeWidget(item.n);
                     if (item.Widget.Events && !item.Events) {
                         item.Events = {};
                     }

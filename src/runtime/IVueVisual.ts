@@ -24,4 +24,6 @@ export interface IVueLayoutItem {
     e?: IVueEvent[];
     /** 运行时生成的事件处理器，用于v-on绑定 eg: {click: function()} */
     a?: object;
+    /** 运行时动态加载的Vue组件 */
+    c?: any;
 }
