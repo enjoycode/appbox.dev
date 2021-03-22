@@ -29,7 +29,7 @@ import DebugService from './DebugService'
 import ReferencesDialog from './ReferencesDialog'
 import InvokeDialog from './InvokeDialog'
 import DebugArgsDialog from './DebugArgsDialog'
-import {modelLibs} from '../../CodeEditor/EditorService'
+import {monaco, modelLibs} from '../../CodeEditor/EditorService'
 
 export default {
     components: {CodeEditor: CodeEditor},
@@ -74,10 +74,10 @@ export default {
         /** 设置编辑器快捷键 */
         initEditorCommands() {
             const _this = this;
-            this.$refs.editor.addCommand(window.monaco.KeyMod.CtrlCmd | window.monaco.KeyCode.KEY_S, function () {
+            this.$refs.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
                 _this.save()
             })
-            this.$refs.editor.addCommand(window.monaco.KeyCode.F5, function () {
+            this.$refs.editor.addCommand(monaco.KeyCode.F5, function () {
                 if (_this.hitBreakpoint) {
                     _this.continueBreakpoint()
                 } else {
@@ -122,8 +122,8 @@ export default {
             let _this = this
             // TODO:** 排队处理，防止服务端乱序执行
             // todo:***** 临时修复monaco升级至0.9.0的问题，原本event.range，现在event.changes[].range
-            for (var i = 0; i < event.changes.length; i++) {
-                var change = event.changes[i]
+            for (let i = 0; i < event.changes.length; i++) {
+                const change = event.changes[i];
                 $runtime.channel.invoke('sys.DesignService.ChangeBuffer', [1, this.target.ID,
                     change.range.startLineNumber, change.range.startColumn,
                     change.range.endLineNumber, change.range.endColumn, change.text]).catch(err => {
@@ -209,15 +209,15 @@ export default {
             DebugService.designer = this
             // 先获取服务方法
             let position = this.$refs.editor.getPosition()
-            var breakpoints = this.$refs.editor.getBreakpoints()
+            const breakpoints = this.$refs.editor.getBreakpoints();
             let args = [this.target.ID, position.lineNumber, position.column]
             $runtime.channel.invoke('sys.DesignService.GetServiceMethod', args).then(res => {
-                var method = JSON.parse(res)
-                for (var i = 0; i < method.Args.length; i++) {
+                const method = JSON.parse(res);
+                for (let i = 0; i < method.Args.length; i++) {
                     method.Args[i].Value = ''
                 }
                 // 显示输入参数对话框
-                var dlg = Vue.component('DebugArgsDialog', DebugArgsDialog)
+                const dlg = Vue.component('DebugArgsDialog', DebugArgsDialog);
                 DesignStore.ide.showDialog(dlg, {
                     ModelID: _this.target.ID, Service: _this.target.App + '.' + _this.target.Text,
                     Method: method,

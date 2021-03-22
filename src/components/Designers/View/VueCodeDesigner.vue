@@ -49,7 +49,7 @@
 
 <script>
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import {monaco, ts, modelLibs} from '../../CodeEditor/EditorService' //TODO: remove it
+import {monaco, ts, modelLibs} from '../../CodeEditor/EditorService'
 import compiler from './Compiler'
 import embedSourceMap from './EmbedSourceMap'
 import scopeStyle from './ScopeStyle'

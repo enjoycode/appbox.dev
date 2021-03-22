@@ -112,18 +112,18 @@ const transformer = <T extends ts.Node>(context: ts.TransformationContext) =>
  * 目的是方便Vue绑定
  */
 function makeNewEntity(appName: string, modelName: string): ts.ObjectLiteralExpression {
-    var fileName = `${appName}.Entities.${modelName}.d.ts`;
-    var libs = monaco.languages.typescript.javascriptDefaults.getExtraLibs();
-    var lib = libs[fileName];
+    const fileName = `${appName}.Entities.${modelName}.d.ts`;
+    const libs = monaco.languages.typescript.javascriptDefaults.getExtraLibs();
+    const lib = libs[fileName];
 
-    var props: ts.PropertyAssignment[] = [];
+    const props: ts.PropertyAssignment[] = [];
 
-    var s = ts.createSourceFile(fileName, lib.content, ts.ScriptTarget.Latest);
-    var n1 = s.getChildAt(0) as ts.SyntaxList;
-    var n2 = n1.getChildAt(0) as ts.ModuleDeclaration;
-    var n3 = n2.body as ts.ModuleDeclaration;
-    var n4 = n3.body as ts.ModuleBlock;
-    var n5 = n4.statements[0] as ts.ClassDeclaration;
+    const s = ts.createSourceFile(fileName, lib.content, ts.ScriptTarget.Latest);
+    const n1 = s.getChildAt(0) as ts.SyntaxList;
+    const n2 = n1.getChildAt(0) as ts.ModuleDeclaration;
+    const n3 = n2.body as ts.ModuleDeclaration;
+    const n4 = n3.body as ts.ModuleBlock;
+    const n5 = n4.statements[0] as ts.ClassDeclaration;
     n5.members.forEach(m => { //PropertyDeclaration
         props.push(ts.createPropertyAssignment((m.name as ts.Identifier).text, ts.createNull()));
     });

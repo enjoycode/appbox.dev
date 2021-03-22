@@ -12,8 +12,8 @@ export default {
 
     methods: {
         updateStyles() {
-            var items = []
-            for (var view in this.views) {
+            const items = [];
+            for (const view in this.views) {
                 items.push(this.views[view].styles)
             }
             this.styles = items
@@ -21,7 +21,7 @@ export default {
 
         // 视图加载成功,注意：调用者过滤没有styles的组件
         viewCreated(viewId, styles) {
-            var vid = viewId.replace('.', '_')
+            const vid = viewId.replace('.', '_');
             if (this.views[vid]) {
                 this.views[vid].count += 1
             } else {
@@ -34,7 +34,7 @@ export default {
         },
         // 视图被destroyed
         viewDestroyed(viewId) {
-            var vid = viewId.replace('.', '_')
+            const vid = viewId.replace('.', '_');
             if (this.views[vid]) {
                 this.views[vid].count -= 1
                 if (this.views[vid].count <= 0) {

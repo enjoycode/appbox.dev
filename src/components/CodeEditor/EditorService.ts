@@ -7,22 +7,22 @@
 //    export = ts
 //}
 
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api' //自定languages不能import * as monaco from 'monaco-editor'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'; //自定languages不能import * as monaco from 'monaco-editor'
 // import * as monaco from 'monaco-editor'
-import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices'
-import { Docomment } from './CSharpFeatures/Docomment/Docomment'
-import TextMateTheme from './TextMateTheme'
-import { CSharpLanguageConfig } from './CSharpFeatures/LanguageConfiguration'
-import CSharpFeatures from './CSharpFeatures'
-import { JavaLanguageConfig } from "./JavaFeatures/LanguageConfiguration";
-import JavaFeatures from "./JavaFeatures"
-import TypeScriptFeatures from './TypeScriptFeatures'
-import { IModelNode, IDesignNode } from '@/design/IDesignNode'
-import store from '@/design/DesignStore'
-import DesignNodeType from '@/design/DesignNodeType'
-import ModelType from '@/design/ModelType'
-import { loadWASM } from 'onigasm'
-import { Registry, StackElement, INITIAL } from 'monaco-textmate'
+import ts from 'monaco-editor/esm/vs/language/typescript/lib/typescriptServices';
+import {Docomment} from './CSharpFeatures/Docomment/Docomment';
+import TextMateTheme from './TextMateTheme';
+import {CSharpLanguageConfig} from './CSharpFeatures/LanguageConfiguration';
+import CSharpFeatures from './CSharpFeatures';
+import {JavaLanguageConfig} from './JavaFeatures/LanguageConfiguration';
+import JavaFeatures from './JavaFeatures';
+import TypeScriptFeatures from './TypeScriptFeatures';
+import {IModelNode, IDesignNode} from '@/design/IDesignNode';
+import store from '@/design/DesignStore';
+import DesignNodeType from '@/design/DesignNodeType';
+import ModelType from '@/design/ModelType';
+import {loadWASM} from 'onigasm';
+import {Registry, StackElement, INITIAL} from 'monaco-textmate';
 
 init();
 
@@ -32,7 +32,7 @@ async function init() {
     try {
         await loadWASM('/dev/onigasm.wasm');
     } catch { //防止开发时热加载
-        // return
+        console.error('load onigasm.wasm error');
     }
     const registry = new Registry({
         getGrammarDefinition: async (scopeName) => {
@@ -40,19 +40,19 @@ async function init() {
                 return {
                     format: 'json',
                     content: await (await fetch('/dev/java.tmLanguage.json')).text()
-                }
+                };
             } else {
                 return {
                     format: 'json',
                     content: await (await fetch('/dev/csharp.tmLanguage.json')).text()
-                }
+                };
             }
         }
     });
     // 先注册language，因为自定义monaco webpack plugin没有加载默认csharp
-    monaco.languages.register({ id: 'csharp' });
+    monaco.languages.register({id: 'csharp'});
     monaco.languages.setLanguageConfiguration('csharp', CSharpLanguageConfig);
-    monaco.languages.register({ id: "java" });
+    monaco.languages.register({id: 'java'});
     monaco.languages.setLanguageConfiguration('java', JavaLanguageConfig);
 
     // map of monaco "language id's" to TextMate scopeNames
@@ -77,10 +77,11 @@ class TokenizerState implements monaco.languages.IState {
 
     constructor(
         private _ruleStack: StackElement
-    ) { }
+    ) {
+    }
 
     public get ruleStack(): StackElement {
-        return this._ruleStack
+        return this._ruleStack;
     }
 
     public clone(): TokenizerState {
@@ -103,12 +104,12 @@ function wireTmGrammars(registry: Registry, languages: Map<string, string>) {
     return Promise.all(
         Array.from(languages.keys())
             .map(async (languageId) => {
-                const grammar = await registry.loadGrammar(languages.get(languageId))
+                const grammar = await registry.loadGrammar(languages.get(languageId));
                 monaco.languages.setTokensProvider(languageId, {
                     getInitialState: () => new TokenizerState(INITIAL),
                     tokenize: (line: string, state: TokenizerState) => {
                         // console.log('csharp tokenize: ' + line)
-                        const res = grammar.tokenizeLine(line, state.ruleStack)
+                        const res = grammar.tokenizeLine(line, state.ruleStack);
                         // console.log('tokenize res: ', res)
                         return {
                             endState: new TokenizerState(res.ruleStack),
@@ -117,11 +118,11 @@ function wireTmGrammars(registry: Registry, languages: Map<string, string>) {
                                 // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
                                 scopes: token.scopes[token.scopes.length - 1]
                             })),
-                        }
+                        };
                     }
-                })
+                });
             })
-    )
+    );
 }
 
 //TODO: 以下ModelLib相关移至单独文件
@@ -162,11 +163,11 @@ class ModelLibManager {
 
     private getDeclareService(type: ModelType): string {
         if (type == ModelType.Service) {
-            return "sys.DesignService.GenServiceDeclare";
+            return 'sys.DesignService.GenServiceDeclare';
         } else if (type == ModelType.Entity) {
-            return "sys.DesignService.GenEntityDeclare";
+            return 'sys.DesignService.GenEntityDeclare';
         } else {
-            throw "NotImpl";
+            throw 'NotImpl';
         }
     }
 
@@ -180,7 +181,7 @@ class ModelLibManager {
                 this.libs[d.Name] = ls.addExtraLib(d.Declare, d.Name + '.d.ts');
             });
         }).catch(err => {
-            console.log("加载模型声明错误: " + err); // TODO: show to IDE output pad.
+            console.log('加载模型声明错误: ' + err); // TODO: show to IDE output pad.
         });
     }
 
@@ -209,7 +210,7 @@ class ModelLibManager {
             }
             this.libs[declare.Name] = t; //指向新的
         }).catch(err => {
-            console.log("更新模型声明错误: " + err); // TODO: show to IDE output pad.
+            console.log('更新模型声明错误: ' + err); // TODO: show to IDE output pad.
         });
     }
 
@@ -227,5 +228,5 @@ class ModelLibManager {
 
 let modelLibs = new ModelLibManager();
 
-export { monaco, ts }
-export { modelLibs }
+export {monaco, ts};
+export {modelLibs};

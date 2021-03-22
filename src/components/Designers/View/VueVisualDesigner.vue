@@ -44,9 +44,10 @@ import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
 import VueToolbox from '@/components/Designers/View/VueToolbox';
 import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
 import {IDesignLayoutItem, IVueState, IVueWidget} from '@/design/IVueWidget';
-import {IVueEvent, IVueLayoutItem} from '@/runtime/IVueVisual';
+import {IVueLayoutItem} from '@/runtime/IVueVisual';
 import {IDesignNode} from '@/design/IDesignNode';
 import {BuildEventHandler} from '@/runtime/VueWidgetService';
+import LoadView from '@/design/LoadView';
 
 @Component({
     components: {RouteDialog, PropertyPanel: VuePropertyPanel}
@@ -141,8 +142,9 @@ export default class VueVisualDesigner extends Vue {
         let isGlobal = item.Widget.Component.indexOf('.') < 0; //TODO:暂简单判断
         if (isGlobal) {
             return Vue.component(item.Widget.Component);
+        } else {
+            return LoadView(item.Widget.Component, this.$root);
         }
-        return null;
     }
 
     /** 仅用于设计时绑定设计及默认样式 */
