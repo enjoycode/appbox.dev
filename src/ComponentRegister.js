@@ -289,8 +289,7 @@ export default function (/*bool desktop, bool mobile*/) {
 
     // ===================AG-Grid============================
     Vue.component("AgGrid", r => require.ensure([], () => {
-        require('ag-grid-community/dist/styles/ag-grid.min.css')
-        require('ag-grid-community/dist/styles/ag-theme-alpine.min.css')
+        require('@/assets/ag-grid.scss')
         r(require('ag-grid-vue/lib/AgGridVue').AgGridVue)
     }, 'ag-grid'))
 
