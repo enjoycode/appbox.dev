@@ -287,6 +287,13 @@ export default function (/*bool desktop, bool mobile*/) {
         r(require('element-ui/lib/divider').default)
     }, 'easeui'))
 
+    // ===================AG-Grid============================
+    Vue.component("AgGrid", r => require.ensure([], () => {
+        require('ag-grid-community/dist/styles/ag-grid.min.css')
+        require('ag-grid-community/dist/styles/ag-theme-alpine.min.css')
+        r(require('ag-grid-vue/lib/AgGridVue').AgGridVue)
+    }, 'ag-grid'))
+
     // ===================Vue-ECharts========================
     Vue.component('v-chart', r => require.ensure([], () => {
         // 引入 ECharts 主模块
