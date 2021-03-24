@@ -151,7 +151,6 @@ export default class VueVisualDesigner extends Vue {
         if (isGlobal) {
             return Vue.component(name);
         } else {
-            console.log('加载自定义视图组件: ' + name);
             return LoadView(name, this.$root);
         }
     }
@@ -178,7 +177,7 @@ export default class VueVisualDesigner extends Vue {
 
     save() {
         let template = JSON.stringify(this.layout, (k, v) => {
-            if (k == 'Widget' || k == 'moved') { //忽略序列化
+            if (k == 'Widget' || k == 'moved' || k == 'a' || k == 'c') { //忽略序列化
                 return undefined;
             }
             return v;
@@ -233,7 +232,7 @@ export default class VueVisualDesigner extends Vue {
                 let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
                 for (const item of designLayout) {
                     item.Widget = VueToolbox.GetWidget(item.n);
-                    item.c = this.makeWidget(item.n);
+                    item.c = this.makeWidget(item.Widget.Component);
                     if (item.Widget.Events && !item.Events) {
                         item.Events = {};
                     }
@@ -277,6 +276,10 @@ export default class VueVisualDesigner extends Vue {
     box-sizing: border-box;
 }
 
+.widgetPanel >>> .vue-resizable-handle {
+    z-index: 9999;
+}
+
 .widgetOverlay {
     position: absolute;
     top: 0;
@@ -287,6 +290,7 @@ export default class VueVisualDesigner extends Vue {
     -moz-opacity: 0.1;
     width: 100%;
     height: 100%;
+    z-index: 9998;
 }
 
 </style>

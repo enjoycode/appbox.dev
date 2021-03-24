@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { Message, MessageBox, Loading, Notification } from 'element-ui'
-import { Toast, Indicator, InfiniteScroll, Lazyload } from 'mint-ui'
+import {Message, MessageBox, Loading, Notification} from 'element-ui'
+import VGrid from "@revolist/vue-datagrid";
 
 // 基本样式导入
 require('element-ui/lib/theme-chalk/message.css')
@@ -309,70 +309,6 @@ export default function (/*bool desktop, bool mobile*/) {
         r(require('./easeui/ECharts/ECharts.vue'))
     }, 'easeui-chart'))
 
-    // ================== 手机端控件 mint ui ============
-    Vue.use(InfiniteScroll) // 当列表即将滚动到底部时，自动加载更多数据
-    // Vue.use(Lazyload, merge({
-    //     loading: require('mint-ui/src/assets/loading-spin.svg'),
-    //     attempt: 3
-    //   }, null)) // 延迟加载
-    Vue.use(Lazyload, {
-        loading: require('mint-ui/src/assets/loading-spin.svg'),
-        attempt: 3
-    }) // 延迟加载
-    Vue.component('MtField', r => require.ensure([], () => {
-        require('mint-ui/lib/field/style.css')
-        r(require('mint-ui/lib/field')) // 属性
-    }, 'mintui'))
-    Vue.component('MtHeader', r => require.ensure([], () => {
-        require('mint-ui/lib/header/style.css')
-        r(require('mint-ui/lib/header')) // header
-    }, 'mintui'))
-    Vue.component('MtTabbar', r => require.ensure([], () => {
-        require('mint-ui/lib/tabbar/style.css')
-        r(require('mint-ui/lib/tabbar'))
-    }, 'mintui')) // 底部导航条
-    Vue.component('MtTabItem', r => require.ensure([], () => {
-        require('mint-ui/lib/tab-item/style.css')
-        r(require('mint-ui/lib/tab-item'))
-    }, 'mintui')) // 底部导航条子项
-    Vue.component('MtPopup', r => require.ensure([], () => {
-        require('mint-ui/lib/popup/style.css')
-        r(require('mint-ui/lib/popup'))
-    }, 'mintui')) // 弹出层，可定位
-    Vue.component('MtPicker', r => require.ensure([], () => {
-        require('mint-ui/lib/picker/style.css')
-        r(require('mint-ui/lib/picker'))
-    }, 'mintui')) // 可实现地区联动，要依赖popup控件
-    Vue.component('MtDatetimePicker', r => require.ensure([], () => {
-        require('mint-ui/lib/datetime-picker/style.css')
-        r(require('mint-ui/lib/datetime-picker'))
-    }, 'mintui')) // 时间选择控件
-    Vue.component('MtSwipe', r => require.ensure([], () => {
-        require('mint-ui/lib/swipe/style.css')
-        r(require('mint-ui/lib/swipe'))
-    }, 'mintui')) // 轮播，支持触摸滑动
-    Vue.component('MtSwipeItem', r => require.ensure([], () => {
-        require('mint-ui/lib/swipe-item/style.css')
-        r(require('mint-ui/lib/swipe-item'))
-    }, 'mintui')) // 轮播子项
-    Vue.component('MtCell', r => require.ensure([], () => {
-        require('mint-ui/lib/cell/style.css')
-        r(require('mint-ui/lib/cell'))
-    }, 'mintui'))
-    Vue.component('MtCellSwipe', r => require.ensure([], () => {
-        require('mint-ui/lib/cell-swipe/style.css')
-        r(require('mint-ui/lib/cell-swipe'))
-    }, 'mintui')) // 此控件可支持手左右滑动，实现更多操作，如左滑显示删除按钮
-    Vue.component('MtSpinner', r => require.ensure([], () => {
-        require('mint-ui/lib/spinner/style.css')
-        r(require('mint-ui/lib/spinner'))
-    }, 'mintui')) // 加载中动画，上面导入的eSpinner好像没有size以及color属性
-    Vue.component('MtLoadmore', r => require.ensure([], () => {
-        require('mint-ui/lib/loadmore/style.css')
-        r(require('mint-ui/lib/loadmore'))
-    }, 'mintui')) // 可实现下拉刷新，上拉加载更多等功能
-    // ================== 手机端控件mint ui ==============
-
     // ===================以下扩展的===================
     Vue.component('ExRichEditor', r => require.ensure([], () => {
         require('quill/dist/quill.snow.css')
@@ -406,12 +342,12 @@ export default function (/*bool desktop, bool mobile*/) {
     Vue.component('ExTerminal', r => require.ensure([], () => {
         r(require('./easeui/Terminal').default)
     }, 'easeui-terminal'))
-    Vue.component('ExTextboxCell', r => require.ensure([], () => {
-        r(require('./easeui/TableCells/TextBoxCell.vue'))
-    }, 'easeui-cells'))
+
+    Vue.component('VGrid', VGrid)
     Vue.component('ExMarkdown', () => import(/* webpackChunkName: "easeui-markdown" */ './easeui/Markdown/Markdown.js'))
     Vue.component('PdfViewer', () => import(/* webpackChunkName: "easeui-pdf" */ './easeui/PdfViewer/PdfViewer.vue'))
 
+    //===================GridLayout===================
     Vue.component('GridLayout', r => require.ensure([], () => {
         r(require('vue-grid-layout').GridLayout)
     }, 'grid-layout'))
@@ -428,6 +364,4 @@ export default function (/*bool desktop, bool mobile*/) {
     Vue.prototype.$prompt = MessageBox.prompt
     Vue.prototype.$notify = Notification
     Vue.prototype.$message = Message
-    Vue.prototype.$toast = Toast
-    Vue.prototype.$indicator = Indicator
 }

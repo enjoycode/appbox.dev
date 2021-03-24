@@ -63,6 +63,7 @@ export default class VueToolbox {
                 return TextEditor;
             }
         } else {
+            console.log('加载自定义属性编辑器')
             return LoadView(prop.Editor, root);
         }
     }

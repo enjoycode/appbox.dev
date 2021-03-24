@@ -4,14 +4,10 @@
             <!--State-->
             <el-collapse-item key="State" title="State" name="State">
                 <el-button-group>
-                    <el-button size="mini" type="plain" icon="fa fa-plus"></el-button>
+                    <el-button @click="onAddState" size="mini" type="plain" icon="fa fa-plus"></el-button>
                     <el-button size="mini" type="plain" icon="fa fa-minus"></el-button>
                 </el-button-group>
-                <el-table :data="state" size="mini" border>
-                    <el-table-column prop="Name" label="Name"></el-table-column>
-                    <el-table-column prop="Type" label="Type"></el-table-column>
-                    <el-table-column prop="Value" label="Value"></el-table-column>
-                </el-table>
+                <v-grid :columns="stateColumns" :source="state" style="height: 200px"></v-grid>
             </el-collapse-item>
             <!--Widget-->
             <el-collapse-item v-if="owner" key="Widget" title="Widget" name="Widget">
@@ -69,6 +65,12 @@ export default class VuePropertyPanel extends Vue {
     @Prop({type: Array}) state: IVueState[];
     @Prop({type: Object}) owner: IDesignLayoutItem;
 
+    stateColumns = [
+        {prop: 'Name', name: 'Name'},
+        {prop: 'Type', name: 'Type'},
+        {prop: 'Value', name: 'Value'}
+    ];
+
     labelWidth = '100px';
     expands = ['State', 'Widget', 'Props', 'Events']; // 展开所有分类
 
@@ -122,7 +124,12 @@ export default class VuePropertyPanel extends Vue {
     }
 
     getPropEditor(prop: IVueProp): any {
-        return VueToolbox.GetPropEditor(prop, this.$root);
+        if (!prop.e) {
+            console.log('设置属性编辑器: ' + prop.Editor);
+            prop.e = VueToolbox.GetPropEditor(prop, this.$root);
+        }
+
+        return prop.e;
     }
 
     getEventAction(name: string): IVueEventAction | undefined {
@@ -147,6 +154,10 @@ export default class VuePropertyPanel extends Vue {
         }
         //触发事件通知设计器重新生成运行时事件处理器
         this.$emit('build-event', this.owner);
+    }
+
+    onAddState() {
+        this.state.push({Name: 'name', Type: 'string', Value: null});
     }
 
 }

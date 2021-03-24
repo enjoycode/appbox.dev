@@ -39,7 +39,7 @@ export default {
                 this.views[vid].count -= 1
                 if (this.views[vid].count <= 0) {
                     delete this.views[vid]
-                    this.updateStyles() // this.$forceUpdate()
+                    this.updateStyles()
                 }
             }
         }
