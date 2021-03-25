@@ -1,5 +1,6 @@
-import {IVueLayoutItem} from '@/runtime/IVueVisual';
+import {IVueGridLayoutItem} from '@/runtime/IVueVisual';
 
+/** 仅用于工具箱定义 */
 export interface IVueProp {
     readonly Name: string;
     readonly Type: string;
@@ -9,16 +10,12 @@ export interface IVueProp {
     e?: any;                        //运行时编辑器
 }
 
+/** 仅用于工具箱定义 */
 export interface IVueEvent {
     readonly Name: string;
 }
 
-export interface IVueState {
-    readonly Name: string;
-    readonly Type: string;
-    readonly Value: any;
-}
-
+/** 仅用于工具箱定义 */
 export interface IVueWidget {
     readonly Name: string;          //工具箱的显示名称
     readonly Icon: string;          //工具箱显示图标
@@ -32,45 +29,8 @@ export interface IVueWidget {
     readonly Events?: IVueEvent[];
 }
 
-type EventAction = 'LoadData' | 'PostData' | 'RunScript';
-
-export interface IVueEventAction {
-    /** 操作类型, eg: LoadData */
-    readonly Type: EventAction;
-}
-
-export interface IVueLoadDataAction extends IVueEventAction {
-    State: string;
-    Service: string;
-    ServiceArgs: any[]; //eg: [{Name:'arg1', Type:'string', Value:'"rick"'}], Value为表达式
-}
-
-export function BuildActionScript(action: IVueEventAction): string {
-    if (action.Type == 'LoadData') {
-        let loadData: IVueLoadDataAction = <IVueLoadDataAction> action;
-        let s = '$runtime.channel.invoke("' + loadData.Service + '",[';
-        let needSep = false;
-        for (const arg of loadData.ServiceArgs) {
-            if (needSep) {
-                s += ',';
-            } else {
-                needSep = true;
-            }
-            s += arg.Value;
-        }
-        s += ']).then(res=>s.' + loadData.State + '=res)';
-        s += '.catch(err=>alert(err))';
-        return s;
-    } else {
-        //TODO:
-        return '';
-    }
-}
-
 /** 设计时的布局项 */
-export interface IDesignLayoutItem extends IVueLayoutItem {
+export interface IDesignLayoutItem extends IVueGridLayoutItem {
     /** 对应的工具箱Widget定义 */
     Widget?: IVueWidget;
-    /** 设计时事件定义 eg: {click: {IVueEventAction}} */
-    Events?: object;
 }

@@ -7,7 +7,12 @@
                     <el-button @click="onAddState" size="mini" type="plain" icon="fa fa-plus"></el-button>
                     <el-button size="mini" type="plain" icon="fa fa-minus"></el-button>
                 </el-button-group>
-                <v-grid :columns="stateColumns" :source="state" style="height: 200px"></v-grid>
+                <c-grid :data="state" :theme="gridTheme" :default-row-height="28"
+                        style="height:180px;border: solid silver 1px;background-color: white">
+                    <c-grid-input-column field="Name" caption="Name" :width="80"></c-grid-input-column>
+                    <c-grid-input-column field="Type" caption="Type" :width="100"></c-grid-input-column>
+                    <c-grid-button-column field="Value" caption="..." width="auto">Value</c-grid-button-column>
+                </c-grid>
             </el-collapse-item>
             <!--Widget-->
             <el-collapse-item v-if="owner" key="Widget" title="Widget" name="Widget">
@@ -56,7 +61,8 @@ import Component from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
 import VueToolbox from '@/components/Designers/View/VueToolbox';
 import EventEditor from '@/components/Designers/View/PropertyEditors/EventEditor.vue';
-import {BuildActionScript, IDesignLayoutItem, IVueEventAction, IVueProp, IVueState} from '@/design/IVueWidget';
+import {IDesignLayoutItem, IVueProp} from '@/design/IVueWidget';
+import {IVueEventAction, IVueState} from '@/runtime/IVueVisual';
 
 @Component({
     components: {EventEditor}
@@ -70,6 +76,14 @@ export default class VuePropertyPanel extends Vue {
         {prop: 'Type', name: 'Type'},
         {prop: 'Value', name: 'Value'}
     ];
+
+    gridTheme = {
+        frozenRowsBgColor: '#f3f3f3',
+        borderColor: 'silver',
+        highlightBorderColor: '#409EFF',
+        underlayBackgroundColor: 'white',
+        font: '12px sans-serif',
+    };
 
     labelWidth = '100px';
     expands = ['State', 'Widget', 'Props', 'Events']; // 展开所有分类
@@ -133,27 +147,17 @@ export default class VuePropertyPanel extends Vue {
     }
 
     getEventAction(name: string): IVueEventAction | undefined {
-        if (!this.owner || !this.owner.Events || !this.owner.Events[name]) {
+        if (!this.owner || !this.owner.e || !this.owner.e[name]) {
             return undefined;
         }
-        return this.owner.Events[name];
+        return this.owner.e[name];
     }
 
     setEventAction(name: string, newValue: IVueEventAction) {
-        this.$set(this.owner.Events, name, newValue);
-        //生成运行时脚本
-        let actionScript = BuildActionScript(newValue);
         if (!this.owner.e) {
-            this.$set(this.owner, 'e', []);
+            this.$set(this.owner, 'e', {});
         }
-        let index = this.owner.e.findIndex(i => i.n == name);
-        if (index < 0) {
-            this.owner.e.push({n: name, c: actionScript});
-        } else {
-            this.owner.e[index].c = actionScript; //已存在更新脚本
-        }
-        //触发事件通知设计器重新生成运行时事件处理器
-        this.$emit('build-event', this.owner);
+        this.$set(this.owner.e, name, newValue);
     }
 
     onAddState() {

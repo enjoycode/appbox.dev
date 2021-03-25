@@ -12,9 +12,6 @@
   "dependencies": {
     "@antv/g2plot": "^1.1.24",
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@revolist/vue-datagrid": "^2.9.9",
-    "ag-grid-community": "^25.1.0",
-    "ag-grid-vue": "^25.1.0",
     "axios": "^0.21.1",
     "canvas-5-polyfill": "^0.1.5",
     "echarts": "^4.8.0",
@@ -32,7 +29,6 @@
     "markdown-it-sup": "^1.0.0",
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-toc-and-anchor": "^4.2.0",
-    "mint-ui": "^2.2.13",
     "monaco-editor": "^0.23.0",
     "monaco-textmate": "^3.0.1",
     "onigasm": "^2.2.5",
@@ -42,7 +38,9 @@
     "setasap": "^2.0.1",
     "tslib": "^1.14.1",
     "vue": "^2.6.12",
+    "vue-cheetah-grid": "^0.23.0-beta.5",
     "vue-class-component": "^6.0.0",
+    "vue-easytable": "^2.4.1",
     "vue-grid-layout": "^2.3.12",
     "vue-meta": "^1.6.0",
     "vue-moment": "^4.1.0",
@@ -58,8 +56,6 @@
     "@vue/cli-service": "^4.5.12",
     "copy-webpack-plugin": "^5.1.1",
     "monaco-editor-webpack-plugin": "^3.0.1",
-    "node-sass": "^5.0.0",
-    "sass-loader": "^8.0.2",
     "typescript": "^4.2.3",
     "vue-template-compiler": "^2.6.12"
   }

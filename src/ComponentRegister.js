@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import {Message, MessageBox, Loading, Notification} from 'element-ui'
-import VGrid from "@revolist/vue-datagrid";
 
 // 基本样式导入
 require('element-ui/lib/theme-chalk/message.css')
@@ -287,12 +286,6 @@ export default function (/*bool desktop, bool mobile*/) {
         r(require('element-ui/lib/divider').default)
     }, 'easeui'))
 
-    // ===================AG-Grid============================
-    Vue.component("AgGrid", r => require.ensure([], () => {
-        require('@/assets/ag-grid.scss')
-        r(require('ag-grid-vue/lib/AgGridVue').AgGridVue)
-    }, 'ag-grid'))
-
     // ===================Vue-ECharts========================
     Vue.component('v-chart', r => require.ensure([], () => {
         // 引入 ECharts 主模块
@@ -343,9 +336,15 @@ export default function (/*bool desktop, bool mobile*/) {
         r(require('./easeui/Terminal').default)
     }, 'easeui-terminal'))
 
-    Vue.component('VGrid', VGrid)
     Vue.component('ExMarkdown', () => import(/* webpackChunkName: "easeui-markdown" */ './easeui/Markdown/Markdown.js'))
     Vue.component('PdfViewer', () => import(/* webpackChunkName: "easeui-pdf" */ './easeui/PdfViewer/PdfViewer.vue'))
+
+    Vue.component("CGridColumnGroup", () => import(/* webpackChunkName: "cgrid" */ 'vue-cheetah-grid/lib/CGridColumnGroup'))
+    Vue.component("CGridColumn", () => import(/* webpackChunkName: "cgrid" */ 'vue-cheetah-grid/lib/CGridColumn'))
+    Vue.component("CGridButtonColumn", () => import(/* webpackChunkName: "cgrid" */ 'vue-cheetah-grid/lib/CGridButtonColumn'))
+    Vue.component("CGridCheckColumn", () => import(/* webpackChunkName: "cgrid" */ 'vue-cheetah-grid/lib/CGridCheckColumn'))
+    Vue.component("CGridInputColumn", () => import(/* webpackChunkName: "cgrid" */ 'vue-cheetah-grid/lib/CGridInputColumn'))
+    Vue.component("CGrid", () => import(/* webpackChunkName: "cgrid" */ 'vue-cheetah-grid/lib/CGrid'))
 
     //===================GridLayout===================
     Vue.component('GridLayout', r => require.ensure([], () => {

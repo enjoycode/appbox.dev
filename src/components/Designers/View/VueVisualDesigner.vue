@@ -18,10 +18,10 @@
                 <grid-layout class="editorCanvas" :layout.sync="layout" :col-num="24" :row-height="32"
                              :is-draggable="!preview" :is-resizable="!preview">
                     <grid-item class="widgetPanel" v-for="item in layout" :x="item.x" :y="item.y" :w="item.w"
-                               :h="item.h" :i="item.i" :key="item.i">
+                               :h="item.h" :i="item.i" :key="item.i" @resize="onItemResize(item)">
                         <div v-if="!preview" class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
-                        <component :is="item.c" :style="makeWidgetStyle(item)"
+                        <component :ref="item.i" :is="item.c" :style="makeWidgetStyle(item)"
                                    v-model="runState[item.m]" v-bind="item.p" v-on="item.a">
                             {{ item.t }}
                         </component>
@@ -30,8 +30,7 @@
             </div>
         </div>
         <!-- 右边属性区域 -->
-        <property-panel slot="panel2" :owner="selectedWidget" :state="state"
-                        @build-event="onBuildEvent"></property-panel>
+        <property-panel slot="panel2" :owner="selectedWidget" :state="state"></property-panel>
     </ex-splitter>
 </template>
 
@@ -43,10 +42,10 @@ import DesignStore from '@/design/DesignStore';
 import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
 import VueToolbox from '@/components/Designers/View/VueToolbox';
 import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
-import {IDesignLayoutItem, IVueState, IVueWidget} from '@/design/IVueWidget';
-import {IVueLayoutItem} from '@/runtime/IVueVisual';
+import {IDesignLayoutItem, IVueWidget} from '@/design/IVueWidget';
+import {IVueGridLayoutItem, IVueState} from '@/runtime/IVueVisual';
 import {IDesignNode} from '@/design/IDesignNode';
-import {BuildEventHandler} from '@/runtime/VueWidgetService';
+import {BuildEventHandler, BuildRunState} from '@/runtime/VueWidgetService';
 import LoadView from '@/design/LoadView';
 
 @Component({
@@ -82,6 +81,14 @@ export default class VueVisualDesigner extends Vue {
         return id.toString();
     }
 
+    /** 用于某些基于Canvas的组件需要更新大小 */
+    onItemResize(item: IDesignLayoutItem) {
+        const c: any = this.$refs[item.i][0];
+        if (c && c.updateSize) {
+            c.updateSize();
+        }
+    }
+
     /** 添加工具箱选择的Widget */
     onAdd() {
         if (!DesignStore.toolbox) {
@@ -110,9 +117,6 @@ export default class VueVisualDesigner extends Vue {
         if (toolboxItem.Model) {
             layoutItem.m = '';
         }
-        if (toolboxItem.Events) {
-            layoutItem.Events = {};
-        }
         this.layout.push(layoutItem);
     }
 
@@ -131,11 +135,6 @@ export default class VueVisualDesigner extends Vue {
 
     onSelectWidget(item: IDesignLayoutItem) {
         this.selectedWidget = item;
-    }
-
-    /** 修改事件处理后重新生成运行时事件处理器 */
-    onBuildEvent(item: IDesignLayoutItem) {
-        BuildEventHandler(item, this.runState, $runtime);
     }
 
     /** 仅用于设计时绑定设计及默认样式 */
@@ -157,8 +156,11 @@ export default class VueVisualDesigner extends Vue {
 
     onSwitchPreview() {
         this.preview = !this.preview;
-        //TODO:重新生成运行时state
-        console.log(this.runState, this.layout);
+        if (this.preview) {
+            //重新生成运行时state及相关事件处理
+            this.runState = BuildRunState(this.state);
+            BuildEventHandler(this.layout, this.runState);
+        }
     }
 
     /** 改变路由设置 */
@@ -187,7 +189,7 @@ export default class VueVisualDesigner extends Vue {
         let runtimeCode = JSON.stringify({
             V: 1, //保留版本号
             L: this.buildRunLayout(),
-            S: this.buildRunState(),
+            S: this.state
         });
 
         //console.log(template);
@@ -200,8 +202,8 @@ export default class VueVisualDesigner extends Vue {
     }
 
     /** 生成运行时的布局 */
-    private buildRunLayout(): IVueLayoutItem[] {
-        let items: IVueLayoutItem[] = [];
+    private buildRunLayout(): IVueGridLayoutItem[] {
+        let items: IVueGridLayoutItem[] = [];
         for (const item of this.layout) {
             items.push({
                 i: item.i, n: item.n, x: item.x, y: item.y, w: item.w, h: item.h,
@@ -211,34 +213,18 @@ export default class VueVisualDesigner extends Vue {
         return items;
     }
 
-    /** 生成运行时状态 */
-    private buildRunState(): object {
-        let rs = {};
-        for (const s of this.state) {
-            rs[s.Name] = JSON.parse(s.Value);
-        }
-        return rs;
-    }
-
     mounted() {
         VueToolbox.EnsureLoaded().then(() => {
             return $runtime.channel.invoke('sys.DesignService.OpenViewModel', [this.target.ID]);
         }).then(res => {
             if (res.Script) {
                 this.state = JSON.parse(res.Script);
-                this.runState = this.buildRunState();
             }
             if (res.Template) {
                 let designLayout: IDesignLayoutItem[] = JSON.parse(res.Template);
                 for (const item of designLayout) {
                     item.Widget = VueToolbox.GetWidget(item.n);
                     item.c = this.makeWidget(item.Widget.Component);
-                    if (item.Widget.Events && !item.Events) {
-                        item.Events = {};
-                    }
-                    if (item.e) {
-                        BuildEventHandler(item, this.runState, $runtime);
-                    }
                 }
                 this.layout = designLayout;
             }
