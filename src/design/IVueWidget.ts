@@ -7,7 +7,7 @@ export interface IVueProp {
     readonly Default?: any;         //默认值
     readonly Editor?: string        //属性编辑器
     readonly EditorOptions?: any;   //属性编辑器选项
-    e?: any;                        //运行时编辑器
+    e?: any;                        //运行时编辑器,不用序列化
 }
 
 /** 仅用于工具箱定义 */

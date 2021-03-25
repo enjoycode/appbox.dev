@@ -45,7 +45,7 @@ import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
 import {IDesignLayoutItem, IVueWidget} from '@/design/IVueWidget';
 import {IVueGridLayoutItem, IVueState} from '@/runtime/IVueVisual';
 import {IDesignNode} from '@/design/IDesignNode';
-import {BuildEventHandler, BuildRunState} from '@/runtime/VueWidgetService';
+import {BuildEventsAndBindProps, BuildRunState} from '@/runtime/VueWidgetService';
 import LoadView from '@/design/LoadView';
 
 @Component({
@@ -159,7 +159,7 @@ export default class VueVisualDesigner extends Vue {
         if (this.preview) {
             //重新生成运行时state及相关事件处理
             this.runState = BuildRunState(this.state);
-            BuildEventHandler(this.layout, this.runState);
+            BuildEventsAndBindProps(this, this.layout, this.runState);
         }
     }
 
@@ -179,7 +179,7 @@ export default class VueVisualDesigner extends Vue {
 
     save() {
         let template = JSON.stringify(this.layout, (k, v) => {
-            if (k == 'Widget' || k == 'moved' || k == 'a' || k == 'c') { //忽略序列化
+            if (k == 'Widget' || k == 'moved' || k == 'a' || k == 'c' || v === this.runState) { //忽略序列化
                 return undefined;
             }
             return v;
@@ -192,7 +192,7 @@ export default class VueVisualDesigner extends Vue {
             S: this.state
         });
 
-        //console.log(template);
+        console.log(template);
 
         let node = this.target;
         let args = [node.Type, node.ID, template, script, styles, runtimeCode];

@@ -38,7 +38,7 @@
                         <component :is="getPropEditor(item)"
                                    :value="getPropValue(item.Name)"
                                    :options="item.EditorOptions"
-                                   @change="setPropValue(item.Name, $event)"></component>
+                                   @change="setPropValue(item, $event)"></component>
                     </el-form-item>
                 </el-form>
             </el-collapse-item>
@@ -125,16 +125,42 @@ export default class VuePropertyPanel extends Vue {
     }
 
     getPropValue(name: string): any {
-        if (!this.owner || !this.owner.p[name]) {
+        if (!this.owner) {
             return null;
         }
 
-        return this.owner.p[name];
+        if (this.owner.b && this.owner.b[name]) {
+            return this.owner.b[name];
+        }
+        if (this.owner.p && this.owner.p[name]) {
+            return this.owner.p[name];
+        }
+
+        return null;
     }
 
-    setPropValue(name: string, newValue: any) {
-        //TODO:判断等于默认值删除属性
-        this.$set(this.owner.p, name, newValue);
+    setPropValue(prop: IVueProp, newValue: any) {
+        if (!newValue) {
+            this.$delete(this.owner.p, prop.Name);
+            if (this.owner.b && this.owner.b[prop.Name]) {
+                this.$delete(this.owner.b, prop.Name);
+            }
+            return;
+        }
+
+        if (typeof newValue === 'string' && newValue.startsWith(':')) {
+            if (!this.owner.b) {
+                this.owner.b = {};
+            }
+            this.$set(this.owner.b, prop.Name, newValue);
+            //不用在这里同步绑定,预览时处理
+        } else {
+            //TODO:判断等于默认值删除属性
+            if (this.owner.b && this.owner.b[prop.Name]) {
+                this.$delete(this.owner.b, prop.Name);
+            }
+            this.$set(this.owner.p, prop.Name, newValue);
+        }
     }
 
     getPropEditor(prop: IVueProp): any {

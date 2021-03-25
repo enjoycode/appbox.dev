@@ -7,6 +7,8 @@ export interface IVueLayoutItem {
     m?: string;
     /** 组件Props eg: {size: 'mini'} */
     p: object;
+    /** 组件绑定的Props eg: {data:':data'} */
+    b?: object;
     /** 设计时事件定义 eg: {click: {IVueEventAction}} */
     e?: object;
     /** 运行时生成的事件处理器，用于v-on绑定 eg: {click: function(){...}} */
