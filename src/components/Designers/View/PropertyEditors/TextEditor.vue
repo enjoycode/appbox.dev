@@ -1,5 +1,7 @@
 <template>
-    <el-input v-model="tempValue" @change="onChanged($event)"></el-input>
+    <el-input v-model="tempValue"
+              @keyup.enter.stop.prevent="onChanged(tempValue)"
+              @change="onChanged($event)"></el-input>
 </template>
 
 <script lang="ts">
