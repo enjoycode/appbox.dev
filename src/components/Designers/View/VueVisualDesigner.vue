@@ -18,7 +18,8 @@
                 <grid-layout class="editorCanvas" :layout.sync="layout" :col-num="24" :row-height="32"
                              :is-draggable="!preview" :is-resizable="!preview">
                     <grid-item class="widgetPanel" v-for="item in layout" :x="item.x" :y="item.y" :w="item.w"
-                               :h="item.h" :i="item.i" :key="item.i" @resize="onItemResize(item)">
+                               :h="item.h" :i="item.i" :key="item.i"
+                               @resize="onItemResize(item)" @container-resized="onItemResize(item)">
                         <div v-if="!preview" class="widgetOverlay" @click="onSelectWidget(item)"></div>
                         <!-- 动态widget -->
                         <component :ref="item.i" :is="item.c" :style="makeWidgetStyle(item)"
@@ -83,9 +84,12 @@ export default class VueVisualDesigner extends Vue {
 
     /** 用于某些基于Canvas的组件需要更新大小 */
     onItemResize(item: IDesignLayoutItem) {
-        const c: any = this.$refs[item.i][0];
-        if (c && c.updateSize) {
-            c.updateSize();
+        const ref: any = this.$refs[item.i];
+        if (ref) {
+            const c = ref[0];
+            if (c && c.updateSize) {
+                c.updateSize();
+            }
         }
     }
 

@@ -30,9 +30,8 @@ export default {
                 children: 'Item'
             },
             onRenderContent: (h, node) => {
-                // return h('span', {staticClass: 'el-tree-node__label'}, node.data.Text)
-                const iconClass = 'fa fa-' + node.data.Icon;
-                return (<span class="el-tree-node__label"><i class={iconClass}></i> {node.data.Name}</span>)
+                return (<span class="el-tree-node__label">
+                        <i class={node.data.Icon + ' fa-fw'}></i> {node.data.Name}</span>)
             }
         }
     },
