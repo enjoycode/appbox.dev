@@ -3,6 +3,7 @@ import TextEditor from '@/components/Designers/View/PropertyEditors/TextEditor.v
 import {IVueProp, IVueWidget} from '@/design/IVueWidget';
 import DesignStore from '@/design/DesignStore';
 import LoadView from '@/design/LoadView';
+import IconEditor from '@/components/Designers/View/PropertyEditors/IconEditor.vue';
 
 export default class VueToolbox {
 
@@ -59,6 +60,8 @@ export default class VueToolbox {
         if (isGlobal) {
             if (prop.Editor == 'Select') {
                 return SelectEditor;
+            } else if (prop.Editor == 'Icon') {
+                return IconEditor;
             } else {
                 return TextEditor;
             }
