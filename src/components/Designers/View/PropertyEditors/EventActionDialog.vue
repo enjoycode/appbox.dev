@@ -3,13 +3,13 @@
         <el-form label-position="right" size="mini" label-width="80px">
             <el-form-item key="action" label="Action:">
                 <el-select v-model="type" @change="onTypeChanged" style="width: 100%">
-                    <el-option v-for="item in actions" :key="item.Name" :label="item.Name" :value="item.Name">
+                    <el-option v-for="item in actions" :key="item" :label="item" :value="item">
                     </el-option>
                 </el-select>
             </el-form-item>
             <!--LoadData-->
             <el-form-item v-if="hasState" key="state" label="State:">
-                <el-input v-model="action.State"></el-input>
+                <el-input :disabled="state != null" v-model="action.State"></el-input>
             </el-form-item>
             <el-form-item v-if="hasService" key="service" label="Service:">
                 <el-input v-model="action.Service" placeholder="eg: sys.HelloService.sayHello"
@@ -39,16 +39,26 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import {Prop, Watch} from 'vue-property-decorator';
-import {IVueEventAction, IVueLoadDataAction} from '@/runtime/IVueVisual';
+import {EventAction, IVueEventAction, IVueLoadDataAction, IVueState} from '@/runtime/IVueVisual';
 
 @Component
 export default class EventActionDialog extends Vue {
-    @Prop({type: Object}) value: IVueEventAction | undefined;
     @Prop({type: Boolean, required: true}) visible: boolean;
+    @Prop({type: Object}) value: IVueEventAction | undefined;
+    /** 如果有值表示正在编辑State的设置值行为 */
+    @Prop({type: Object}) state: IVueState | undefined;
 
-    type = 'LoadData';
-    actions = [{Name: 'LoadData'}, {Name: 'PostData'}, {Name: 'RunScript'}];
+    type: EventAction = 'LoadData';
 
+    get actions(): EventAction[] {
+        if (this.state) {
+            return ['LoadData'];
+        } else {
+            return ['LoadData', 'PostData', 'RunScript'];
+        }
+    }
+
+    /** 临时编辑的行为（从源复制的） */
     action: IVueLoadDataAction = {Type: 'LoadData', State: '', Service: '', ServiceArgs: []};
 
     get hasState(): boolean {
@@ -61,8 +71,15 @@ export default class EventActionDialog extends Vue {
 
     @Watch('visible')
     onVisibleChanged() {
-        if (this.visible && this.value) {
-            this.action = JSON.parse(JSON.stringify(this.value)); //deep clone
+        if (this.visible) {
+            if (this.state) {
+                if (this.state.Value) {
+                    this.action = JSON.parse(JSON.stringify(this.state.Value)); //TODO:deep clone
+                }
+                this.action.State = this.state.Name;
+            } else if (this.value) {
+                this.action = JSON.parse(JSON.stringify(this.value)); //TODO:deep clone
+            }
         }
     }
 

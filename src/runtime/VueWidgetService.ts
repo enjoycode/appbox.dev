@@ -1,8 +1,8 @@
-import {IVueEventAction, IVueLayoutItem, IVueLoadDataAction, IVueState} from '@/runtime/IVueVisual';
+import {IVueEventAction, IVueLayoutItem, IVueLoadDataAction, IVueState, RuntimeVueState} from '@/runtime/IVueVisual';
 
 /** 生成运行时视图状态 */
-export function BuildRunState(state: IVueState[]): object {
-    let rs = {};
+export function BuildRunState(state: IVueState[]): RuntimeVueState {
+    let rs = new RuntimeVueState();
     for (const s of state) {
         //先都设为默认值
         let defaultValue: any = null;
@@ -18,7 +18,7 @@ export function BuildRunState(state: IVueState[]): object {
         rs[s.Name] = defaultValue;
 
         if (s.Value) { //有值设置，则转换为函数
-            //TODO:
+            buildEventAction(s.Value, s.Name, rs.ValueActions, rs);
         }
     }
     return rs;
@@ -34,11 +34,7 @@ export function BuildEventsAndBindProps(vm: any, items: IVueLayoutItem[], state:
                     continue;
                 }
                 const action: IVueEventAction = item.e[prop];
-                if (action.Type == 'LoadData') {
-                    buildLoadDataAction(<IVueLoadDataAction> action, prop, handlers, vm, state);
-                } else {
-                    //TODO:
-                }
+                buildEventAction(action, prop, handlers, state);
             }
             item.a = handlers;
         }
@@ -56,17 +52,23 @@ export function BuildEventsAndBindProps(vm: any, items: IVueLayoutItem[], state:
     }
 }
 
-function buildLoadDataAction(action: IVueLoadDataAction, prop: string, handlers: object, vm: any, state: object): void {
+function buildEventAction(action: IVueEventAction, prop: string, handlers: object, state: object): void {
+    if (action.Type == 'LoadData') {
+        buildLoadDataAction(<IVueLoadDataAction> action, prop, handlers, state);
+    } else {
+        //TODO:
+    }
+}
+
+function buildLoadDataAction(action: IVueLoadDataAction, prop: string, handlers: object, state: object): void {
     if (action.ServiceArgs && action.ServiceArgs.length > 0) {
-        //TODO:无参数的服务调用及特殊Action可以不用生成代码
         let script = buildLoadDataScript(action);
         let f = new Function('s', '$runtime', 'e', script);
         handlers[prop] = v => f(state, $runtime, v);
     } else {
         handlers[prop] = v => {
             $runtime.channel.invoke(action.Service, []).then(res => {
-                state[action.State] = res;
-                // vm.$set(state, action.State, res);
+                state[action.State] = res; // vm.$set(state, action.State, res);
             }).catch(err => alert(err));
         };
     }

@@ -11,7 +11,8 @@
                         style="height:180px;border: solid silver 1px;background-color: white">
                     <c-grid-input-column field="Name" caption="Name" :width="80"></c-grid-input-column>
                     <c-grid-input-column field="Type" caption="Type" :width="100"></c-grid-input-column>
-                    <c-grid-button-column field="Value" caption="..." width="auto">Value</c-grid-button-column>
+                    <c-grid-button-column field="Value" caption="..." @click="onSetState" width="auto">Value
+                    </c-grid-button-column>
                 </c-grid>
             </el-collapse-item>
             <!--Widget-->
@@ -52,6 +53,10 @@
                 </el-form>
             </el-collapse-item>
         </el-collapse>
+
+        <!--设置状态值对话框-->
+        <event-action-dialog :visible.sync="stateDlgVisible"
+                             :state="currentState" @change="onStateValueChanged"></event-action-dialog>
     </div>
 </template>
 
@@ -63,19 +68,14 @@ import VueToolbox from '@/components/Designers/View/VueToolbox';
 import EventEditor from '@/components/Designers/View/PropertyEditors/EventEditor.vue';
 import {IDesignLayoutItem, IVueProp} from '@/design/IVueWidget';
 import {IVueEventAction, IVueState} from '@/runtime/IVueVisual';
+import EventActionDialog from '@/components/Designers/View/PropertyEditors/EventActionDialog.vue';
 
 @Component({
-    components: {EventEditor}
+    components: {EventActionDialog, EventEditor}
 })
 export default class VuePropertyPanel extends Vue {
     @Prop({type: Array}) state: IVueState[];
     @Prop({type: Object}) owner: IDesignLayoutItem;
-
-    stateColumns = [
-        {prop: 'Name', name: 'Name'},
-        {prop: 'Type', name: 'Type'},
-        {prop: 'Value', name: 'Value'}
-    ];
 
     gridTheme = {
         frozenRowsBgColor: '#f3f3f3',
@@ -87,6 +87,10 @@ export default class VuePropertyPanel extends Vue {
 
     labelWidth = '100px';
     expands = ['State', 'Widget', 'Props', 'Events']; // 展开所有分类
+
+    /** 当前选择的State */
+    currentState: IVueState | null = null;
+    stateDlgVisible = false;
 
     get name() {
         return this.owner ? this.owner.n : '';
@@ -188,6 +192,15 @@ export default class VuePropertyPanel extends Vue {
 
     onAddState() {
         this.state.push({Name: 'name', Type: 'string', Value: null});
+    }
+
+    onSetState(val: IVueState) {
+        this.currentState = val;
+        this.stateDlgVisible = true;
+    }
+
+    onStateValueChanged(val: IVueEventAction | undefined) {
+        this.currentState.Value = val;
     }
 
 }

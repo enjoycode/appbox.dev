@@ -43,7 +43,7 @@ import VuePropertyPanel from '@/components/Designers/View/VuePropertyPanel.vue';
 import VueToolbox from '@/components/Designers/View/VueToolbox';
 import RouteDialog from '@/components/Designers/View/RouteDialog.vue';
 import {IDesignLayoutItem, IVueWidget} from '@/design/IVueWidget';
-import {IVueGridLayoutItem, IVueState} from '@/runtime/IVueVisual';
+import {IVueGridLayoutItem, IVueState, RuntimeVueState} from '@/runtime/IVueVisual';
 import {IDesignNode} from '@/design/IDesignNode';
 import {BuildEventsAndBindProps, BuildRunState} from '@/runtime/VueWidgetService';
 import LoadView from '@/design/LoadView';
@@ -64,9 +64,9 @@ export default class VueVisualDesigner extends Vue {
     };
     selectedWidget: IDesignLayoutItem = null; //当前选择的Widget
 
-    state: IVueState[] = [];            //设计时状态
-    layout: IDesignLayoutItem[] = [];   //设计时布局
-    runState = {};                      //运行时状态
+    state: IVueState[] = [];                    //设计时状态
+    layout: IDesignLayoutItem[] = [];           //设计时布局
+    runState: RuntimeVueState = new RuntimeVueState(); //运行时状态
 
     /** 生成新的标识号 */
     private makeWidgetId(): string {
@@ -160,6 +160,8 @@ export default class VueVisualDesigner extends Vue {
             //重新生成运行时state及相关事件处理
             this.runState = BuildRunState(this.state);
             BuildEventsAndBindProps(this, this.layout, this.runState);
+            //刷新运行时状态
+            this.runState.Refresh();
         }
     }
 
@@ -192,7 +194,8 @@ export default class VueVisualDesigner extends Vue {
             S: this.state
         });
 
-        console.log(template);
+        console.log('Template:', template);
+        console.log('Script:', script);
 
         let node = this.target;
         let args = [node.Type, node.ID, template, script, styles, runtimeCode];
