@@ -1,11 +1,11 @@
-/** Fork from https://github.com/ecomfe/vue-echarts, 修改默认宽高 */
-
 <template>
     <div style="width:100%;height:400px"></div>
 </template>
 
 <script>
-import echarts from 'echarts/lib/echarts'
+/** Fork from https://github.com/ecomfe/vue-echarts, 修改默认宽高 */
+
+import * as echarts from 'echarts' //TODO:暂导入全部
 import debounce from 'lodash/debounce'
 import { addListener, removeListener } from 'resize-detector'
 

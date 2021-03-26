@@ -287,20 +287,7 @@ export default function (/*bool desktop, bool mobile*/) {
     }, 'easeui'))
 
     // ===================Vue-ECharts========================
-    Vue.component('v-chart', r => require.ensure([], () => {
-        // 引入 ECharts 主模块
-        // var echarts = require('echarts/lib/echarts')
-        // 引入柱状图
-        require('echarts/lib/chart/line')
-        require('echarts/lib/chart/bar')
-        require('echarts/lib/chart/pie')
-        // 引入提示框和标题组件
-        require('echarts/lib/component/tooltip')
-        require('echarts/lib/component/title')
-
-        // r(require('vue-echarts/components/ECharts.vue'))
-        r(require('./easeui/ECharts/ECharts.vue'))
-    }, 'easeui-chart'))
+    Vue.component('EChart', () => import(/* webpackChunkName: "echarts" */ './easeui/ECharts/ECharts.vue'))
 
     // ===================以下扩展的===================
     Vue.component('ExRichEditor', r => require.ensure([], () => {
