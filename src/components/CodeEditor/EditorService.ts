@@ -75,10 +75,7 @@ async function init() {
 
 class TokenizerState implements monaco.languages.IState {
 
-    constructor(
-        private _ruleStack: StackElement
-    ) {
-    }
+    constructor(private _ruleStack: StackElement) {}
 
     public get ruleStack(): StackElement {
         return this._ruleStack;
@@ -89,14 +86,10 @@ class TokenizerState implements monaco.languages.IState {
     }
 
     public equals(other: monaco.languages.IState): boolean {
-        if (!other ||
+        return !(!other ||
             !(other instanceof TokenizerState) ||
             other !== this ||
-            other._ruleStack !== this._ruleStack
-        ) {
-            return false;
-        }
-        return true;
+            other._ruleStack !== this._ruleStack);
     }
 }
 

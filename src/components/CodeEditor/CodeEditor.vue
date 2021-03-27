@@ -3,16 +3,16 @@
 </template>
 
 <script>
-import { monaco } from './EditorService'
+import {monaco} from './EditorService'
 
 export default {
     props: {
-        width: { type: [String, Number], default: '100%' },
-        height: { type: [String, Number], default: '500' },
-        code: { type: String, default: '// code \n' }, // todo:待移除
-        language: { type: String, default: 'javascript' },
-        theme: { type: String, default: 'vs-dark' }, // vs, vs-dark, hc-black
-        options: { type: Object, default: () => { } },
+        width: {type: [String, Number], default: '100%'},
+        height: {type: [String, Number], default: '500'},
+        code: {type: String, default: '// code \n'}, // todo:待移除
+        language: {type: String, default: 'javascript'},
+        theme: {type: String, default: 'vs-dark'}, // vs, vs-dark, hc-black
+        options: { type: Object, default: () => {} },
         fileName: '' // 对应的虚拟文件名称
     },
     mounted() {
@@ -28,7 +28,7 @@ export default {
     },
     computed: {
         style() {
-            const { width, height } = this
+            const {width, height} = this
             const fixedWidth = width.toString().indexOf('%') !== -1 ? width : `${width}px`
             const fixedHeight = height.toString().indexOf('%') !== -1 ? height : `${height}px`
             return {
@@ -56,7 +56,7 @@ export default {
                 glyphMargin: true,
                 folding: true,
                 renderIndentGuides: true,
-                minimap: { enabled: false }
+                minimap: {enabled: false}
             },
             toDispose: [],
             breakpoints: [],
@@ -77,7 +77,7 @@ export default {
             }
         },
         setReadonly(value) {
-            this.editor.updateOptions({ readOnly: value })
+            this.editor.updateOptions({readOnly: value})
         },
         saveViewState() {
             return this.editor.saveViewState()
@@ -151,7 +151,7 @@ export default {
             for (let i = 0; i < this.breakpoints.length; i++) {
                 const bp = this.breakpoints[i];
                 const range = this.editor.getModel().getDecorationRange(bp);
-                bps.push({ id: bp, line: range.startLineNumber })
+                bps.push({id: bp, line: range.startLineNumber})
             }
             return bps
         },
@@ -169,14 +169,20 @@ export default {
                 this.breakline = this.editor.deltaDecorations(this.breakline, [])
             }
         }
+    },
+    watch: {
+        code: function (newVal, oldVal) {
+            const oldModel = this.editor.getModel()
+            this.editor.setModel(this.createModel(this.code, this.language));
+            oldModel.dispose();
+        }
     }
 }
 </script>
 
 <style>
 .breakpoint {
-    background: url("data:image/svg+xml;charset=utf-8,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='5' fill='%23c10' fill-rule='evenodd'/%3E%3C/svg%3E")
-        50% no-repeat;
+    background: url("data:image/svg+xml;charset=utf-8,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='8' cy='8' r='5' fill='%23c10' fill-rule='evenodd'/%3E%3C/svg%3E") 50% no-repeat;
 }
 
 .breakline {

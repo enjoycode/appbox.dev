@@ -13,7 +13,7 @@
             </el-tree>
         </div>
         <!--编辑对话框-->
-        <el-dialog :title="'Settings: ' + editorTitle" :visible.sync="editorVisible" width="700px">
+        <el-dialog :title="'Settings: ' + editorTitle" :visible.sync="editorVisible" width="800px">
             <!--TODO:根据类型动态编辑器，暂仅Json-->
             <code-editor ref="editor" v-bind="editorOptions"></code-editor>
             <span slot="footer" class="dialog-footer">
@@ -38,11 +38,10 @@ export default class SettingsTreeView extends Vue {
     editorTitle = '';
 
     filterText = '';
-    settings = [{
-        Name: 'VueWidgets',
-        Icon: 'cog',
-        Type: 'Json'
-    }];
+    settings = [
+        {Name: 'VueWidgets', Icon: 'cog', Type: 'json'},
+        {Name: 'TSExtraLib', Icon: 'cog', Type: 'ts'}
+    ];
     currentSetting = null;
 
     treeHeight = 0;
@@ -52,7 +51,6 @@ export default class SettingsTreeView extends Vue {
     };
 
     onRenderContent(h, node) {
-        // return h('span', {staticClass: 'el-tree-node__label'}, node.data.Text)
         const iconClass = 'fa fa-' + node.data.Icon;
         return (<span class="el-tree-node__label"><i class={iconClass}></i> {node.data.Name}</span>);
     }
@@ -67,10 +65,16 @@ export default class SettingsTreeView extends Vue {
     onNodeClick(data, node) {
         this.currentSetting = data;
         this.editorTitle = data.Name;
-        this.editorOptions['fileName'] = data.Name + '.json';
+        this.$set(this.editorOptions, 'fileName', data.Name + '.' + data.Type);
         //加载配置值
         $runtime.channel.invoke('sys.DesignService.GetAppSettings', [null, data.Name]).then(res => {
-            this.editorOptions['code'] = JSON.stringify(res, null, 4);
+            if (data.Type == 'json') {
+                this.$set(this.editorOptions, 'language', 'json');
+                this.$set(this.editorOptions, 'code', JSON.stringify(res, null, 4));
+            } else if (data.Type == 'ts') {
+                this.$set(this.editorOptions, 'language', 'javascript');
+                this.$set(this.editorOptions, 'code', res);
+            }
             this.editorVisible = true;
         }).catch(err => this.$message.error('Can\'t load settings: ' + data.Name));
     }
@@ -81,7 +85,7 @@ export default class SettingsTreeView extends Vue {
         $runtime.channel.invoke('sys.DesignService.SaveAppSettings', args).then(() => {
             //激发设计时事件通知需要刷新的对象
             DesignStore.emitEvent('SettingsChanged', this.currentSetting.Name);
-            this.$message.success('Save settings ok.')
+            this.$message.success('Save settings ok.');
         }).catch(err => this.$message.error('Save error: ' + err));
     }
 }
