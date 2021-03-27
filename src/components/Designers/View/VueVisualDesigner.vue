@@ -184,6 +184,7 @@ export default class VueVisualDesigner extends Vue {
                 this.draggingItem.h, this.draggingItem.w);
 
             this.draggingItem.c = this.makeWidget(this.draggingItem.Widget.Component);
+            this.selectedWidget = this.draggingItem;
         }
 
         this.draggingItem = null;
@@ -204,6 +205,7 @@ export default class VueVisualDesigner extends Vue {
 
         let layoutItem = this.createLayoutItem(toolboxItem, false);
         this.layout.push(layoutItem);
+        this.selectedWidget = layoutItem;
     }
 
     /** 删除选择的Widget */
