@@ -7,8 +7,9 @@
             </div>
         </div>
         <div class="ide-left-tree-warp">
-            <el-tree class="ide-left-tree" ref="toolBoxTree" :data="node" node-key="Name"
-                     :render-content="onRenderContent"
+            <el-tree class="ide-left-tree" ref="toolboxTree" :data="node" node-key="Name"
+                     :render-content="onRenderContent" draggable :allow-drop="allowDrop"
+                     @node-drag-start="onDragStart" @node-drag-end="onDragEnd"
                      :props="treeOption" :filter-node-method="filterNode" highlight-current>
             </el-tree>
         </div>
@@ -37,7 +38,7 @@ export default {
     },
     watch: {
         filterText(val) {
-            this.$refs.toolBoxTree.filter(val)
+            this.$refs.toolboxTree.filter(val)
         }
     },
     methods: {
@@ -45,13 +46,27 @@ export default {
             if (!value) return true
             return data.Name.indexOf(value) !== -1
         },
+        allowDrop() {
+            return false; /*always false*/
+        },
+
+        onDragStart(node, e) {
+            this.$refs.toolboxTree.setCurrentKey(node.data.Name);
+        },
+        onDragEnd(snode, dnode, place, e) {
+            let designer = store.designers.getActiveDesigner()
+            if (designer && designer.onDragEnd) {
+                designer.onDragEnd(e);
+            }
+        },
+
         /** 获取当前选择 */
         getSelected() {
-            return this.$refs.toolBoxTree.getCurrentNode()
+            return this.$refs.toolboxTree.getCurrentNode()
         },
         /** 清除选择 */
         clearSelected() {
-            this.$refs.toolBoxTree.setCurrentKey(null)
+            this.$refs.toolboxTree.setCurrentKey(null)
         },
         /** 当前的编辑器改变后加载相应的工具箱 */
         onDesignerChanged() {

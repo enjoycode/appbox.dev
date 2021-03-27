@@ -15,8 +15,9 @@
             </div>
             <!-- 设计区域 -->
             <div class="editorPanel">
-                <grid-layout class="editorCanvas" :layout.sync="layout" :col-num="24" :row-height="32"
-                             :is-draggable="!preview" :is-resizable="!preview">
+                <grid-layout ref="gridLayout" class="editorCanvas" :layout.sync="layout"
+                             :col-num="layoutOption.colNum" :row-height="layoutOption.rowHeight"
+                             :is-draggable="!preview" :is-resizable="!preview" @dragover.native="onDragOverGrid">
                     <grid-item class="widgetPanel" v-for="item in layout" :x="item.x" :y="item.y" :w="item.w"
                                :h="item.h" :i="item.i" :key="item.i"
                                @resize="onItemResize(item)" @container-resized="onItemResize(item)">
@@ -67,7 +68,15 @@ export default class VueVisualDesigner extends Vue {
 
     state: IVueState[] = [];                    //设计时状态
     layout: IDesignLayoutItem[] = [];           //设计时布局
+    layoutOption = {
+        colNum: 24,
+        rowHeight: 32
+    };
     runState: RuntimeVueState = new RuntimeVueState(); //运行时状态
+
+    draggingItem: IDesignLayoutItem | null = null;
+    dragPreX = -99999;
+    dragPreY = -99999;
 
     /** 生成新的标识号 */
     private makeWidgetId(): string {
@@ -82,6 +91,30 @@ export default class VueVisualDesigner extends Vue {
         return id.toString();
     }
 
+    private createLayoutItem(toolboxItem: IVueWidget, byDrag: boolean): IDesignLayoutItem {
+        let id = this.makeWidgetId();
+        let item: IDesignLayoutItem = {
+            n: toolboxItem.Name,
+            i: id,
+            x: (this.layout.length * 2) % 24, //(this.colNum || 12),
+            y: this.layout.length + 24, //(this.colNum || 12), // puts it at the bottom
+            w: toolboxItem.Width,
+            h: toolboxItem.Height,
+            p: VueToolbox.MakeDefaultProps(toolboxItem),
+            Widget: toolboxItem
+        };
+        if (toolboxItem.Text) {
+            item.t = toolboxItem.Text;
+        }
+        if (toolboxItem.Model) {
+            item.m = '';
+        }
+        if (!byDrag) {
+            item.c = this.makeWidget(toolboxItem.Component);
+        }
+        return item;
+    }
+
     /** 用于某些基于Canvas的组件需要更新大小 */
     onItemResize(item: IDesignLayoutItem) {
         const ref: any = this.$refs[item.i];
@@ -91,6 +124,70 @@ export default class VueVisualDesigner extends Vue {
                 c.updateSize();
             }
         }
+    }
+
+    /** 工具箱拖动Widget至GridLayout之上 */
+    onDragOverGrid(e: DragEvent) {
+        e.preventDefault(); //TODO:判断是否允许
+
+        const grid: any = this.$refs.gridLayout;
+        if (!grid) {
+            console.log('Can\'t find gridLayout component');
+            return;
+        }
+
+        if (!this.draggingItem) {
+            let toolboxItem: IVueWidget = DesignStore.toolbox.getSelected();
+            this.draggingItem = this.createLayoutItem(toolboxItem, true);
+            this.layout.push(this.draggingItem);
+        }
+
+        //注意:GridLayout.$children下有个placeholder
+        if (grid.$children.length === this.layout.length) {
+            return; //尚未挂载新建的
+        }
+
+        const parentRect = grid.$el.getBoundingClientRect();
+        const offsetX = e.clientX - parentRect.left;
+        const offsetY = e.clientY - parentRect.top;
+        const dx = Math.abs(offsetX - this.dragPreX);
+        const dy = Math.abs(offsetY - this.dragPreY);
+
+        if (dx > 5 || dy > 5) { //TODO:根据布局参数计算最小diff
+            let el = grid.$children[this.layout.length]; //注意placeholder
+            el.dragging = {top: offsetY, left: offsetX};
+
+            let newPos = el.calcXY(offsetY, offsetX);
+            if (this.draggingItem.x != newPos.x || this.draggingItem.y != newPos.y) {
+                grid.dragEvent('dragstart', this.draggingItem.i,
+                    newPos.x, newPos.y, this.draggingItem.h, this.draggingItem.w);
+            }
+
+            this.dragPreX = offsetX;
+            this.dragPreY = offsetY;
+        }
+    }
+
+    onDragEnd(e: DragEvent) {
+        if (!this.draggingItem) {
+            return;
+        }
+
+        const grid: any = this.$refs.gridLayout;
+        if (grid) {
+            let parentRect = grid.$el.getBoundingClientRect();
+            const offsetX = e.clientX - parentRect.left;
+            const offsetY = e.clientY - parentRect.top;
+            let el = grid.$children[this.layout.length];
+            let newPos = el.calcXY(offsetY, offsetX);
+            grid.dragEvent('dragend', this.draggingItem.i, newPos.x, newPos.y,
+                this.draggingItem.h, this.draggingItem.w);
+
+            this.draggingItem.c = this.makeWidget(this.draggingItem.Widget.Component);
+        }
+
+        this.draggingItem = null;
+        this.dragPreX = this.dragPreY = -99999;
     }
 
     /** 添加工具箱选择的Widget */
@@ -105,22 +202,7 @@ export default class VueVisualDesigner extends Vue {
             return;
         }
 
-        let id = this.makeWidgetId();
-        let layoutItem: IDesignLayoutItem = {
-            i: id, x: 0, y: 100, //TODO:排到最后
-            w: toolboxItem.Width,
-            h: toolboxItem.Height,
-            n: toolboxItem.Name,
-            p: VueToolbox.MakeDefaultProps(toolboxItem),
-            Widget: toolboxItem,
-            c: this.makeWidget(toolboxItem.Component)
-        };
-        if (toolboxItem.Text) {
-            layoutItem.t = toolboxItem.Text;
-        }
-        if (toolboxItem.Model) {
-            layoutItem.m = '';
-        }
+        let layoutItem = this.createLayoutItem(toolboxItem, false);
         this.layout.push(layoutItem);
     }
 
@@ -143,7 +225,7 @@ export default class VueVisualDesigner extends Vue {
 
     /** 仅用于设计时绑定设计及默认样式 */
     makeWidgetStyle(item: IDesignLayoutItem): object {
-        let s = item.Widget.Style ? item.Widget.Style : {};
+        let s = item.Widget && item.Widget.Style ? item.Widget.Style : {};
         s['zIndex'] = this.preview ? 'auto' : -1;
         return s;
     }
