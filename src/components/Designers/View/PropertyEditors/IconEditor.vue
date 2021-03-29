@@ -53,7 +53,7 @@ export default class IconEditor extends Vue {
 
     mounted() {
         if (!IconEditor.allIcons) {
-            axios.get('dev/categories.yml').then(res => {
+            axios.get('/dev/categories.yml').then(res => {
                 IconEditor.allIcons = yaml.load(res.data);
                 this.icons = IconEditor.allIcons;
             });
