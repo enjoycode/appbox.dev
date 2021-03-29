@@ -28,6 +28,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import CodeEditor from '@/components/CodeEditor/CodeEditor.vue';
 import DesignStore from '@/design/DesignStore';
+import DesignService from '@/design/DesignService';
 
 @Component({
     components: {CodeEditor}
@@ -67,10 +68,13 @@ export default class SettingsTreeView extends Vue {
         this.editorTitle = data.Name;
         this.$set(this.editorOptions, 'fileName', data.Name + '.' + data.Type);
         //加载配置值
-        $runtime.channel.invoke('sys.DesignService.GetAppSettings', [null, data.Name]).then(res => {
+        DesignService.GetAppSettings(null, data.Name).then(res => {
             if (data.Type == 'json') {
                 this.$set(this.editorOptions, 'language', 'json');
                 this.$set(this.editorOptions, 'code', JSON.stringify(res, null, 4));
+                this.$nextTick(() => {
+                    (this.$refs.editor as any).setJsonSchema();
+                })
             } else if (data.Type == 'ts') {
                 this.$set(this.editorOptions, 'language', 'javascript');
                 this.$set(this.editorOptions, 'code', res);
@@ -81,8 +85,8 @@ export default class SettingsTreeView extends Vue {
 
     onSave() {
         let e: any = this.$refs.editor;
-        let args = [null, this.currentSetting.Name, this.currentSetting.Type, e.getValue()];
-        $runtime.channel.invoke('sys.DesignService.SaveAppSettings', args).then(() => {
+        DesignService.SaveAppSettings(null,
+            this.currentSetting.Name, this.currentSetting.Type, e.getValue()).then(() => {
             //激发设计时事件通知需要刷新的对象
             DesignStore.emitEvent('SettingsChanged', this.currentSetting.Name);
             this.$message.success('Save settings ok.');

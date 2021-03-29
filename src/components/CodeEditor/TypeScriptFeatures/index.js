@@ -1,3 +1,5 @@
+import DesignService from "@/design/DesignService";
+
 export default function (monaco) {
     // validation settings
     // monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -13,8 +15,8 @@ export default function (monaco) {
     })
 
     // extra libraries
-    $runtime.channel.invoke('sys.DesignService.GetAppSettings', [null, 'TSExtraLib']).then(res => {
-        monaco.languages.typescript.javascriptDefaults.addExtraLib( res,'view.d.ts')
+    DesignService.GetAppSettings(null, 'TSExtraLib').then(res => {
+        monaco.languages.typescript.javascriptDefaults.addExtraLib(res, 'view.d.ts')
     }).catch(err => alert('Can\'t load extra lib: ' + err))
 
 }

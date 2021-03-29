@@ -4,6 +4,7 @@ import {IVueProp, IVueWidget} from '@/design/IVueWidget';
 import DesignStore from '@/design/DesignStore';
 import LoadView from '@/design/LoadView';
 import IconEditor from '@/components/Designers/View/PropertyEditors/IconEditor.vue';
+import DesignService from '@/design/DesignService';
 
 export default class VueToolbox {
 
@@ -32,7 +33,7 @@ export default class VueToolbox {
     }
 
     private static loadWidgets(): Promise<void> {
-        return $runtime.channel.invoke('sys.DesignService.GetAppSettings', [null, 'VueWidgets']).then(res => {
+        return DesignService.GetAppSettings(null, 'VueWidgets').then(res => {
             this.widgets = res;
         });
     }
@@ -66,7 +67,7 @@ export default class VueToolbox {
                 return TextEditor;
             }
         } else {
-            console.log('加载自定义属性编辑器')
+            console.log('加载自定义属性编辑器');
             return LoadView(prop.Editor, root);
         }
     }

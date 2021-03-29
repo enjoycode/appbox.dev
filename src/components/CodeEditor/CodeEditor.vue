@@ -4,6 +4,7 @@
 
 <script>
 import {monaco} from './EditorService'
+import DesignService from "@/design/DesignService";
 
 export default {
     props: {
@@ -12,7 +13,7 @@ export default {
         code: {type: String, default: '// code \n'}, // todo:待移除
         language: {type: String, default: 'javascript'},
         theme: {type: String, default: 'vs-dark'}, // vs, vs-dark, hc-black
-        options: { type: Object, default: () => {} },
+        options: {type: Object, default: () => {}},
         fileName: '' // 对应的虚拟文件名称
     },
     mounted() {
@@ -110,6 +111,31 @@ export default {
             this.toDispose.push(this.editor.onMouseDown(this.onMouseDown))
             this.$emit('mounted', this.editor)
         },
+        /** 编辑json文档时从配置加载并设置相应的schema */
+        setJsonSchema() {
+            if (this.fileName.endsWith('.schema.json') || !this.fileName.endsWith('.json')) {
+                return;
+            }
+            let schemaName = this.fileName.substring(0, this.fileName.length - 5) + '.schema';
+            //先判断是否存在
+            const uri = 'http://app/' + schemaName + '.json';
+            let options = monaco.languages.json.jsonDefaults.diagnosticsOptions;
+            let index = options.schemas.findIndex(t => t.uri == uri);
+            if (index >= 0) {
+                return;
+            }
+            //不存在尝试从配置加载
+            DesignService.GetAppSettings(null, schemaName).then(res => {
+                if (res) {
+                    options.schemas.push({
+                        uri: uri,
+                        fileMatch: [this.fileName],
+                        schema: res
+                    })
+                }
+            });
+        },
+
         // ====以下事件处理====
         onMouseDown(e) {
             // this.editor.getTargetAtClientPoint(e.clientX, e.clientY)
