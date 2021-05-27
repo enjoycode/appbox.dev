@@ -19,7 +19,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="AllowNull">
-            <el-checkbox v-model="AllowNull" disabled></el-checkbox>
+            <el-checkbox v-model="AllowNull" :disabled="false"></el-checkbox>
         </el-form-item>
     </el-form>
 </template>
@@ -62,7 +62,7 @@
             propertyChanged(name, value) {
                 var _that = this
                 // 传入服务更改
-                let args = [this.owner.ID, this.Name, name, value]
+                let args = [this.owner.ID, this.Name, name, value + '']
                 $runtime.channel.invoke('sys.DesignService.ChangeEntityMember', args).then(res => {
                     this.$emit('PropertyChanged', name, value)
                 }).catch(err => {

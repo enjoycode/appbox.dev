@@ -4,6 +4,7 @@ import axios from 'axios'
 import rjson from './refJSON'
 import jsonp from './jsonp'
 import DebugService from '@/components/Designers/Service/DebugService'
+import EventManager from '@/components/Designers/Events/EventManager'
 
 var socket
 
@@ -64,6 +65,8 @@ function onResult(res) {
 	if (res.ES) { // Event
 		if (res.ES === 2) { // 调试事件
 			DebugService.handleDebugEvent(res.BD) //TODO: 交由DesignStore处理
+		} else if (res.ES === 3) {
+			EventManager.handleEvent(res.BD)
 		}
 	} else { // InvokeResponse
 		for (var i = 0; i < waitHandles.length; i++) {

@@ -1,4 +1,5 @@
 import { Entity } from './Entity'
+import EventManager from '@/components/Designers/Events/EventManager'
 
 // 参考: https://github.com/airyland/vux/blob/v2/src/plugins/device/index.js
 const _isAndroid = /(Android);?[\s/]+([\d.]+)?/.test(navigator.userAgent)
@@ -66,5 +67,12 @@ export default {
             }, 'wxsdk')
         })
         return promise
-    }
+	},
+	
+	addEventListener(eventName, callback) {
+		EventManager.register(eventName, callback)
+	},
+	removeEventListener(eventName, callback) {
+		EventManager.unregister(eventName, callback)
+	}
 }

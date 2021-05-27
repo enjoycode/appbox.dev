@@ -3,7 +3,7 @@ import { IDesignToolboxItem, IDesignToolbox } from '@/components/Canvas/Services
 import DesignSurface from '@/components/Canvas/DesignSurface';
 import ItemDesigner from '@/components/Canvas/Designers/ItemDesigner';
 import DesignStore from "@/design/DesignStore";
-import TextBoxDesigner from './Designers/TextBoxDesigner';
+import TextBoxDesigner from './Designers/TextboxDesigner';
 import ReportObjectDesigner from './Designers/ReportObjectDesigner';
 import TableDesigner from './Designers/TableDesigner';
 import BarcodeDesigner from "./Designers/BarcodeDesigner";
