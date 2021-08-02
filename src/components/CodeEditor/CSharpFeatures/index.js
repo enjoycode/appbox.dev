@@ -1,8 +1,8 @@
 import SnippetCompletionProvider from './SnippetCompletionProvider'
-import CompletionItemProvider from './CompletionItemProvider'
-import DocumentFormattingProvider from './DocumentFormattingProvider'
-import DocumentSymbolProvider from './DocumentSymbolProvider'
-import HoverProvider from './HoverProvider'
+import CompletionItemProvider from '../Providers/CompletionItemProvider'
+import DocumentFormattingProvider from '../Providers/DocumentFormattingProvider'
+import DocumentSymbolProvider from '../Providers/DocumentSymbolProvider'
+import HoverProvider from '../Providers/HoverProvider'
 import SignatureHelpProvider from './SignatureHelpProvider'
 
 export default function (monaco) {
