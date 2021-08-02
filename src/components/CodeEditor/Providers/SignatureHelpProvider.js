@@ -2,18 +2,20 @@
 export default {
     signatureHelpTriggerCharacters: ['(', ',', '<'],
     provideSignatureHelp: function (model, position, token, context) {
-        var promise = new Promise((resolve, reject) => {
-            var args = [model.fileName, position.lineNumber, position.column]
+        return new Promise((resolve, reject) => {
+            const args = [model.fileName, position.lineNumber, position.column];
             $runtime.channel.invoke('sys.DesignService.SignatureHelp', args).then(res => {
                 if (res) {
-                    resolve({ value: res, dispose: () => { } })
+                    //后端序列化可能无activeParameter或activeSignature
+                    if (!res.activeSignature) res.activeSignature = 0;
+                    if (!res.activeParameter) res.activeParameter = 0;
+                    resolve({value: res, dispose: () => {}})
                 } else {
-                    resolve( undefined)
+                    resolve(undefined)
                 }
             }).catch(err => {
                 reject(err)
             });
         })
-        return promise
     }
 }

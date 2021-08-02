@@ -3,7 +3,7 @@ import CompletionItemProvider from '../Providers/CompletionItemProvider'
 import DocumentFormattingProvider from '../Providers/DocumentFormattingProvider'
 import DocumentSymbolProvider from '../Providers/DocumentSymbolProvider'
 import HoverProvider from '../Providers/HoverProvider'
-import SignatureHelpProvider from './SignatureHelpProvider'
+import SignatureHelpProvider from '../Providers/SignatureHelpProvider'
 
 export default function (monaco) {
     monaco.languages.registerCompletionItemProvider('csharp', SnippetCompletionProvider)
