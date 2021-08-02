@@ -1,10 +1,11 @@
 <template>
-    <el-dialog class="dialog" width="800px" title="Service References" :visible.sync="visible" :close-on-click-modal="false" @close="onClose">
+    <el-dialog class="dialog" width="800px" title="Service References" :visible.sync="visible"
+               :close-on-click-modal="false" @close="onClose">
         <el-transfer filterable v-model="references" :data="source" :titles="['Available','Selected']">
         </el-transfer>
         <div slot="footer">
-            <input ref="input" @change="onFileChange" :multiple="false" accept=".dll,.so,.dylib" style="width:0px; visibility: hidden;"
-                type="file">
+            <input ref="input" @change="onFileChange" :multiple="false" :accept="uploadExts"
+                   style="width:0; visibility: hidden;" type="file">
             <el-button type="primary" @click="onUpload">Upload Assembly</el-button>
             <el-button @click="visible = false">Cancel</el-button>
             <el-button type="primary" @click="onOkClick">OK</el-button>
@@ -16,38 +17,6 @@
 import store from '@/design/DesignStore'
 import axios from 'axios'
 
-const sysDeps = [
-    'Newtonsoft.Json',
-    'System',
-    'System.Collections.NonGeneric',
-    'System.Collections.Specialized',
-    'System.ComponentModel',
-    'System.ComponentModel.Primitives',
-    'System.ComponentModel.TypeConverter',
-    'System.IO',
-    'System.Private.Xml',
-    'System.Private.Xml.Linq',
-    'System.Private.Uri',
-    'System.Net.Primitives',
-    'System.Net.Http',
-    'System.Net.Requests',
-    'System.Net.WebHeaderCollection',
-    'System.ObjectModel',
-    'System.Runtime.Extensions',
-    'System.Runtime.InteropServices',
-    'System.Security.Cryptography.Primitives',
-    'System.Security.Cryptography.Algorithms',
-    'System.Security.Cryptography.Csp',
-    'System.Security.Cryptography.X509Certificates',
-    'System.Threading.Timer',
-    'System.Web',
-    'System.Web.HttpUtility',
-    'System.Xml.Linq',
-    'System.Xml.ReaderWriter',
-    'System.Xml.Serialization',
-    'System.Xml.XmlSerializer'
-]
-
 export default {
     data() {
         return {
@@ -57,6 +26,12 @@ export default {
             targetNode: null
         }
     },
+    computed: {
+        /** 允许上传的第三方依赖文件的扩展名 */
+        uploadExts: function () {
+            return this.targetNode == null || this.targetNode.Language === 1 ? ".jar" : ".dll,.so"
+        }
+    },
     methods: {
         onClose: function (e) {
             this.$emit('close')
@@ -64,20 +39,19 @@ export default {
         onFileChange(ev) {
             const files = ev.target.files
             if (!files) return
-            let fileName = files[0].name.split('.').slice(0, -1).join('.') // 不需要扩展名
-            var formdata = new FormData()
-            formdata.append('file', files[0])
+            let fileName = files[0].name
             let _this = this
             axios({
-                url: '/api/blob/sys.DesignService.Validate3rdLib/sys.DesignService.Upload3rdLib/' + this.targetNode.App,
+                url: '/upload?v=sys.DesignService.Validate3rdLib&p=sys.DesignService.Upload3rdLib&a='
+                    + this.targetNode.App + '/' + fileName,
                 method: 'post',
-                data: formdata,
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                data: files[0],
+                //headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).then(res => {
                 if (res.data) { // 返回true表示CLR组件
                     // 判断当前列表是否已存在，不存在则添加入列表内
                     if (_this.source.findIndex(t => t.key == fileName) < 0) {
-                        _this.source.push({ key: fileName, label: fileName, ext: true }) // 加入ext表示外部组件
+                        _this.source.push({key: fileName, label: fileName, ext: true}) // 加入ext表示外部组件
                     }
                 }
             }).catch(err => {
@@ -87,7 +61,9 @@ export default {
         onOkClick() {
             let _this = this
             $runtime.channel.invoke('sys.DesignService.UpdateReferences', [this.targetNode.ID, this.references])
-                .then(res => { _this.visible = false })
+                .then(res => {
+                    _this.visible = false
+                })
                 .catch(err => {
                     _this.$message.error('Update reference error: ' + err)
                 })
@@ -98,22 +74,19 @@ export default {
         }
     },
     mounted() {
-        for (var i = 0; i < sysDeps.length; i++) {
-            this.source.push({ key: sysDeps[i], label: sysDeps[i] })
-        }
         // 加载Application的依赖项
         let designer = store.designers.getActiveDesigner()
         this.targetNode = designer.target
-        var _this = this
+        const _this = this;
         $runtime.channel.invoke('sys.DesignService.GetReferences', [this.targetNode.ID]).then(res => {
             if (res.AppDeps) {
-                for (var i = 0; i < res.AppDeps.length; i++) {
-                    var element = res.AppDeps[i]
-                    _this.source.push({ key: element, label: element, ext: true }) // 加入ext表示外部组件
+                for (let i = 0; i < res.AppDeps.length; i++) {
+                    const element = res.AppDeps[i];
+                    _this.source.push({key: element, label: element, ext: true}) // 加入ext表示外部组件
                 }
             }
             if (res.ModelDeps) {
-                for (i = 0; i < res.ModelDeps.length; i++) {
+                for (let i = 0; i < res.ModelDeps.length; i++) {
                     _this.references.push(res.ModelDeps[i])
                 }
             }

@@ -8,7 +8,8 @@ module.exports = {
     configureWebpack: {
         plugins: [
             new MonacoWebpackPlugin({
-                output: 'js', languages: ['css', 'html', 'javascript', 'json', 'less', 'markdown', 'scss', 'typescript', 'xml'],
+                output: 'js',
+                languages: ['css', 'html', 'javascript', 'json', 'less', 'markdown', 'scss', 'typescript', 'xml'],
                 features: ['accessibilityHelp', 'bracketMatching', 'caretOperations', 'clipboard',
                     'codeAction', 'codelens', 'colorDetector', 'comment', 'contextmenu', 'coreCommands',
                     'cursorUndo', 'dnd', 'find', 'folding', 'fontZoom', 'format', 'goToDefinitionCommands',
@@ -19,10 +20,10 @@ module.exports = {
                     'wordOperations', 'wordPartOperations']
             }),
             new CopyWebpackPlugin([
-                { from: './node_modules/onigasm/lib/onigasm.wasm' },
-                { from: './src/components/CodeEditor/CSharpFeatures/csharp.tmLanguage.json'},
-                { from: './src/components/CodeEditor/JavaFeatures/java.tmLanguage.json'},
-                { from: './node_modules/@fortawesome/fontawesome-free/metadata/categories.yml'}
+                {from: './node_modules/onigasm/lib/onigasm.wasm'},
+                {from: './src/components/CodeEditor/CSharpFeatures/csharp.tmLanguage.json'},
+                {from: './src/components/CodeEditor/JavaFeatures/java.tmLanguage.json'},
+                {from: './node_modules/@fortawesome/fontawesome-free/metadata/categories.yml'}
             ])
         ]
     },
@@ -37,6 +38,10 @@ module.exports = {
                 secure: false
             },
             '/blob': {
+                target: 'http://10.211.55.8:8000/',
+                secure: false
+            },
+            '/upload': {
                 target: 'http://10.211.55.8:8000/',
                 secure: false
             },
