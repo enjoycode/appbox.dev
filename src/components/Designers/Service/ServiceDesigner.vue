@@ -66,9 +66,58 @@ export default {
 
     methods: {
         /** 代码编辑器初始化后开始加载服务代码 */
-        onEditorMounted() {
+        onEditorMounted(/*monaco editor*/editor) {
             this.initEditorCommands() // 开始设置快捷键
+            this.initEditorService(editor, this.target)
             this.loadModel(false) // 开始加载模型
+        },
+
+        /** 设置编辑器的服务(用于代码导航) */
+        initEditorService(editor, target) {
+            // editor._codeEditorService.findModel = function (editor, resource) {
+            //     let model = null
+            //     if (resource !== null) {
+            //         model = monaco.editor.getModel(resource)
+            //     }
+            //     return model
+            // }
+
+            editor._codeEditorService.doOpenEditor = function (editor, input) {
+                let model = null
+                //先判断是否跳转至模型
+                const resourceUri = monaco.Uri.parse(input.resource)
+                if (resourceUri.scheme === "file") {
+                    if (resourceUri.authority === "models") {
+                        const modelNode = DesignStore.tree.findModelNodeByUri(resourceUri)
+                        DesignStore.tree.navigateTo(modelNode)
+                        return null
+                    } else if (resourceUri.authority === target.ID) { //本身
+                        model = editor.getModel()
+                    }
+                }
+
+                //这个this.findModel调用的是StandaloneCodeEditorServiceImpl.prototype.findModel这个方法
+                //let model = this.findModel(editor, input.resource)
+                if (!model) {
+                    return null
+                }
+                //editor.setModel(model)
+                let selection = input.options.selection
+                if (selection) {
+                    if (typeof selection.endLineNumber === 'number' && typeof selection.endColumn === 'number')
+                        editor.setSelection(selection)
+                    editor.revealRangeInCenter(selection, 1 /* Immediate */)
+                } else {
+                    let pos = {
+                        lineNumber: selection.startLineNumber,
+                        column: selection.startColumn
+                    }
+                    editor.setPosition(pos)
+                    editor.revealPositionInCenter(pos, 1 /* Immediate */)
+                }
+                editor.focus()
+                return editor
+            }
         },
 
         /** 设置编辑器快捷键 */
@@ -266,7 +315,8 @@ export default {
                 })
             }
         }
-    },
+    }
+    ,
 
     mounted() {
         this.debouncedCheckCode = debounce(this.checkCode, 1000)

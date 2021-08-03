@@ -115,16 +115,16 @@ export default Vue.extend({
         },
 
         /** 当前选择的节点改变 */
-        onCurrentChanged(value, node) {
-            this.currentNode = value;
-            store.emitEvent('CurrentNodeChanged', value);
+        onCurrentChanged(data, node) {
+            this.currentNode = data;
+            store.emitEvent('CurrentNodeChanged', data);
         },
 
         /** 根据节点类型及标识查找节点，注意：返回的是数据项 */
-        findNode(type, id) {
+        findNode(/*DesignNodeType*/type, /*String*/ id) {
             const loopFind = function(nodes, type, id) {
-                for (var i = 0; i < nodes.length; i++) {
-                    var element = nodes[i];
+                for (let i = 0; i < nodes.length; i++) {
+                    const element = nodes[i];
                     if (element.Type === type && element.ID === id) {
                         return element;
                     }
@@ -140,7 +140,7 @@ export default Vue.extend({
             return loopFind(this.designNodes, type, id);
         },
         /** 根据模型类型及名称查找节点 */
-        findModelNodeByName(type, appName, modelName) {
+        findModelNodeByName(/*ModelType*/type, appName, modelName) {
             let loopFind = function(nodes) {
                 for (let i = 0; i < nodes.length; i++) {
                     const element = nodes[i];
@@ -196,6 +196,36 @@ export default Vue.extend({
             let names = reference.Model.split('.');
             return this.findModelNodeByName(modelType, names[0], names[1]);
         },
+        /** 根据monaco.Uri查找节点，用于导航跳转 */
+        findModelNodeByUri(uri) {
+            //eg: path = "/sys/entities/Student.java"
+            const paths = uri.path.split('/');
+            if (paths.length !== 4) {
+                return null;
+            }
+            const appName = paths[1];
+            const typeName = paths[2];
+            let modelName = paths[3];
+            if (modelName.endsWith('.java') || modelName.endsWith('.dart')) {
+                modelName = modelName.substr(0, modelName.length - 5);
+            }
+            let type = 0;
+            switch (typeName) {
+                case 'entities':
+                    type = ModelType.Entity;
+                    break;
+                case 'services':
+                    type = ModelType.Service;
+                    break;
+                case 'views':
+                    type = ModelType.View;
+                    break;
+                default:
+                    throw new Error('未实现');
+            }
+
+            return this.findModelNodeByName(type, appName, modelName);
+        },
 
         /** 用于新建成功返回后刷新模型根节点或添加新建的节点 */
         onNewNode(nodeInfo) {
@@ -212,7 +242,6 @@ export default Vue.extend({
             }
             // }
         },
-
         /** 用于服务端删除成功后刷新模型根节点或移除删除的节点 */
         onDeleteNode(node, /* String */ rootNodeID) {
             // 移除前端声明 TODO:向上查找获取路径
@@ -244,11 +273,20 @@ export default Vue.extend({
             // TODO:优化查找
             loopFind(this.designNodes, node.Type, node.ID);
         },
-        /** 选中node，不激活相应的设计器 */
-        selectNode(data) {
-            this.currentNode = data;
-            this.currentNodeKey = data.ID;
+
+        /** 选中node，不打开相应的设计器 */
+        selectNode(nodeData) {
+            this.currentNode = nodeData;
+            this.currentNodeKey = nodeData.ID;
         },
+        /** 选中节点并打开相应的设计器 */
+        navigateTo(nodeData) {
+            if (nodeData) {
+                this.selectNode(nodeData);
+                this.onCurrentChanged(nodeData, null);
+            }
+        },
+
         /**
          * 用于绑定Select控件上
          * 取出设计树中的所有Entity并根据application分组

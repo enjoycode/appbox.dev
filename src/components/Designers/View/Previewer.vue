@@ -34,10 +34,7 @@ export default {
                 // todo:特殊路径如自定义的处理
                 if (paths.length === 3) {
                     let node = store.tree.findNode(22, paths[1] + '.' + paths[2])
-                    if (node) {
-                        store.tree.selectNode(node)
-                        store.tree.onCurrentChanged(node) // 暂手动激发变更事件
-                    }
+                    store.tree.navigateTo(node)
                     next(false)
                     return
                 }
