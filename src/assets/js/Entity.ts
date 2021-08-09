@@ -110,7 +110,7 @@ export class Entity {
                 let count = bs.ReadVariant();
                 let list = [];
                 for (let i = 0; i < count; i++) {
-                    list.push(await Entity.ReadFrom(bs));
+                    list.push(await bs.DeserializeAsync()); //同上处理循环引用
                 }
                 obj[memberInfo.Name] = list;
             } else {
