@@ -87,7 +87,7 @@ export default {
                 //先判断是否跳转至模型
                 const resourceUri = monaco.Uri.parse(input.resource)
                 if (resourceUri.scheme === "file") {
-                    if (resourceUri.authority === "models") {
+                    if (resourceUri.authority.endsWith("_models")) {
                         const modelNode = DesignStore.tree.findModelNodeByUri(resourceUri)
                         DesignStore.tree.navigateTo(modelNode)
                         return null
