@@ -89,8 +89,12 @@ export default {
         getPosition() {
             return this.editor.getPosition()
         },
-        setPosition(pos /* IPosition */) {
+        setPosition(pos /* IPosition */, reveal) {
             this.editor.setPosition(pos)
+            if (reveal) {
+                this.editor.revealLineInCenter(pos.lineNumber) // this.editor.revealPosition(pos)
+            }
+
         },
         getPositionAt(offset /* number */) {
             return this.editor.getModel().getPositionAt(offset)

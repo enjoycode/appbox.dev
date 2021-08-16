@@ -161,8 +161,8 @@ export default {
             if (!this.goto) {
                 return
             }
-            let pos = this.$refs.editor.getPositionAt(this.goto.Offset)
-            this.$refs.editor.setPosition(pos) //暂简单设定位置
+            let pos = {lineNumber: this.goto.StartLine, column: this.goto.StartColumn} //this.$refs.editor.getPositionAt(this.goto.Offset)
+            this.$refs.editor.setPosition(pos, true) //暂简单设定位置
             this.$refs.editor.focus()
         },
 
