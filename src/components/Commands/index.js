@@ -5,6 +5,8 @@ import DeleteModelCommand from './DeleteModel'
 import ExportAppCommand from './ExportApp'
 import ImportAppCommand from './ImportApp'
 import GetAssemblyCommand from './GetAssembly'
+import FindModelUsagesCommand from "./FindModelUsages";
+import RenameModelCommand from "@/components/Commands/RenameModel";
 
 import Vue from 'vue'
 import NewDataStoreDialog from './NewDataStoreDialog'
@@ -18,6 +20,8 @@ export default {
     },
     Checkout: CheckoutCommand,
     Save: SaveCommand,
+    FindModelUsages: FindModelUsagesCommand,
+    RenameModel: RenameModelCommand,
     Publish: PublishCommand,
     NewView: function () {
         store.ide.showDialog(Vue.component('NewModelDialog', NewModelDialog), 'View')

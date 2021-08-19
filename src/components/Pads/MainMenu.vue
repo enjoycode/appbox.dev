@@ -59,9 +59,10 @@ export default {
                         {title: 'Save', icon: 'fas fa-save fa-fw', index: 'Save'},
                         {title: 'Checkout', icon: 'fas fa-edit fa-fw', index: 'Checkout'},
                         {title: 'Delete', icon: 'fas fa-trash fa-fw', index: 'DeleteModel'},
-                        {title: 'Rename', icon: 'fas fa-edit fa-fw', index: 'Rename'},
+                        {title: 'Rename', icon: 'fas fa-edit fa-fw', index: 'RenameModel'},
+                        {title: 'Usages', icon: 'fas fa-link fa-fw', index: 'FindModelUsages'},
                         {title: 'Publish', icon: 'fas fa-archive fa-fw', index: 'Publish'},
-                        {title: 'Discard Changes', icon: 'fas fa-archive fa-fw', index: 'DiscardChanges'},
+                        {title: 'Discard Changes', icon: 'fas fa-undo fa-fw', index: 'DiscardChanges'},
                         {title: 'Reload', icon: 'fas fa-sync fa-fw', index: 'ReloadTree'},
                     ]
                 },

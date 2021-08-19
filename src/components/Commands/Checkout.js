@@ -4,7 +4,7 @@ import store from '@/design/DesignStore'
 import DesignNodeType from '@/design/DesignNodeType'
 
 export default function () {
-    var node = store.tree.currentNode
+    const node = store.tree.currentNode;
     if (node) {
         // 已经签出或被其他人签出处理
         if (node.CheckoutBy) {

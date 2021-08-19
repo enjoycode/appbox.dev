@@ -45,14 +45,17 @@ export default {
     },
 
     methods: {
+        makeTabKey(node) {
+            return node.ID + '-' + node.Type
+        },
         // 注意： targetName = nodeData.ID + '-' + nodeData.Type
-        removeTab(targetName) {
+        removeTab(tabKey) {
             let tabs = this.openedTabs
             let activeName = this.currentTab
             let targetNode = null;
-            if (activeName === targetName) {
+            if (activeName === tabKey) {
                 tabs.forEach((tab, index) => {
-                    if (tab.name === targetName) {
+                    if (tab.name === tabKey) {
                         let nextTab = tabs[index + 1] || tabs[index - 1]
                         if (nextTab) {
                             activeName = nextTab.name
@@ -68,14 +71,14 @@ export default {
             }
 
             this.currentTab = activeName
-            this.openedTabs = tabs.filter(tab => tab.name !== targetName)
+            this.openedTabs = tabs.filter(tab => tab.name !== tabKey)
         },
         removeTabByNode(node) {
-            this.removeTab(node.ID + '-' + node.Type)
+            this.removeTab(this.makeTabKey(node))
         },
         /** 设计树当前选择的节点改变后打开相应的设计器 */
         onCurrentNodeChanged(node, goto /* IModelReference */) {
-            const key = node.ID + '-' + node.Type;
+            const key = this.makeTabKey(node)
             // 检查是否已打开
             for (let index = 0; index < this.openedTabs.length; index++) {
                 if (this.openedTabs[index].name === key) {
@@ -174,6 +177,13 @@ export default {
                     designer.readOnly = true
                 }
             }
+        },
+        /** 用于重命名模型后刷新打开的相应节点的标题 */
+        refreshTitle(node) {
+            const key = node.ID + '-' + node.Type
+            const tab = this.openedTabs.find(t => t.name === key)
+            if (tab)
+                tab.title = node.App + '.' + node.Text
         },
         /** 刷新所有打开的设计器的内容，主要用于后端改变模型后（如重命名）后通知前端刷新 */
         refreshDesigners(updates) {
