@@ -102,6 +102,9 @@ export default {
         addCommand(keys, handler) {
             this.editor.addCommand(keys, handler)
         },
+        addAction(action) {
+            this.editor.addAction(action)
+        },
         focus() {
             this.editor.focus()
         },

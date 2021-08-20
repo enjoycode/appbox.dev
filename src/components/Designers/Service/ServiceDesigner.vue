@@ -30,6 +30,7 @@ import ReferencesDialog from './ReferencesDialog'
 import InvokeDialog from './InvokeDialog'
 import DebugArgsDialog from './DebugArgsDialog'
 import {monaco, modelLibs} from '../../CodeEditor/EditorService'
+import FindUsages from "@/components/CodeEditor/Actions/FindUsages";
 
 export default {
     components: {CodeEditor: CodeEditor},
@@ -123,10 +124,14 @@ export default {
         /** 设置编辑器快捷键 */
         initEditorCommands() {
             const _this = this;
-            this.$refs.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
+            const editor = this.$refs.editor
+
+            editor.addAction(FindUsages)
+
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function () {
                 _this.save()
             })
-            this.$refs.editor.addCommand(monaco.KeyCode.F5, function () {
+            editor.addCommand(monaco.KeyCode.F5, function () {
                 if (_this.hitBreakpoint) {
                     _this.continueBreakpoint()
                 } else {
