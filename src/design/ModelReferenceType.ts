@@ -11,10 +11,8 @@ enum ModelReferenceType {
     ReportModelID,
     WorkflowModelID,
     PermissionModelID,
-    ResourceModelID,
-    MenuFolderID,
-    MenuItemID,
-    EventModelID
+    EventModelID,
+    CodeEditor
 }
 
 export default ModelReferenceType
