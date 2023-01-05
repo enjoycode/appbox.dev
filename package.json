@@ -50,9 +50,9 @@
     "xterm": "^3.14.5"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.12.1",
+    "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-typescript": "^3.12.1",
-    "@vue/cli-service": "^4.2.2",
+    "@vue/cli-service": "^5.0.8",
     "copy-webpack-plugin": "^5.1.1",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "typescript": "^3.7.5",
